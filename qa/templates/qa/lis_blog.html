@@ -41,7 +41,7 @@
         <div class="row">
 
           <!-- Blog Masonry Grid -->
-          <div id="posts-masonry" class="posts-masonry" style="position: relative; height: 1988px;">
+          <div id="posts-masonry" class="posts-masonry" style="position: relative; ">
             <div class="">
 
                       <!-- <div class="col-md-4 col-sm-4 col-xs-12 margin_bottom30" >
@@ -49,7 +49,7 @@
                 {% if  blog.photo.image.url %}
                 <img class="center-block" src="{{ blog.photo.image.url }}" height="250" width="100%" style="box-shadow: 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12), 0 2px 4px -1px rgba(0,0,0,0.3);">
                 {% else %}
-                <img class="center-block" src='{% static "qa/images/blog.jpg" %}' height="250" width="100%">
+                <img class="center-block" src='{% static "images/blog.jpg" %}' height="250" width="100%">
                 {% endif %}
                 </a>
                 <div class="blog-content bg-white" style="box-shadow: 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12), 0 2px 4px -1px rgba(0,0,0,0.3); padding: 10px;">
@@ -71,36 +71,36 @@
 
 
               <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-              <div class="blog-grid">
-                <div class="blog-image"> 
-                  <a href="/qa/blog/{{ blog.id }}">
-                  {% if  blog.photo.image.url %}
-                  <img alt="blog-image1" class="" src="{{ blog.photo.image.url }}" height="250" width="100%"> 
-                  {% else %}
-                <img  src='{% static "qa/images/blog.jpg" %}' height="250" width="100%">
-                {% endif %}
-              </a>
+                <div class="blog-grid">
+                  <div class="blog-image"> 
+                    <a href="/qa/blog/{{ blog.id }}">
+                    {% if  blog.photo.image.url %}
+                    <img alt="blog-image1" class="" src="{{ blog.photo.image.url }}" height="250" width="100%"> 
+                    {% else %}
+                  <img  src='{% static "images/blog.jpg" %}' height="250" width="100%">
+                  {% endif %}
+                </a>
+                  </div>
+                  <div class="blog-content" style="max-height: 200px;">
+                    <h5><a href="/qa/blog/{{ blog.id }}">{{ blog.blog_title }}</a></h5>
+                    <ul class="post-meta">
+                      <li>{% trans "Par" %} {{ blog.user_data.user.username }}</li>
+                      <li>{{ blog.categorie.title_categorie }}</li>
+                      <li>{{ blog.pub_date }}</li>
+                    </ul>
+                    <div class="q_text" ><p>{{ blog.blog_text| safe|truncatechars_html:20 }}</p></div>
+                  </div>
+                  <div class="blog-footer">
+                    <ul class="like-comment">
+                      <li><a href="/qa#"><i class="icon-heart"></i>{{ blog.voteblog.count }}</a>
+                      </li>
+                      <li><a href="/qa#"><i class="icon-chat"></i>{{ blog.answer_blog_set.count }}</a>
+                      </li>
+                    </ul>
+                    
+                    <a href="/qa/blog/{{ blog.id }}" class="more-btn pull-right"><i class="fa fa-long-arrow-right"></i> {% trans "PLUS" %}</a> </div>
                 </div>
-                <div class="blog-content" style="max-height: 200px;">
-                  <h5><a href="/qa/blog/{{ blog.id }}">{{ blog.blog_title }}</a></h5>
-                  <ul class="post-meta">
-                    <li>{% trans "Par" %} {{ blog.user_data.user.username }}</li>
-                    <li>{{ blog.categorie.title_categorie }}</li>
-                    <li>{{ blog.pub_date }}</li>
-                  </ul>
-                  <div class="q_text" ><p>{{ blog.blog_text| safe|truncatechars_html:20 }}</p></div>
-                </div>
-                <div class="blog-footer">
-                  <ul class="like-comment">
-                    <li><a href="/qa#"><i class="icon-heart"></i>{{ blog.voteblog.count }}</a>
-                    </li>
-                    <li><a href="/qa#"><i class="icon-chat"></i>{{ blog.answer_blog_set.count }}</a>
-                    </li>
-                  </ul>
-                  
-                  <a href="/qa/blog/{{ blog.id }}" class="more-btn pull-right"><i class="fa fa-long-arrow-right"></i> {% trans "PLUS" %}</a> </div>
-              </div>
-            </div>
+             </div>
 
 
 

@@ -1,0 +1,146 @@
+{% extends 'dashboard-teacher/base.html' %}
+{% load static %}
+{% block content %}
+    <style>
+        .mark_as_read {
+            font-style: initial;
+            color: #365899;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .page-item.active .page-link {
+            background-color: #495056;
+            border-color: #495056;
+        }
+
+        .page-link {
+            color: #21252a;
+            border: 1px solid #e1e8ed;
+        }
+        .page-link:focus, .page-link:hover {
+            color: #fff;
+            text-decoration: none;
+            background-color: #495055;
+            border-color: #495054;
+        }
+
+    </style>
+<div class="content-wrapper">
+    <div class="container-fluid">
+      <!-- Breadcrumbs-->
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'eLearning:teacher_dashboard' %}">Tableau de bord</a>
+            </li>
+            <li class="breadcrumb-item active">Messages</li>
+        </ol>
+        <div class="box_general">
+            <form method="get" id="formFilter">
+                <div class="header_box">
+                    <h4 class="d-inline-block">Boîte de réception</h4>
+                    <input type="hidden" name="page" value="{{ messages.number }}">
+                    <div class="filter" style="margin-left: 20px">
+                        <select title="" name="filter_by" class="selectbox" onchange="document.getElementById('formFilter').submit();">
+                            <option value="1" {% if filter_by == '1' %}selected{% endif %}>Filtrer par lecture</option>
+                            <option value="2" {% if filter_by == '2' %}selected{% endif %}>Non Lus</option>
+                            <option value="3" {% if filter_by == '3' %}selected{% endif %}>Lus</option>
+                        </select>
+                    </div>
+                    <div class="filter" style="margin-left: 20px">
+                        <select title="" name="filter_students" class="selectbox" onchange="document.getElementById('formFilter').submit();">
+                            <option value="1" {% if filter_students == '1' %}selected{% endif %}>Filtrer par étudiants</option>
+                            <option value="2" {% if filter_students == '2' %}selected{% endif %}>Vos étudiants</option>
+                            <option value="3" {% if filter_students == '3' %}selected{% endif %}>Autres étudiants</option>
+                        </select>
+                    </div>
+                    <div class="filter">
+                        <select title="" name="order_by" class="selectbox" onchange="document.getElementById('formFilter').submit();">
+                            <option value="1" {% if order_by == '1' %}selected{% endif %}>Trier Par</option>
+                            <option value="2" {% if order_by == '2' %}selected{% endif %}>Nouveau</option>
+                            <option value="3" {% if order_by == '3' %}selected{% endif %}>Ancien</option>
+                            <option value="4" {% if order_by == '4' %}selected{% endif %}>Etudiants (A-Z)</option>
+                            <option value="5" {% if order_by == '5' %}selected{% endif %}>Etudiants (Z-A)</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+            <div class="list_general">
+                {% for message in messages %}
+                    <form id="formMarkAsRead{{ message.m.pk }}" action="{% url 'eLearning:mark_as_read' %}" data-validate-url="{% url 'eLearning:mark_as_read' %}">
+                        <input type="hidden" value="{{ message.m.pk }}" name="message">
+                        <input type="hidden" value="teacher" name="type">
+                        {% if message.m.is_read %}
+                            <input type="hidden" value="read" name="is_read">
+                        {% else %}
+                            <input type="hidden" value="unread" name="is_read" id="mark_as_read_hidden{{ message.m.pk }}">
+                        {% endif %}
+                    </form>
+                {% endfor %}
+                <ul>
+                    {% for message in messages %}
+                        <li>
+                            <span><a href="javascript:" data-pk="{{ message.m.pk }}" class="mark_as_read">
+                                <u id="mark_as_read_link{{ message.m.pk }}">Marquer comme {% if message.m.is_read %}non {% endif %}lu</u></a>
+                            </span>
+                            <figure>
+                                {% if message.m.student.photo_profil %}
+                                    {% if message.m.student.photo_profil.image %}
+                                        <img src="{{ message.m.student.photo_profil.image.url }}" alt="Image">
+                                    {% else %}
+                                        <img src="{% static 'eLearning/img/default-profil.jpg' %}" alt="Image">
+                                    {% endif %}
+                                {% else %}
+                                    <img src="{% static 'eLearning/img/default-profil.jpg' %}" alt="Image">
+                                {% endif %}
+                            </figure>
+                            <a href="{% url 'eLearning:dashboard_messages_reply' message.m.pk %}">
+                            <h4>{{ message.m.student.user.last_name }} {{ message.m.student.user.first_name }}
+                                {% if message.is_student %}
+                                    <i class="fa fa-graduation-cap"></i>
+                                {% endif %}
+                                {% if message.m.is_read %}
+                                    <i class="read" id="read_or_not{{ message.m.pk }}">Lu</i>
+                                {% else %}
+                                    <i class="unread" id="read_or_not{{ message.m.pk }}">Non lu</i>
+                                {% endif %}
+                            </h4></a>
+                            <h6>
+                                {{ message.m.object }}
+                                <span style="float: none; color: #333; margin-left: 7px;">-</span>
+                                <span style="float: none; font-style: normal; color: #333; font-size: 13px; margin-left: 7px;">{{ message.m.date_add }}</span>
+                            </h6>
+                            <p>{% autoescape off %}{{ message.m.message }}{% endautoescape %}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <!-- /box_general-->
+        {% if messages.has_other_pages %}
+            <div style="float: right">
+            <nav aria-label="...">
+                <ul class="pagination pagination-sm add_bottom_30">
+                    {% if messages.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ messages.previous_page_number }}&filter_by={{ filter_by }}&order_by={{ order_by }}&filter_students={{ filter_students }}">Précédent</a>
+                        </li>
+                    {% endif %}
+                    {% for i in messages.paginator.page_range %}
+                        {% if messages.number == i %}
+                            <li class="page-item active"><a class="page-link" href="?page={{ i }}&filter_by={{ filter_by }}&order_by={{ order_by }}&filter_students={{ filter_students }}">{{ i }}</a></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}&filter_by={{ filter_by }}&order_by={{ order_by }}&filter_students={{ filter_students }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if messages.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ messages.next_page_number }}&filter_by={{ filter_by }}&order_by={{ order_by }}&filter_students={{ filter_students }}">Suivant</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            </div>
+        {% endif %}
+        <!-- /pagination-->
+    </div>
+  <!-- /container-fluid-->
+</div>
+{% endblock %}

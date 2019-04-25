@@ -30,8 +30,8 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'SocialMedia',
-    'main_app',
+   # 'channels',  # khsha tkoun hia lowla
+
     'django.contrib.humanize',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,24 +39,39 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'widget_tweaks',
+
+    'main_app',
+    'dashboard',
+    'SocialMedia',
     'journal',
+    'ecommerce',
+    'qa',
+    'ao',
+    'eLearning',
+
+    'widget_tweaks',
     'imagekit',
     'ckeditor',
+    'ckeditor_uploader',
     'captcha',
-    'appelsOffres',
-    'ecommerce',
     'paypal.standard.ipn',
     'paypal.standard.pdt',
     'crispy_forms',
-    'qa',
-    'django_markdown',
-    'markdownx',
-    'ckeditor_uploader',
     'easy_select2',
     'django_select2',
     'rest_framework',
-    'ELearning',
+    'oauth2client',
+    'googleapiclient',
+
+    'django_user_agents',
+    'tracking_analyzer',
+    'django_social_share',
+
+    'bs4',
+
+    'pusher_chat_app',
+    'jwt',
+
 ]
 
 MIDDLEWARE = [
@@ -67,6 +82,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django_user_agents.middleware.UserAgentMiddleware",
 ]
 
 ROOT_URLCONF = 'SocialNetworkJob.urls'
@@ -85,6 +101,13 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'journal.context_processors.global_var',
                 'ecommerce.context_processors.global_var',
+                'SocialMedia.context_processors.global_var',
+                'SocialNetworkJob.context_processors.global_settings',
+                'dashboard.context_processors.global_settings',
+                'qa.context_processors.global_var',
+
+                'ao.context_processors.global_var',
+
             ],
         },
     },
@@ -225,3 +248,33 @@ MARKDOWN_EDITOR_SKIN = 'simple'
 CKEDITOR_UPLOAD_PATH = "uploads/"
 
 
+
+#Recaptcha
+
+GOOGLE_RECAPTCHA_SECRET_KEY = '6LcIOV8UAAAAAGNiz4ZWD-Hz4EPZwdHOVLndj-xc'
+
+
+#Google Analytics
+
+GOOGLE_ANALYTICS = {
+    'GOOGLE_ANALYTICS_ID': 'UA-125193151-1',
+}
+
+# django-analytics-tracker
+
+
+GEOIP_PATH = 'dashboard/geoip_dataset/'
+
+
+# Pusher chatkit settings
+
+PUSHER_INSTANCE_LOCATOR = "v1:us1:f43a92eb-92eb-4bf6-978b-caf1efff74b9"
+PUSHER_SECRET_KEY = "bcebc7cc-2137-42a7-98ab-006924e2edf1:6RZaUUWVybIMcWG0IGqrlKf/ZCwk7cYzUV90bYUVVQM="
+PUSHER_INSTANCE_ID = PUSHER_INSTANCE_LOCATOR.split(":")[2]
+PUSHER_KEY_ID = PUSHER_SECRET_KEY.split(":")[0]
+PUSHER_SECRET = PUSHER_SECRET_KEY.split(":")[1]
+PUSHER_CHATKIT_SUPERADMIN_ID = "ecosysteme_btp_superadmin"
+
+# Share Facebook MEssenger
+
+FACEBOOK_APP_ID = "274585039913237"

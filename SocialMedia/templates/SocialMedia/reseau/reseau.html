@@ -1,0 +1,371 @@
+{% extends "SocialMedia/base_socialmedia.html" %}
+{% load staticfiles %}
+{% load nbsp %}
+{% load widget_tweaks %}
+{% block title %}ESPR ReseauSocial{% endblock %}
+
+{% block stylesheets %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'SocialMedia/css/mur/style1.css' %}" type="text/css"/>
+    <link rel="stylesheet" href="{% static 'SocialMedia/css/mur/style2.css' %}" type="text/css"/>
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- Wrapper Start -->
+    <div class="wrapper">
+
+        <!-- Page Wrapper Start -->
+        <section class="page--wrapper pt--80 pb--20" style="transform: none;padding-top: 20px;">
+            <div class="container">
+                <div class="row">
+
+
+                    <!-- Main Sidebar Start -->
+                      <div class="main--sidebar col-md-3 pb--60" data-trigger="stickyScroll">
+                        <!-- Widget Start -->
+                        <div class="widget" style="    padding: 10px 20px;    background-color: white;">
+                            <div class="row">
+                                <a href="/reseausocial/profil/">
+                                    <div class="col-xs-12 text-center">
+                                        <img src="{{ user.profil.photo_profil.image.url }}"
+                                             class="img-circle" style="width:100px; height: 100px;"
+                                             alt="">
+                                    </div>
+
+                                    <div class="col-xs-12 text-center">
+                                        <h4>{{ user.first_name | title }} {{ user.last_name |title }}</h4>
+                                    </div>
+                                </a>
+                            </div>
+                            <!-- Groupes End -->
+                        </div>
+                        <!-- Widget End -->
+
+                        <!-- Relations Start -->
+                        <div class="widget" style="     padding: 10px 20px;   background-color: white;">
+
+
+                            <!-- Text Widget Start -->
+                            <div class="text--widget text-center">
+                                    <p class="h4 badge" style="font-weight: 500;font-size: 20px;padding: 5px;color: white;">{{ amis }}</p>
+                                    <p style="color:grey;font-size: 16px; font-weight: 500;">Vos relations</p>
+                                <div id="statuts" class="display-flex ivm-view-attr__img-wrapper--expanded ember-view"><!---->
+                                    <a  style="color: #ea4b0f;" href="{% url 'SocialMedia:Amis' %}"><span class="ml--15">Tout voir</span></a><!---->
+                                </div>
+                                    <a href="{% url 'SocialMedia:Amis' %}">
+                                        <div id="statuts" class="mn-connections-summary__social-proof ember-view">
+                                                <div class="mn-social-proof">
+                                                  <div class="mn-social-proof__facepiles">
+                                                    {% for f in friends|slice:"4" %}
+                                                        {% if not forloop.first %}
+                                                            <img style="margin-left: -20px;" class="lazy-image loaded mn-social-proof__profile-image EntityPhoto-circle-2" alt="{{ f.nom }}" height="40" width="40" src="{{ f.photo_profil.image.url }}">
+                                                        {% else %}
+                                                            <img class="lazy-image mn-social-proof__profile-image EntityPhoto-circle-2 loaded" alt="{{ f.nom }}" height="40" width="40" src="{{ f.photo_profil.image.url }}">
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                      <!---->  </div>
+                                                </div>
+                                        </div>
+                                    </a>
+                            </div>
+                            <!-- Text Widget End -->
+                        </div>
+
+                        <div class="widget" style="    padding: 10px 20px;    background-color: white;">
+
+
+                            <!-- Text Widget Start -->
+                            <div class="text--widget text-center">
+                                <div id="statuts" class="display-flex ivm-view-attr__img-wrapper--expanded ember-view"><!---->
+                                    <a  style="color: #ea4b0f;" href="{% url 'SocialMedia:reseau' %}"><span class="ml--15">Trouver des relations</span></a><!---->
+                                </div>
+                            </div>
+                            <!-- Text Widget End -->
+                        </div>
+                    <!-- Main Sidebar End -->
+
+                    <!-- Main Content Start -->
+
+                    </div>
+
+                    <!-- Main Sidebar End -->
+
+                    <!-- Main Content Start -->
+
+
+
+
+
+                   <!-- Activity List Start -->
+<div class="main--sidebar col-md-6 pb--60">
+
+
+                                <!-- Activity Items Start -->
+
+
+
+                <div class="member--items border-light-custom" style="background-color:white;margin-top: 0;outline: #cdcfd2 solid 1px;border: none;">
+<header id="status" class="artdeco-card__header">
+      <h3 class="artdeco-card__title" style="    border-bottom: 1px solid rgba(0,0,0,.15);    padding: 13px 16px 16px 16px;margin-top: 0;font-size: 20px;line-height: 28px;    font-weight: 400;">
+        Les connaissez-vous&nbsp;?
+      </h3>
+    </header>
+
+
+<div id="communFriend">
+</div>
+                    <div class="row gutter--15 AdjustRow activity--items nav  infinite-container">
+
+                                        {% for contact in contacts %}
+
+                                            {% include "SocialMedia/reseau/infos_reseau.html" %}
+
+                                        {% endfor %}
+                    {% if not contacts %}
+                            <header id="status" class="artdeco-card__header text-center">
+                                  <h3 class="artdeco-card__title" style="    padding: 13px 16px 16px 16px;margin-top: 0;font-size: 20px;line-height: 28px;    font-weight: 400;">
+                                    Aucune relation n'a été trouvée.
+                                  </h3>
+                                </header>
+                    {% endif %}
+                     </div>
+                </div>
+                                            <div class="row text-center">
+                                                <img id="loadingImageMoreComments" style="display: none; width: 40%;" class="img-rounded"  src="{% static 'SocialMedia/Spinner.gif' %}" />
+                                            </div>
+                            <!-- Activity List End -->
+
+
+                        <!-- Load More Button Start -->
+                            {% if contacts.has_next %}
+                            <div class="load-more--btn pt--30 text-center hidden">
+                                <a href="?page={{ contacts.next_page_number }}" class="btn btn-animate infinite-more-link">
+                                    <span><i class="fa ml--10 fa-caret-right"></i></span>
+                                </a>
+                            </div>
+                            {% endif %}
+                        <!-- Load More Button End -->
+
+
+</div>
+
+<div class="main--sidebar col-md-3 " data-trigger="stickyScroll">
+
+
+
+                        <!-- Widget Start -->
+                        <div class="widget" style="padding: 0px 5px;overflow-x: hidden;">
+                            <div class="row">
+                                        <div class="list-group" style="margin-bottom: 0px;">
+                                                  <a href="{% url 'SocialMedia:creer_entreprise'%}" class="list-group-item list-group-item-action">
+                                                        <div style=" font-family: -apple-system,system-ui,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Fira Sans,Ubuntu,Oxygen,Oxygen Sans,Cantarell,Droid Sans,Apple Color Emoji,Segoe UI Emoji,Segoe UI Emoji,Segoe UI Symbol,Lucida Grande,Helvetica,Arial,sans-serif; font-size: 14px; font-weight: 600; text-align: center; " id="statuts" class="Sans-17px-black-85%-semibold ph5 pv4">
+                                                            Creer une page Entreprises <span style=" position: relative; top: 3px; left: 4px; margin: 0 8px; " class="nav-business-services__svg-icon nav-business-services__svg-icon--nearby svg-icon-wrap"><li-icon aria-hidden="true" type="plus-icon" size="small"><svg viewBox="0 0 24 24" width="24px" height="24px" x="0" y="0" preserveAspectRatio="xMinYMin meet" class="artdeco-icon" focusable="false"><path d="M14,9H9v5H7V9H2V7H7V2H9V7h5V9Z" class="small-icon" style="fill-opacity: 1"></path></svg></li-icon></span>
+                                                          </div>
+                                                  </a>
+                                                <a href="{% url 'SocialMedia:creer_groupe'%}" class="list-group-item list-group-item-action">
+                                                        <div style=" font-family: -apple-system,system-ui,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Fira Sans,Ubuntu,Oxygen,Oxygen Sans,Cantarell,Droid Sans,Apple Color Emoji,Segoe UI Emoji,Segoe UI Emoji,Segoe UI Symbol,Lucida Grande,Helvetica,Arial,sans-serif; font-size: 14px; font-weight: 600; text-align: center; " id="statuts" class="Sans-17px-black-85%-semibold ph5 pv4">
+                                                            Creer un Groupe <span style=" position: relative; top: 3px; left: 4px; margin: 0 8px; " class="nav-business-services__svg-icon nav-business-services__svg-icon--nearby svg-icon-wrap"><li-icon aria-hidden="true" type="plus-icon" size="small"><svg viewBox="0 0 24 24" width="24px" height="24px" x="0" y="0" preserveAspectRatio="xMinYMin meet" class="artdeco-icon" focusable="false"><path d="M14,9H9v5H7V9H2V7H7V2H9V7h5V9Z" class="small-icon" style="fill-opacity: 1"></path></svg></li-icon></span>
+                                                          </div>
+                                                  </a>
+                                        </div>
+                            </div>
+                        </div>
+                        <!-- Widget End -->
+
+
+
+<artdeco-modal-overlay id="statuts" class="side-panel__overlay global-alert-offset ember-view">
+<artdeco-modal-content id="ember2265" class="ember-view">
+
+
+    <div id="ember2266" class="ember-view">
+    <div class="nav-app-launcher__card" style=" border: 1px solid rgba(0,0,0,.15);  padding-bottom: 0; background-color: #fff; ">
+
+
+
+
+    <div class="Sans-17px-black-85%-semibold ph5 pv4" style="padding-bottom: 10px;">
+    Entreprises
+  </div>
+
+  <div class="divider mt0 mb2" ></div>
+
+
+  <ul class="nav-app-launcher__app-icon-list pv2 list-style-none" style="padding-left: 20px;background-color: white;height: 100%;max-height: 266px;overflow-y: scroll;overflow-x: hidden;">
+        {% if entreprises.count != 0 %}
+        {% for ent in entreprises %}
+      <li   class="nav-app-launcher__app-icon-item nav-app-launcher__app-icon-item--narrow" style="display: inline-block; width: 100px; text-align: center; margin-bottom: 8px; padding-top: 4px; vertical-align: top;">
+<a data-control-name="nav.launcher_learning" target="_blank" href="{% url 'SocialMedia:page_entreprise' ent.id %}" id="ember2267" class="nav-app-launcher__app-icon-link block pt1 ember-view">          <span class="nav-app-launcher__svg-icon svg-icon-wrap"><li-icon style=" border-radius: 4px; box-shadow: 0 0 4px rgba(0,0,0,0.85); " aria-hidden="true" type="app-learning-icon">
+
+    <img style="height: 100%;" src="{{ ent.entreprise.logo.url }}" viewBox="0 0 40 40" width="40px" height="40px" x="0" y="0" preserveAspectRatio="xMinYMin meet" focusable="false" />
+</li-icon></span>
+          <h5 title="LinkedIn Learning" class="break-words Sans-13px-black-55%">{{ ent.entreprise.nom }}</h5>
+</a>      </li>
+        {% endfor %}
+        {% else %}
+
+                            <header id="status" class="artdeco-card__header text-center">
+                                  <h3 class="artdeco-card__title" style="    padding: 13px 16px 16px 16px;margin-top: 0;font-size: 20px;line-height: 28px;    font-weight: 400;">
+                                    Aucune Entreprise n'a été trouvée.
+                                  </h3>
+                                </header>
+        {% endif %}
+  </ul>
+</div>
+
+</div>
+
+
+</artdeco-modal-content>
+      </artdeco-modal>
+
+</artdeco-modal-overlay>
+
+
+
+<artdeco-modal-overlay id="statuts" class="side-panel__overlay global-alert-offset ember-view">
+<artdeco-modal-content id="ember2265" class="ember-view" style="padding-top: 2px;">
+
+
+    <div id="ember2266" class="ember-view">
+    <div class="nav-app-launcher__card" style=" border: 1px solid rgba(0,0,0,.15);  padding-bottom: 0; background-color: #fff; ">
+
+
+
+
+    <div class="Sans-17px-black-85%-semibold ph5 pv4" style="padding-bottom: 10px;">
+    Groupes
+  </div>
+
+  <div class="divider mt0 mb2" ></div>
+
+
+  <ul class="nav-app-launcher__app-icon-list pv2 list-style-none" style="padding-left: 20px;background-color: white;height: 100%;max-height: 266px;overflow-y: scroll;overflow-x: hidden;">
+        {% if grs.count != 0 %}
+        {% for g in grs %}
+      <li   class="nav-app-launcher__app-icon-item nav-app-launcher__app-icon-item--narrow" style="display: inline-block; width: 100px; text-align: center; margin-bottom: 8px; padding-top: 4px; vertical-align: top;">
+<a data-control-name="nav.launcher_learning" target="_blank" href="{% url 'SocialMedia:groupe' g.id %}" id="ember2267" class="nav-app-launcher__app-icon-link block pt1 ember-view">          <span class="nav-app-launcher__svg-icon svg-icon-wrap"><li-icon style=" border-radius: 4px; box-shadow: 0 0 4px rgba(0,0,0,0.85); " aria-hidden="true" type="app-learning-icon">
+
+    <img style="height: 100%;" src="{{ g.photo_profil.image.url }}" viewBox="0 0 40 40" width="40px" height="40px" x="0" y="0" preserveAspectRatio="xMinYMin meet" focusable="false" />
+</li-icon></span>
+          <h5 title="LinkedIn Learning" class="break-words Sans-13px-black-55%">{{ g.nom}}</h5>
+</a>      </li>
+        {% endfor %}
+        {% else %}
+
+                            <header id="status" class="artdeco-card__header text-center">
+                                  <h3 class="artdeco-card__title" style="    padding: 13px 16px 16px 16px;margin-top: 0;font-size: 20px;line-height: 28px;    font-weight: 400;">
+                                    Aucun Groupe n'a été trouvé.
+                                  </h3>
+                                </header>
+        {% endif %}
+  </ul>
+</div>
+
+</div>
+
+
+</artdeco-modal-content>
+      </artdeco-modal>
+
+</artdeco-modal-overlay>
+
+                    </div>
+
+
+
+
+
+
+
+
+     </div>
+            </div>
+        </section>
+        <!-- Page Wrapper End -->
+    </div>
+{% endblock content %}
+{% block scripts %}
+    {{ block.super }}
+
+    <script>
+$('.profil_links_menu li').removeClass('active');
+    $('.profil_links_menu li:eq(1)').addClass('active');
+    </script>
+
+    <script>
+
+
+    var infinite = new Waypoint.Infinite({
+      element: $('.infinite-container')[0],
+      onBeforePageLoad: function () {
+        $('#loadingImageMoreComments').fadeIn(250);
+      },
+      onAfterPageLoad: function ($items) {
+        $('#loadingImageMoreComments').fadeOut(250);
+      }
+    });
+
+
+    function communFriend(id, cid){
+        friendURL = "{% url 'SocialMedia:communFriend' %}";
+        $.ajax({
+                    url: friendURL,
+                    type: 'GET',
+                    data: {'id':id, 'cid':cid},
+                    success: function (data) {
+                        $("#communFriend").html(data);
+                    },
+                    error: function () {
+                    },
+                    complete:function(){
+                        $('#FriendModal').modal('show');
+                    },
+                    stop: function (e) {
+                        swal("Veuiller Verifier Votre Connexion Reseau Puis Ressayer", "Erreur Fatale", "error");
+                    }
+                });
+    }
+
+    function addFriend(e, cid){
+        e.preventDefault();
+        friendURL = "{% url 'SocialMedia:addContact' %}";
+        $.ajax({
+                    url: friendURL,
+                    type: 'GET',
+                    data: {'c_id':cid},
+                    success: function (data) {
+                        $(".cn"+cid).remove();
+                        setTimeout(function(){
+                        location.reload();
+                        },850);
+                        const toast = swal.mixin({
+                          toast: true,
+                          position: 'bottom-right',
+                          showConfirmButton: false,
+                          timer: 3000
+                        });
+
+                        toast({
+                          type: 'success',
+                          title: 'La demande à été envoyé avec succé'
+                        })
+                    },
+                    error: function () {
+                    },
+                    complete:function(){
+                        $('#FriendModal').modal('show');
+                    },
+                    stop: function (e) {
+                        swal("Veuiller Verifier Votre Connexion Reseau Puis Ressayer", "Erreur Fatale", "error");
+                    }
+                });
+    }
+
+
+
+  </script>
+{% endblock %}
+
+

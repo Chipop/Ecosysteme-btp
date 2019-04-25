@@ -1,0 +1,236 @@
+{% extends 'qa/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+      <!-- =-=-=-=-=-=-= Main Area =-=-=-=-=-=-= -->
+  <div class="main-content-area">
+
+    <!-- =-=-=-=-=-=-= User Profile =-=-=-=-=-=-= -->
+    <section id="user-profile" class="user-profile parallex">
+      <div class="container">
+        <!-- Row -->
+        <div class="row">
+
+          <div class="col-md-12 col-xs-12 col-sm-12">
+            <div class="profile-sec ">
+              <div class="profile-head">
+                <div class="col-md-9 col-xs-12 col-sm-9 no-padding">
+                  <div class="profile-avatar">
+                    <span>
+                        {% if profile.photo_profil is None %}
+                            <img class="img-responsive img-circle" alt="image" src="{% static 'images/default-profil.jpg' %}">
+                        {% else %}
+                            <img class="img-responsive img-circle" alt="image" src="{{ profile.photo_profil.image.url }}">
+                        {% endif %}
+                        <a href="{% url 'qa:notification' profile.id %}" style="background: #fff; position: absolute; z-index: 1; bottom: 0; right: 0; border-radius: 50%; color: #000; padding: 4px 4px 3px;"> {{ count_n }}
+                              <i class="fa fa-bell-o"></i></a>
+                    </span>
+                    <div class="profile-name">
+                      <h3>
+                          {{ profile.user.first_name|capfirst }} {{ profile.user.last_name|upper }}
+                          {% if own_profile %}
+                              <a href="{% url 'qa:update_profile' profile.id %}">
+                                  <button class="btn btn-default"
+                                      style="padding: 4px 13px 3px; margin-top: -5px; margin-left: 20px; font-size: 12px;">
+                                      Modifier Profil</button></a>
+                          {% endif %}
+                      </h3>
+                      <i>{{ profile.fonction|upper }}</i>
+                        <p>{{ profile.resume }}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3 col-xs-12 col-sm-3 no-padding">
+                  <ul class="profile-count">
+                    <li>{{ profile.points }}<i>Points</i></li>
+                    <li>{{ profile.answer_set.count }}<i>Réponses</i></li>
+                      {% if qa_profile_pro %}
+                          <li>{{ profile.article_set.count }}<i>Articles</i></li>
+                      {% else %}
+                          <li>{{ profile.question_set.count }}<i>Questions</i></li>
+                      {% endif %}
+                  </ul>
+                  <ul class="social-btns" style="position: absolute; right: 16%; top: 0;">
+                      <li><a href="{{ profile.facebook }}" title="Facebook"><i class="fa fa-facebook"></i></a></li>
+                        <li><a href="{{ profile.linkedin }}" style="background: #0077B5" title="LinkedIn"><i class="fa fa-linkedin"></i></a></li>
+                        <li><a href="{{ profile.twitter }}" title="Twitter"><i class="fa fa-twitter"></i></a></li>
+                          <li><a href="{{ profile.instagram }}" style="background: #cd486b" title="Instagram"><i class="fa fa-instagram"></i></a></li>
+                        <li><a href="{{ profile.youtube }}" style="background: #ff0000" title="Youtube"><i class="fa fa-youtube"></i></a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <!-- Profile Sec -->
+          </div>
+
+        </div>
+        <!-- Row End -->
+      </div>
+      <!-- end container -->
+    </section>
+
+    <!-- =-=-=-=-=-=-= User Profile end =-=-=-=-=-=-= -->
+
+     <!-- =-=-=-=-=-=-= User TimeLine =-=-=-=-=-=-= -->
+
+    <section class="section-padding-40">
+
+      <div class="container">
+        <!-- Row -->
+        <div class="row">
+
+          <div class="col-md-12">
+
+            <div class="timeline-container">
+            <!-- Pagination View More -->
+            <div class="clearfix">
+                {% if activities.has_other_pages %}
+                    <div class="col-md-3">
+                        <p class="paginatorIndex" style="color: #000; text-transform: uppercase; font-size: 18px;">
+                            page <b style="font-size: 22px;">{{ activities.number }}</b>
+                            sur <b style="font-size: 22px;">{{ activities.paginator.num_pages }}</b></p>
+                    </div>
+                    <div class="col-md-9">
+                        <ul class="pagination">
+                            {% if activities.has_previous %}
+                                <li><a href="?page={{ activities.previous_page_number }}">&laquo;</a></li>
+                            {% else %}
+                                <li class="disabled"><span>&laquo;</span></li>
+                            {% endif %}
+                            {% for i in activities.paginator.page_range %}
+                                {% if activities.number == i %}
+                                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                                {% else %}
+                                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if activities.has_next %}
+                                <li><a href="?page={{ activities.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                                <li class="disabled"><span>&raquo;</span></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+            <!-- Pagination View More End -->
+              <ul>
+                  {% for activity in activities %}
+                    <li>
+                      <div class="timeline">
+                        <div class="user-timeline">
+                          <span>
+                              {% if profile.photo_profil is None %}
+                                  <img alt="image" src="{% static 'images/default-cover.jpg' %}">
+                              {% else %}
+                                  <img alt="image" src="{{ profile.photo_profil.image.url }}">
+                              {% endif %}
+                          </span>
+                        </div>
+                        <div class="timeline-detail">
+                          <div class="timeline-head">
+                              {% if activity.type_o == 'answer' %}
+                                  <h3>
+                                      <a href="{% url 'qa:profile' profile.id %}">
+                                      {{ profile.user.first_name|capfirst }} {{ profile.user.last_name|upper }}</a>
+                                      <span> a laissé une réponse sur </span>
+                                      <a href="{% url 'qa:question' activity.question.id %}">{{ activity.question.title }}</a>
+                                      <span>le {{ activity.creation_date }}</span>
+                                  </h3>
+                              {% elif activity.type_o == 'question' %}
+                                  <h3>
+                                      <a href="{% url 'qa:profile' profile.id %}">
+                                      {{ profile.user.first_name|capfirst }} {{ profile.user.last_name|upper }}</a>
+                                      <span> a commencé une conversation </span>
+                                        <a href="{% url 'qa:question' activity.id %}">{{ activity.title }}</a>
+                                      <span>le {{ activity.creation_date }}</span>
+                                  </h3>
+                              {% else %}
+                                  <h3>
+                                      <a href="{% url 'qa:profile' profile.id %}">
+                                      {{ profile.user.first_name|capfirst }} {{ profile.user.last_name|upper }}</a>
+                                      <span> a ajouté un article </span>
+                                        <a href="{% url 'qa:blog_post' activity.id %}">{{ activity.title }}</a>
+                                      <span>le {{ activity.creation_date }}</span>
+                                  </h3>
+                              {% endif %}
+                            <div class="social-share">
+                              <a title=""><i class="fa fa-share-alt"></i></a>
+                              <ul class="social-btns">
+                                <li><a href="#" data-placement="left" data-toggle="tooltip" title="Facebook"><i class="fa fa-facebook"></i></a></li>
+                                <li><a href="#" data-placement="left" data-toggle="tooltip" title="Google"><i class="fa fa-google-plus"></i></a></li>
+                                <li><a href="#" data-placement="left" data-toggle="tooltip" title="Twitter"><i class="fa fa-twitter"></i></a></li>
+                              </ul>
+                            </div>
+                          </div>
+                            {% if activity.content is not None and activity.content != '' and activity.type_o != 'article' %}
+                              <div class="timeline-content">
+                                {{ activity.content|safe }}
+                              </div>
+                            {% endif %}
+                        </div>
+                      </div>
+                    </li>
+                  {% endfor %}
+              </ul>
+            </div>
+
+            <!-- Pagination View More -->
+            <div class="clearfix">
+                {% if activities.has_other_pages %}
+                    <div class="col-md-3">
+                        <p class="paginatorIndex" style="color: #000; text-transform: uppercase; font-size: 18px;">
+                            page <b style="font-size: 22px;">{{ activities.number }}</b>
+                            sur <b style="font-size: 22px;">{{ activities.paginator.num_pages }}</b></p>
+                    </div>
+                    <div class="col-md-9">
+                        <ul class="pagination">
+                            {% if activities.has_previous %}
+                                <li><a href="?page={{ activities.previous_page_number }}">&laquo;</a></li>
+                            {% else %}
+                                <li class="disabled"><span>&laquo;</span></li>
+                            {% endif %}
+                            {% for i in activities.paginator.page_range %}
+                                {% if activities.number == i %}
+                                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                                {% else %}
+                                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if activities.has_next %}
+                                <li><a href="?page={{ activities.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                                <li class="disabled"><span>&raquo;</span></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+            <!-- Pagination View More End -->
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+    <!-- =-=-=-=-=-=-= User TimeLine End =-=-=-=-=-=-= -->
+
+  </div>
+  <!-- =-=-=-=-=-=-= Main Area End =-=-=-=-=-=-= -->
+
+{% endblock %}
+
+
+{% block script %}
+    <script>
+        {% if profile.photo_couverture is not None %}
+            $("#user-profile").css("background-image","url({{ profile.photo_couverture.image.url }})");
+        {% else %}
+            $("#user-profile").css("background-image","url({% static 'images/default-cover.jpg' %})");
+        {% endif %}
+    </script>
+{% endblock %}

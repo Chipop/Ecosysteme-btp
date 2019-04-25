@@ -1,0 +1,118 @@
+{% extends 'dashboard-teacher/base.html' %}
+{% load static %}
+{% block content %}
+
+    <style>
+        .page-item.active .page-link {
+            background-color: #495056;
+            border-color: #495056;
+        }
+
+        .page-link {
+            color: #21252a;
+            border: 1px solid #e1e8ed;
+        }
+        .page-link:focus, .page-link:hover {
+            color: #fff;
+            text-decoration: none;
+            background-color: #495055;
+            border-color: #495054;
+        }
+    </style>
+
+<div class="content-wrapper">
+    <div class="container-fluid">
+        <!-- Breadcrumbs-->
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'eLearning:teacher_dashboard' %}">Tableau de bord</a>
+            </li>
+            <li class="breadcrumb-item active">Revues</li>
+        </ol>
+        <div class="box_general">
+            <form method="get" id="formFilter">
+                <div class="header_box">
+                    <h2 class="d-inline-block">Liste des Revues</h2>
+                        <input type="hidden" name="page" value="{{ reviews.number }}">
+                        <div class="filter">
+                            <select title="" name="filter_by" class="selectbox" onchange="document.getElementById('formFilter').submit();">
+                                <option value="0" {% if filter_by == 0 %}selected{% endif %}>Filtrer par Cours</option>
+                                {% for course in course_list %}
+                                    <option value="{{ course.pk }}" {% if filter_by == course.pk %}selected{% endif %}>{{ course.name }}</option>
+                                {% endfor%}
+                            </select>
+                        </div>
+                        <div class="filter" style="margin-right: 20px">
+                            <select title="" name="order_by" class="selectbox" onchange="document.getElementById('formFilter').submit();">
+                                <option value="1" {% if order_by == '1' %}selected{% endif %}>Trier Par</option>
+                                <option value="2" {% if order_by == '2' %}selected{% endif %}>Nouveau</option>
+                                <option value="3" {% if order_by == '3' %}selected{% endif %}>Ancien</option>
+                                <option value="4" {% if order_by == '4' %}selected{% endif %}>Evaluation (5-1)</option>
+                                <option value="5" {% if order_by == '5' %}selected{% endif %}>Evaluation (1-5)</option>
+                                <option value="6" {% if order_by == '6' %}selected{% endif %}>Cours (A-Z)</option>
+                                <option value="7" {% if order_by == '7' %}selected{% endif %}>Cours (Z-A)</option>
+                            </select>
+                        </div>
+                </div>
+            </form>
+			<div class="list_general reviews">
+				<ul>
+                    {% for review in reviews %}
+                        <li>
+                            <span style="font-style: normal; margin-right: 12px;">{{ review.date_add }}</span><br>
+                            <span class="rating">
+                                {% for i in "*****" %}
+                                    {% if forloop.counter <= review.value %}
+                                       <i class="fa fa-fw fa-star yellow"></i>
+                                    {% else %}
+                                        <i class="fa fa-fw fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </span>
+                            <figure>
+                                {% if review.student.photo_profil %}
+                                    {% if review.student.photo_profil.image %}
+                                        <img src="{{ review.student.photo_profil.image.url }}" alt="image">
+                                    {% else %}
+                                        <img src="{% static 'eLearning/img/default-profil.jpg' %}" alt="image">
+                                    {% endif %}
+                                {% else %}
+                                    <img src="{% static 'eLearning/img/default-profil.jpg' %}" alt="image">
+                                {% endif %}
+                            </figure>
+                            <h4>{{ review.student.user.last_name }} {{ review.student.user.first_name }} - {{ review.course.name }}</h4>
+                            <p>{{ review.comment }}</p>
+                        </li>
+                    {% endfor %}
+				</ul>
+			</div>
+		</div>
+		<!-- /box_general-->
+        {% if reviews.has_other_pages %}
+            <div style="float: right">
+                <nav aria-label="...">
+                    <ul class="pagination pagination-sm add_bottom_30">
+                        {% if reviews.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ reviews.previous_page_number }}&filter_by={{ filter_by }}&order_by={{ order_by }}">Précédent</a>
+                            </li>
+                        {% endif %}
+                        {% for i in reviews.paginator.page_range %}
+                            {% if reviews.number == i %}
+                                <li class="page-item active"><a class="page-link" href="?page={{ i }}&filter_by={{ filter_by }}&order_by={{ order_by }}">{{ i }}</a></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="?page={{ i }}&filter_by={{ filter_by }}&order_by={{ order_by }}">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if reviews.has_next %}
+                            <li class="page-item"><a class="page-link" href="?page={{ reviews.next_page_number }}&filter_by={{ filter_by }}&order_by={{ order_by }}">Suivant</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        {% endif %}
+		<!-- /pagination-->
+    </div>
+	  <!-- /container-fluid-->
+</div>
+{% endblock %}

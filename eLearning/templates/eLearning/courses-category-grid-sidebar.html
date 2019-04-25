@@ -1,0 +1,317 @@
+{% extends 'eLearning/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+    a {
+        color: #000;
+    }
+    .page-item.active .page-link {
+        background-color: #ea4c0f;
+        border-color: #ea4c0f;
+    }
+
+    a.page-link {
+        color: #ea4c0f;
+    }
+
+    .page-link:focus, .page-link:hover {
+        color: #333;
+    }
+    .box_grid figure .preview{
+        background: #eee;
+        height: 90%;
+        top: 11%;
+        width: 94%;
+        left: 3%;
+        border-radius: 5px;
+        padding: 12px 8px;
+    }
+
+    .box_grid figure .preview h3 {
+        font-weight: bold;
+        font-size: 20px;
+        padding-top: 8px;
+    }
+
+    .box_grid .preview ul{
+        padding: 0;
+        overflow: hidden;
+        max-height: 116px;
+    }
+
+    .box_grid .preview ul li {
+        display: block !important;
+        float: none;
+        padding: 0;
+    }
+</style>
+
+<section id="hero_in" class="courses">
+    <div class="wrapper">
+        <div class="container">
+            <h1 class="fadeInUp">Cours en ligne</h1>
+            <h1 class="fadeInUp"><span></span>{{ category.name }}</h1>
+        </div>
+    </div>
+</section>
+<!--/hero_in-->
+
+<div class="filters_listing" style="background: #333;padding: 17px 0;">
+    <div class="container">
+        <form action="{% url 'eLearning:category' selected_category %}" id="filter_form">
+            {% for category in selected_categories %}
+                <input type="hidden" name="selected_categories" value="{{ category }}" />
+            {% endfor %}
+            {% for revue in selected_revues %}
+                <input type="hidden" name="selected_revues" value="{{ revue }}" />
+            {% endfor %}
+            <ul class="clearfix" id="Div_Filter">
+                <li>
+                    <div class="switch-field" style="overflow: visible;display: grid;">
+                        <div>
+                            <p style="margin-bottom: 0; color: #fff; font-weight: 600; float: left; padding-top: 2px; margin-right: 30px; text-transform: uppercase; font-size: 17px;">Trier par :</p>
+                            {% if sort %}
+                                <input type="radio" id="all" name="sort" value="all" {% if sort == "all" %}checked{% endif %} onchange="document.getElementById('filter_form').submit();">
+                                <label for="all">Tous</label>
+
+                                <input type="radio" id="popular" name="sort" value="popular" {% if sort == "popular" %}checked{% endif %} onchange="document.getElementById('filter_form').submit();">
+                                <label for="popular">Populaires</label>
+
+                                <input type="radio" id="latest" name="sort" value="latest" {% if sort == "latest" %}checked{% endif %} onchange="document.getElementById('filter_form').submit();">
+                                <label for="latest">Nouveaux</label>
+
+                                <input type="radio" id="review" name="sort" value="review" {% if sort == "review" %}checked{% endif %} onchange="document.getElementById('filter_form').submit();">
+                                <label for="review">Les mieux notés</label>
+                            {% else %}
+                                <input type="radio" id="all" name="sort" value="all" checked onchange="document.getElementById('filter_form').submit();">
+                                <label for="all">Tous</label>
+                                <input type="radio" id="popular" name="sort" value="popular" onchange="document.getElementById('filter_form').submit();">
+                                <label for="popular">Populaires</label>
+                                <input type="radio" id="latest" name="sort" value="latest" onchange="document.getElementById('filter_form').submit();">
+                                <label for="latest">Nouveaux</label>
+                            {% endif %}
+                        </div>
+                        <div style="display: flex;">
+                            <p style="margin-bottom: 0; color: #fff; font-weight: 600; float: left; padding-top: 2px; margin-right: 45px; text-transform: uppercase; font-size: 17px;">Filtrer par :</p>
+                            <span style="margin: 0 5px;">
+                                <select title="" name="filter_paying" class="selectbox" id="menu_categories" onchange="document.getElementById('filter_form').submit();">
+                                    {% if selected_paying %}
+                                        <option value="0" {% if selected_paying == 0 %}selected="selected"{% endif %}>Payant/Gratuit</option>
+                                        <option value="1" {% if selected_paying == 1 %}selected="selected"{% endif %}>Gratuit</option>
+                                        <option value="2" {% if selected_paying == 2 %}selected="selected"{% endif %}>Payant</option>
+                                    {% else %}
+                                        <option value="0" selected="selected">Payant/Gratuit</option>
+                                        <option value="1">Gratuit</option>
+                                        <option value="2">Payant</option>
+                                    {% endif %}
+                                </select>
+                            </span>
+                            <span style="margin: 0 5px;">
+                                <select title="" name="filter_level" class="selectbox" id="menu_categories" onchange="document.getElementById('filter_form').submit();">
+                                    {% if selected_level %}
+                                        <option value="0" {% if selected_level == 0 %}selected="selected"{% endif %}>Niveaux</option>
+                                        <option value="Facile" {% if selected_level == 'Facile' %}selected="selected"{% endif %}>Facile</option>
+                                        <option value="Moyen" {% if selected_level == 'Moyen' %}selected="selected"{% endif %}>Moyen</option>
+                                        <option value="Difficile" {% if selected_level == 'Difficile' %}selected="selected"{% endif %}>Difficile</option>
+                                    {% else %}
+                                        <option value="0" selected="selected">Niveaux</option>
+                                        <option value="Facile">Facile</option>
+                                        <option value="Moyen">Moyen</option>
+                                        <option value="Difficile">Difficile</option>
+                                    {% endif %}
+                                </select>
+                            </span>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="layout_view" style="margin-top: 17px;">
+                        <input type="hidden" name="type_list" id="type_list" value="{{ type }}">
+                        <a href="javascript:" onclick="document.getElementById('type_list').value ='grid'; document.getElementById('filter_form').submit();" class="active"><i class="icon-th"></i></a>
+                        <a href="javascript:" onclick="document.getElementById('type_list').value ='list'; document.getElementById('filter_form').submit();" ><i class="icon-th-list"></i></a>
+                    </div>
+                </li>
+            </ul>
+        </form>
+    </div>
+    <!-- /container -->
+</div>
+<!-- /filters -->
+
+<div class="container margin_60_35">
+    <div class="row">
+        <aside class="col-lg-3" id="sidebar">
+            <div id="filters_col"> <a data-toggle="collapse" href="#collapseFilters" aria-expanded="false" aria-controls="collapseFilters" id="filters_col_bt">Filtres </a>
+                <div class="collapse show" id="collapseFilters">
+                  <form action="{% url 'eLearning:category' selected_category %}">
+                    <input type="hidden" name="sort" value="{{ sort }}">
+                    <input type="hidden" name="type_list" value="{{ type }}">
+                    <input type="hidden" name="filter_level" value="{{ selected_level }}">
+                    <input type="hidden" name="filter_paying" value="{{ selected_paying }}">
+                    <div class="filter_type">
+                        <h6>Catégorie</h6>
+                        <ul>
+                            {% for categorie in categories %}
+                            <li>
+                                <label>
+                                    <input name="selected_categories" type="checkbox" class="icheck"
+                                           {% if categorie.pk in selected_categories %}checked{% endif %}
+                                           value="{{ categorie.pk }}">{{ categorie.name }} <small>({{ categorie.number }})</small>
+                                </label>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="filter_type">
+                        <h6>Evaluation</h6>
+                        <ul>
+                            {% for revue in revues %}
+                            <li>
+                                <label>
+                                    <input name="selected_revues" type="checkbox" class="icheck"
+                                           {% if revue.value in selected_revues %}checked{% endif %}
+                                           value="{{ revue.value }}">
+                                    <span class="rating">
+                                         {% for i in "*****" %}
+                                            {% if forloop.counter <= revue.value %}
+                                               <i class="icon_star voted"></i>
+                                            {% else %}
+                                                <i class="icon_star_alt"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <small>({{ revue.number }})</small>
+                                    </span>
+                                </label>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <input type="submit" value="Filtrer" class="btn_1" style="background: #333; color: #fff; padding: 11px 25px; width: 100%; text-transform: uppercase; font-size: 14px; font-weight: 500; letter-spacing: 2px; cursor: pointer;"/>
+                  </form>
+                </div>
+                <!--/collapse -->
+            </div>
+            <!--/filters col-->
+        </aside>
+        <!-- /aside -->
+
+        <div class="col-lg-9">
+            <div class="row">
+                {% for course in courses %}
+                <div class="col-md-6">
+                    <div class="box_grid wow">
+                        <figure class="block-reveal">
+                            <div class="block-horizzontal" style="background: #EC5252"></div>
+                            <form id="formAddToWish{{ course.c.pk }}" method="get" action="{% url 'eLearning:add_to_wish' %}" data-validate-url="{% url 'eLearning:add_to_wish' %}"><input type="hidden" name="course" value="{{ course.c.pk }}"></form>
+                            <a href="javascript:" onclick="wishlist.add('{{ course.c.pk }}', '{{ user.is_authenticated }}')" id="buttonWish{{ course.c.pk }}" class="wish_bt"></a>
+                            <a href="{% url 'eLearning:course' course.c.pk %}"><img src="{{ course.c.image.url }}" class="img-fluid" alt="image {{ course.c.name }}" style="width: 100%"></a>
+                            <div class="price">
+                                {% if course.c.is_free %}Gratuit{% elif course.sale %}{{ course.sale.new_price }} Dh (-{{ course.sale.percentage }}%){% else %}{{ course.c.price }} Dh{% endif %}
+                            </div>
+                            <div class="preview">
+                                <h3>Vous allez apprendre</h3>
+                                <ul>
+                                    {% for post_skill in course.c.elearning_postskills_set.all %}
+                                        <li>{{ post_skill.value }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </figure>
+                        <div class="wrapper">
+                            <small>{{ course.c.category.category.name }} > {{ course.c.category.name }}</small>
+                            <h3>{{ course.c.name }}</h3>
+                            <p>{% autoescape off %}{{ course.c.description|striptags|truncatewords:20 }}{% endautoescape %}</p>
+                            <div class="rating">
+                                {% for i in "*****" %}
+                                    {% if forloop.counter <= course.ratting %}
+                                       <i class="icon_star voted"></i>
+                                    {% elif forloop.counter == course.ratting|add:"1" and course.rattingInt < course.ratting %}
+                                            <i class="icon_star-half_alt voted"></i>
+                                    {% else %}
+                                        <i class="icon_star_alt"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <small>({{ course.number }})</small>
+                            </div>
+                        </div>
+                        <ul>
+                            <li><i class="icon_clock_alt"></i> {{ course.c.duration }}</li>
+                            <li><i class="icon_like"></i> {{ course.c.like }}</li>
+                            <li><a href="{% url 'eLearning:course' course.c.pk %}">Voir Cours</a></li>
+                        </ul>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <!-- /row -->
+            {% if courses.has_other_pages %}
+                <div style="height: 47px;">
+                    <nav aria-label="Pagination" style="float: right">
+                        <ul class="pagination pagination-sm add_bottom_30">
+                            {% if courses.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ courses.previous_page_number }}">Précédent</a>
+                                </li>
+                            {% endif %}
+                            {% for i in courses.paginator.page_range %}
+                                {% if courses.number == i %}
+                                    <li class="page-item active"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                                {% else %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if courses.has_next %}
+                                <li class="page-item"><a class="page-link" href="?page={{ courses.next_page_number }}">Suivant</a></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            {% endif %}
+        </div>
+        <!-- /col -->
+    </div>
+    <!-- /row -->
+</div>
+<!-- /container -->
+<div class="bg_color_1">
+    <div class="container margin_60_35">
+        <div class="row">
+            <div class="col-md-4">
+                <a href="#" class="boxed_list">
+                    <i class="pe-7s-help2"></i>
+                    <h4>Besoin d'aide? Contactez nous</h4>
+                    <p>Cum appareat maiestatis interpretaris et, et sit.</p>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="#" class="boxed_list">
+                    <i class="pe-7s-wallet"></i>
+                    <h4>Paiements et Remboursements</h4>
+                    <p>Qui ea nemore eruditi, magna prima possit eu mei.</p>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="#" class="boxed_list">
+                    <i class="pe-7s-note2"></i>
+                    <h4>Normes de Qualité</h4>
+                    <p>Hinc vituperata sed ut, pro laudem nonumes ex.</p>
+                </a>
+            </div>
+        </div>
+        <!-- /row -->
+    </div>
+    <!-- /container -->
+</div>
+<!-- /bg_color_1 -->
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+    {% if is_filtering %}
+        $( document ).ready(function() {
+            var link = document.createElement("a");
+            link.setAttribute("href", "#Div_Filter");
+            link.click();
+        });
+    {% endif %}
+</script>
+{% endblock %}

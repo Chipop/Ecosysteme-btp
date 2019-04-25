@@ -1,0 +1,326 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}
+    Cours | Elearning | {{ block.super }}
+{% endblock title %}
+
+
+{% block stylesheets %}
+    {{ block.super }}
+    <style>
+        .p-left-20 {
+            padding-left: 20px;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+
+        <div class="row">
+
+            <div class="col-lg-12">
+
+                <div class=" float-left">
+                    <a href="{% url 'dashboard:elearning_cours' %}">
+                        <button class="btn btn-primary dim">
+                            <i class="fa fa-arrow-left"></i> Liste des cours
+                        </button>
+                    </a>
+                </div>
+
+                <div class=" float-right">
+                    <a href="{% url 'dashboard:elearning_delete_cours' id=cours.id %}">
+                        <button class="btn btn-danger dim">
+                            <i class="fa fa-trash"></i> Supprimer
+                        </button>
+                    </a>
+
+                    <a href="{% url 'dashboard:elearning_update_cours' id=cours.id %}">
+                        <button class="btn btn-success dim">
+                            <i class="fa fa-pencil"></i> Modifier
+                        </button>
+                    </a>
+
+
+                </div>
+            </div>
+
+
+            <div class="col-lg-8">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Cours : {{ cours.name }}
+
+                            {% if order.status == "Shipped" %}
+                                <span class="badge badge-primary">{{ order.status }}</span>
+                            {% elif order.status == "Processing" %}
+                                <span class="badge badge-warning">{{ order.status }}</span>
+                            {% elif order.status == "Created" %}
+                                <span class="badge badge-success">{{ order.status }}</span>
+                            {% endif %}
+
+                            <span class="badge badge-white">{{ order.payment_method }}</span></h5>
+                    </div>
+                    <div class="ibox-content">
+                        <table class="table">
+                            <h5>Description</h5>
+
+                            <p>{{ cours.description|safe }}</p>
+
+                            <h5>
+                                Pré-requis
+                                <a href="{% url 'dashboard:elearning_add_prerequis' id=cours.id %}">
+                                    <button class="btn btn-primary btn-xs"><i class="fa fa-plus"></i></button>
+                                </a>
+                            </h5>
+
+                            <div class="p-left-20">
+                                {% for pre in cours.elearning_prerequisites_set.all %}
+                                    <p>
+                                        {{ pre.value }}
+                                        <a href="{% url 'dashboard:elearning_delete_prerequis' id_prerequis=pre.id %}">
+                                            <button class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button>
+                                        </a>
+                                        <a href="{% url 'dashboard:elearning_update_prerequis' id_prerequis=pre.id %}">
+                                            <button class="btn btn-success btn-xs"><i class="fa fa-pencil"></i></button>
+                                        </a>
+                                    </p>
+                                {% empty %}
+                                    <p>-</p>
+                                {% endfor %}
+                            </div>
+
+                            <h5>
+                                Ce qu'on apprend dans ce cours
+                                <a href="{% url 'dashboard:elearning_add_postskill' id=cours.id %}">
+                                    <button class="btn btn-primary btn-xs"><i class="fa fa-plus"></i></button>
+                                </a>
+                            </h5>
+
+
+                            <div class="p-left-20">
+                                {% for pre in cours.elearning_postskills_set.all %}
+                                    <p>
+                                        {{ pre.value }}
+                                        <a href="{% url 'dashboard:elearning_delete_postskill' id_postskill=pre.id %}">
+                                            <button class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button>
+                                        </a>
+                                        <a href="{% url 'dashboard:elearning_update_postskill' id_postskill=pre.id %}">
+                                            <button class="btn btn-success btn-xs"><i class="fa fa-pencil"></i></button>
+                                        </a>
+                                    </p>
+                                {% empty %}
+                                    <p>-</p>
+                                {% endfor %}
+                            </div>
+
+
+                        </table>
+                    </div>
+                </div>
+
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>{{ cours.elearning_part_set.all.count }} chapitres | {{ course.duration }} </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h5>
+                            Chapitres
+                            <a href="{% url 'dashboard:elearning_add_chapter' id=cours.id %}">
+                                <button class="btn btn-primary btn-xs"><i class="fa fa-plus"></i></button>
+                            </a>
+                        </h5>
+                        <div class="p-left-20">
+                            {% for part in cours.elearning_part_set.all %}
+                                <h4>
+                                    {{ part.name }}
+                                    <a href="{% url 'dashboard:elearning_delete_chapter' id_chapter=part.id %}">
+                                        <button class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button>
+                                    </a>
+                                    <a href="{% url 'dashboard:elearning_update_chapter' id_chapter=part.id %}">
+                                        <button class="btn btn-success btn-xs"><i class="fa fa-pencil"></i></button>
+                                    </a>
+                                    <a href="{% url 'dashboard:elearning_add_lecon' id_chapitre=part.id %}">
+                                        <button class="btn btn-primary btn-xs"><i class="fa fa-plus"></i> Leçon</button>
+                                    </a>
+                                </h4>
+                                <div class="p-left-20">
+                                    {% if part.elearning_chapter_set.all.count > 0 %}
+                                        <h5>
+                                            Leçons
+                                        </h5>
+                                    {% endif %}
+
+                                    <div class="p-left-20">
+                                        {% for chapter in part.elearning_chapter_set.all %}
+                                            <p>
+                                                {{ chapter.name }} {# leçon #}
+
+                                                <a href="{% url 'dashboard:elearning_delete_lecon' id_lecon=chapter.id %}">
+                                                    <button class="btn btn-danger btn-xs"><i class="fa fa-trash"></i>
+                                                    </button>
+                                                </a>
+                                                <a href="{% url 'dashboard:elearning_update_lecon' id_lecon=chapter.id %}">
+                                                    <button class="btn btn-success btn-xs"><i class="fa fa-pencil"></i>
+                                                    </button>
+                                                </a>
+                                            </p>
+                                        {% endfor %}
+                                    </div>
+
+                                    {% if part.attached_file %}
+                                        <strong>Fichier joint :</strong>
+                                        <a href="{{ part.attached_file.url }}"
+                                           target="_blank">{{ part.attached_file.name }}</a>
+                                    {% endif %}
+
+                                    {% if part.exam %}
+
+                                        <p><strong>Quizz :</strong> {{ part.exam.title }}
+                                            | {{ part.exam.elearning_question_set.all.count }} questions</p>
+
+                                    {% endif %}
+                                </div>
+
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Détails du cours</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <img src="{% if cours.image %} {{ cours.image.url }} {% else %}{% endif %}"
+                                             alt=""
+                                             style="height: 200px;">
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <a href="">{{ order.user.user.first_name | title }} {{ order.user.user.last_name | title }}</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ibox-content">
+                        <p><strong>Professeur</strong> : <a
+                                href="{% url 'dashboard:user_infos' id_user=cours.teacher.id %}">{{ cours.teacher.user.get_full_name|title }}</a>
+                        </p>
+                        <p><strong>Etudiants</strong> : {{ cours.elearning_formation_set.all.count }}</p>
+                    </div>
+
+                    <div class="ibox-content">
+                        <p>
+                            <strong>Approuvé</strong> :
+                            {% if cours.approved %}
+                                <i class="fa fa-check" style="color:#1ab394;"><span
+                                        style="display:none;">x</span></i>
+                            {% else %}
+                                <i class="fa fa-times" style="color:#ed5565;"></i>
+                            {% endif %}
+
+                        </p>
+                        <p>
+                            <strong>Activé</strong> :
+                            {% if cours.active %}
+                                <i class="fa fa-check" style="color:#1ab394;"><span
+                                        style="display:none;">x</span></i>
+                            {% else %}
+                                <i class="fa fa-times" style="color:#ed5565;"></i>
+                            {% endif %}
+                        </p>
+
+                        <p><strong>Prix</strong> : {% if cours.price == 0 %}
+                            Gratuit
+                        {% else %}
+                            {{ cours.price }} DH
+                        {% endif %}
+                        </p>
+                        <p><strong>Langue</strong> : {{ cours.language }}</p>
+                        <p><strong>Certificat</strong> : {% if cours.has_certificate %}Oui{% else %}Non{% endif %}</p>
+                        <p><strong>Durée</strong> : {{ cours.duration }}</p>
+                        <p><strong>Niveau</strong> : {{ cours.level }}</p>
+                    </div>
+
+
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+    </div>
+
+
+
+
+{% endblock content %}
+
+
+
+
+{% block scripts %}
+
+    {{ block.super }}
+
+    <script>
+        $('#dashboard_elearning').addClass("active");
+        $('#elearning_cours').addClass("active");
+
+    </script>
+
+    <!-- Toastr script -->
+    <script src="{% static 'dashboard/js/plugins/toastr/toastr.min.js' %}"></script>
+
+    <script>
+        {% if messages %}
+            {% for msg in messages %}
+                {% if msg.tags == "success" %}
+                    toastr.options = {
+                        "closeButton": true,
+                        "debug": false,
+                        "progressBar": true,
+                        "preventDuplicates": false,
+                        "positionClass": "toast-top-right",
+                        "onclick": null,
+                        "showDuration": "400",
+                        "hideDuration": "1000",
+                        "timeOut": "7000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+
+                    Command: toastr["success"]("{{ msg }}")
+
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+
+
+{% endblock scripts %}

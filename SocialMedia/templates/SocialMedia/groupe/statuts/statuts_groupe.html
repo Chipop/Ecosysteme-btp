@@ -124,9 +124,6 @@
                     <span class="headline block p0 Sans-15px-black-85%-semibold">
                       Modifier le post
                     </span>
-                    <span class="sub-headline block text-align-left Sans-13px-black-55%">
-
-                    </span>
                   </span>
                 </span>
               </button>
@@ -158,7 +155,7 @@
 
       <div id="ember1581" class="feed-shared-actor feed-shared-actor--with-control-menu ember-view"><a data-control-id="W1C4B5y7iMwQGAR0mwPlgw==" data-control-name="actor_picture" target="_self" href="{{ statut.publisher.photo_profil.image.url }}" id="ember1586" class="feed-shared-actor__image app-aware-link ember-view">    <span data-entity-hovercard-id="urn:li:fs_miniProfile:ACoAAA8BYqEBCGLg_vT_ca6mMEqkpp9nVffJ3hc" class="js-feed-shared-actor__avatar">
       <div id="ember1597" class="feed-shared-actor__avatar ivm-image-view-model ember-view">
-          <div id="ember1602" class="display-flex ember-view"><!---->    <div id="ember1607" class="presence-entity presence-entity--size-3 ember-view"><div aria-label="{{ statut.publisher.user.frist_name }} {{ statut.publisher.user.last_name }}" id="ember1614" class="ivm-view-attr__img--centered feed-shared-actor__avatar-image EntityPhoto-circle-3 presence-entity__image EntityPhoto-circle-3 ember-view" style="background-image: url('{{ statut.publisher.photo_profil.image.url }}');">  <span class="visually-hidden">{{ statut.publisher.user.first_name }} {{ statut.publisher.user.last_name }</span>
+          <div id="ember1602" class="display-flex ember-view"><!---->    <div id="ember1607" class="presence-entity presence-entity--size-3 ember-view"><div aria-label="{{ statut.publisher.user.frist_name }} {{ statut.publisher.user.last_name }}" id="ember1614" class="ivm-view-attr__img--centered feed-shared-actor__avatar-image EntityPhoto-circle-3 presence-entity__image EntityPhoto-circle-3 ember-view" style="background-image: url('{{ statut.publisher.photo_profil.image.url }}');"> 
 </div>
 
 <div id="ember1617" class="presence-indicator  presence-entity__indicator presence-entity__indicator--size-3 hidden presence-indicator--size-3 ember-view"></div>
@@ -173,9 +170,7 @@
         <span dir="ltr">{{ statut.publisher.user.first_name }} {{ statut.publisher.user.last_name }}</span>
       </span>
         <span class="feed-shared-actor__influencer-badge">
-          <span class="visually-hidden">
-             est un utilisateur de ReseauSocial
-          </span>
+   
         </span>
 
       <span class="feed-shared-actor__description Sans-13px-black-55%">
@@ -221,14 +216,11 @@
         <ul id="ember1677" class="feed-shared-social-counts ember-view"><li class="feed-shared-social-counts__item mr1">
     <button data-control-name="likes_count" class="feed-shared-social-counts__num-likes feed-shared-social-counts__count-value Sans-13px-black-55% hoverable-link-text" data-ember-action="" data-ember-action-1678="1678">
       <span aria-hidden="true" onclick="showLikers({{ statut.id }}, 'statut')" id="likes{{ statut.id }}">{{ statut.likes.all.count }} j'aimes</span>
-      <span class="visually-hidden">1,495 j'aimes sur le statut de {{ statut.publisher.user.username }}</span>
     </button>
   </li><li class="feed-shared-social-counts__item">
     <button data-control-name="comments_count" class="feed-shared-social-counts__num-comments feed-shared-social-counts__count-value Sans-13px-black-55% hoverable-link-text" data-ember-action="" data-ember-action-1679="1679">
       <span aria-hidden="true" onclick="getMoreComments(this)" statutid="{{ statut.id }}" page="1" id="NbComments{{ statut.id }}">{{ statut.commentaire_set.all.count }} commentaires</span>
-      <span class="visually-hidden" id="commentaires{{ statut.id }}">
-        {{ statut.commentaire_set.all.count }} Commentaires sur le statut de {{ statut.publisher.user.username }}
-      </span>
+ 
     </button>
   </li><!----></ul>
         <div id="ember1684" class="ember-view"><div id="ember1685" class="ember-view"><!----></div></div>
@@ -239,9 +231,6 @@
   <span class="unlike-icon svg-icon-wrap"><li-icon aria-hidden="true" type="like-filled-icon" size="small"><svg viewBox="0 0 24 24" width="24px" height="24px" x="0" y="0" preserveAspectRatio="xMinYMin meet" class="artdeco-icon" focusable="false"><path d="M11.64,7L9.71,3.77A6,6,0,0,1,9,2.13L8.75,1H8A2,2,0,0,0,6,3V3.15A7.81,7.81,0,0,0,6.43,5.3L6.66,6a0,0,0,0,1,0,0H2.5A1.49,1.49,0,0,0,1.38,8.49a0,0,0,0,1,0,0,1.49,1.49,0,0,0,.31,2.25,0,0,0,0,1,0,0A1.48,1.48,0,0,0,2.83,13a0,0,0,0,1,0,0,1.38,1.38,0,0,0,0,1,1.62,1.62,0,0,0,1.51,1H7a6.47,6.47,0,0,0,2.14-.31L11.25,14H14V7H11.64Z" class="small-icon" style="fill-opacity: 1"></path></svg></li-icon></span>
 
 <!---->
-<span class="visually-hidden">
-    Je n’aime plus
-</span>
 
 </button>
   </div>
@@ -250,9 +239,6 @@
   <span class="unlike-icon svg-icon-wrap"><li-icon aria-hidden="true" type="like-filled-icon" size="small"><svg viewBox="0 0 24 24" width="24px" height="24px" x="0" y="0" preserveAspectRatio="xMinYMin meet" class="artdeco-icon" focusable="false"><path d="M11.64,7L9.71,3.77A6,6,0,0,1,9,2.13L8.75,1H8A2,2,0,0,0,6,3V3.15A7.81,7.81,0,0,0,6.43,5.3L6.66,6a0,0,0,0,1,0,0H2.5A1.49,1.49,0,0,0,1.38,8.49a0,0,0,0,1,0,0,1.49,1.49,0,0,0,.31,2.25,0,0,0,0,1,0,0A1.48,1.48,0,0,0,2.83,13a0,0,0,0,1,0,0,1.38,1.38,0,0,0,0,1,1.62,1.62,0,0,0,1.51,1H7a6.47,6.47,0,0,0,2.14-.31L11.25,14H14V7H11.64Z" class="small-icon" style="fill-opacity: 1"></path></svg></li-icon></span>
 
 <!---->
-<span class="visually-hidden">
-    J’aime
-</span>
 
 </button>
   </div>
@@ -260,11 +246,8 @@
 
           <button onclick="focusComment(this)" statut="{{ statut.id }}" class="button comment feed-shared-social-action-bar__action-btn social-action-btn mr5 ember-view"><span class="svg-icon-wrap"><li-icon aria-hidden="true" type="speech-bubble-icon" size="small"><svg viewBox="0 0 24 24" width="24px" height="24px" x="0" y="0" preserveAspectRatio="xMinYMin meet" class="artdeco-icon" focusable="false"><path d="M14,3H2A1,1,0,0,0,1,4v7a1,1,0,0,0,1,1h9l4,3V4A1,1,0,0,0,14,3ZM3,10V5H13v6.11L11.52,10H3ZM5,7h6V8H5V7Z" class="small-icon" style="fill-opacity: 1"></path></svg></li-icon></span><span aria-hidden="true"></span>
 
-<span class="visually-hidden">
-  Commenter
-</span>
 </button>
-            <button data-control-name="reshare" onclick="showShare(event, {{ statut.id }})" id="ember1717" class="feed-shared-social-action-bar__action-btn feed-shared-social-action-bar__reshare-button reshare-button button reshare social-action-btn ember-view"><span class="svg-icon-wrap"><span class="visually-hidden">Share</span><li-icon aria-hidden="true" type="share-linkedin-icon" size="small"><svg viewBox="0 0 24 24" width="24px" height="24px" x="0" y="0" preserveAspectRatio="xMinYMin meet" class="artdeco-icon" focusable="false"><path d="M15.7,7.3L9,1v4H7c-3.9,0-7,3.1-7,7v3h1.4c0-2.2,1.9-4,4.1-4c0,0,0.1,0,0.1,0H9v4l0,0l6.7-6.3C16.1,8.4,16.1,7.7,15.7,7.3C15.7,7.3,15.7,7.3,15.7,7.3z M11,10.6V9H5.6c-1.2,0-2.4,0.4-3.4,1.1C3.1,8.2,4.9,7,7,7h4V5.4L13.7,8L11,10.6z" class="small-icon" style="fill-opacity: 1"></path></svg></li-icon></span>
+            <button data-control-name="reshare" onclick="showShare(event, {{ statut.id }})" id="ember1717" class="feed-shared-social-action-bar__action-btn feed-shared-social-action-bar__reshare-button reshare-button button reshare social-action-btn ember-view"><span class="svg-icon-wrap"><li-icon aria-hidden="true" type="share-linkedin-icon" size="small"><svg viewBox="0 0 24 24" width="24px" height="24px" x="0" y="0" preserveAspectRatio="xMinYMin meet" class="artdeco-icon" focusable="false"><path d="M15.7,7.3L9,1v4H7c-3.9,0-7,3.1-7,7v3h1.4c0-2.2,1.9-4,4.1-4c0,0,0.1,0,0.1,0H9v4l0,0l6.7-6.3C16.1,8.4,16.1,7.7,15.7,7.3C15.7,7.3,15.7,7.3,15.7,7.3z M11,10.6V9H5.6c-1.2,0-2.4,0.4-3.4,1.1C3.1,8.2,4.9,7,7,7h4V5.4L13.7,8L11,10.6z" class="small-icon" style="fill-opacity: 1"></path></svg></li-icon></span>
 
 <span aria-hidden="true"></span>
 

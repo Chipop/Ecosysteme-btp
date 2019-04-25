@@ -4,133 +4,1050 @@
 
 {% block stylesheet %}{{ block.super }}{% endblock %}
 
-{% block title %}{{ block.super }} | Creer compte{% endblock %}
+{% block title %}{{ block.super }} | S'inscrire {% endblock %}
 {% block header %}
-    <header class="header header-sticky header-light">
-            <nav class="navbar navbar-expand-lg yamm">
-                <div class="container">
-                    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <a class="navbar-brand" href="{% url 'main_app:home' %}">
-                        <img src="{% static 'main_app/img/logo.png' %}" style="top: 14px;width: 40px;" class="img-fluid logo-dark" alt="">
-                    </a>
-
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="nav navbar-nav ml-auto smooth-scroll">
-                        <li class="nav-item"><a class="nav-link active" href="#home"><i class="ion-home mr-2"></i> Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#about"><i class="ion-person-stalker mr-2"></i> About</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#work"><i class="ion-images mr-2"></i> Portfolio</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#services"><i class="ion-settings mr-2"></i> Services</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#contact"><i class="ion-android-call mr-2"></i> Contact</a></li>
-
-                    </ul>
-                    </div>
-                    <div class="right-search ml-4 dropdown">
-                        <a class="icon-search" href="#!" data-toggle="dropdown">
-                            <i class="ion-ios-search-strong"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <form class="form-inline">
-                                <input type="text" placeholder="Search" class="form-control">
-                                <button type="button" class="form-search-button">
-                                    <i class="ion-ios-search-strong"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </nav><!--nav end-->
-        </header>
+    {% include 'top_nav.html' %}
 {% endblock %}
 {% block content %}
-    <section id="content-region-3" class="padding-40 page-tree-bg">
-            <div class="container">
-                <h3 class="page-tree-text">
-                   Creation d'un compte ESPR
-                </h3>
-            </div>
-        </section><!--page-tree end here-->
-        <div class="space-70"></div>
 
-     <div class="container">
-            <div class="row">
-                <div class="col-lg-6 ml-auto mr-auto">
-                    <div class="my-login-form">
 
-                         <form method="POST">
-                         {% csrf_token %}
-                        <h4 class="text-uppercase">Creer Compte</h4><hr>
-                         {% include "messages.html" %}
-                         {% if form_inscription.errors %}
-                             <div class="alert alert-danger" style="padding: 10px;font-size:12px;font-weight:bold;width: 100%;"  role="alert">
-                                <i class="fa fa-exclamation" aria-hidden="true"></i> Veuiller corriger vos erreurs:
-                             </div>
-                         {% endif %}
-                         <ul style="list-style-type:  none; color: #721c24;">
-                         {% for champ in form_inscription %}
-                             {% if champ.errors %}
-                                 <span class="error-block" style="color: red; font-weight: 700;">{{ champ.errors }}</span>
-                             {% endif %}
-                         {% endfor %}
-                         </ul>
-                        <div class="row">
+    <!-- MultiStep Form -->
+    <div class="row" id="main_inscription">
+        <div class="col-md-12 " style="text-align: center; padding-top: 33px;"><h1>Inscription</h1></div>
+        <div class="col-md-12 ">
+            <form id="msform" method="POST" action="/signup/">
+                <!-- progressbar -->
+                <ul id="progressbar">
+                    <li class="active">Votre profil</li>
+                    <li>Vos coordonnées</li>
+                    <li>Votre activité</li>
+                    <li>Confirmation</li>
+                </ul>
+                <!-- fieldsets -->
 
-                            <div class="col-md-6 margin-btm-20">
-                                {% render_field form_inscription.username class="form-control" placeholder="Nom utilisateur.." %}
-                            </div>
+                <!-- Step 1 Votre profil -->
+                <fieldset>
+                    <h2 class="fs-title">Votre profil</h2>
 
-                            <div class="col-md-6 margin-btm-20">
-                                {% render_field form_inscription.password class="form-control" placeholder="Mot de passe.." %}
-                            </div>
-
-                            <div class="col-md-6 margin-btm-20">
-                                {% render_field form_inscription.confirmer_votre_mot_de_passe class="form-control" placeholder="Confirmer votre mot de passe.." %}
-                            </div>
-
-                            <div class="col-md-6 margin-btm-20">
-                                {% render_field form_inscription.email class="form-control" placeholder="email.." %}
-                            </div>
-
-                            <div class="col-md-6 margin-btm-20">
-                                {% render_field form_inscription.first_name class="form-control" placeholder="prenom.." %}
-                            </div>
-
-                            <div class="col-md-6 margin-btm-20">
-                                {% render_field form_inscription.last_name class="form-control" placeholder="nom.." %}
-                            </div>
-
-                            <div class="col-md-12 margin-btm-20">
-                            <table>
-                                <tr>
-                                    <td> <span class="genre">Genre:</span></td>
-                                    <td >
-                                        {% for radio in form_inscription.genre %}
-                                            <span class="genre" style="padding-left: 50px;padding-top:10px;" ></span>
-                                            {% render_field radio  %}
-                                            </span>
-                                        {% endfor %}
-
-                                    </td>
-                                </tr>
-                            </table>
-                            </div>
-
-                            <div class="col-md-12 text-right">
-                                <button type="submit" class="btn theme-btn-color">S'inscrire</button>
-                            </div>
+                    <div class="row">
+                        <div class="col-md-4">
                         </div>
-                        <hr>
-                        <div class="form-btm-link text-center">
-                         <a href="{% url 'main_app:log_in' %}">Déjà membre ? </a>
+                        <div class="col-md-8">
+                            {% include 'messages.html' %}
                         </div>
-                    </form>
                     </div>
-                </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="select_votre_profil" class="label-register">Votre profil <span
+                                    class="obligatoire">*</span></label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_profil_inscription.votre_profile class="form-control" %}
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;" id="errors_votre_profil">
+                            <p class="error_form displaynone" id="profil_obligatoire">Ce champ est obligatoire.</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="id_email" class="label-register">Email <span
+                                    class="obligatoire">*</span></label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_user_inscription.email class="form-control" %}
+                        </div>
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;" id="errors_email">
+                            <p class="error_form displaynone" id="email_obligatoire">Ce champ est obligatoire.</p>
+                            <p class="error_form displaynone" id="email_email">Veuillez saisir une adresse Email
+                                valide.</p>
+                            <p class="error_form displaynone" id="email_identique">Les deux adresse Email doivent être
+                                identiques.</p>
+                            {% for error in form_user_inscription.email.errors %}
+                                <p class="error_form">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="confirm_email" class="label-register">Confirmez votre Email <span
+                                    class="obligatoire">*</span></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="email" id="confirm_email" required autocomplete="off"/>
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;" id="errors_confirm_email">
+                            <p class="error_form displaynone" id="confirm_email_obligatoire">Ce champ est
+                                obligatoire.</p>
+                            <p class="error_form displaynone" id="confirm_email_email">Veuillez saisir une adresse Email
+                                valide.</p>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="id_password" class="label-register">Mot de passe <span
+                                    class="obligatoire">*</span></label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_user_inscription.password class="form-control" %}
+                        </div>
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;" id="errors_password">
+                            <p class="error_form displaynone" id="password_obligatoire">Ce champ est obligatoire.</p>
+                            <p class="error_form displaynone" id="password_identique">Les deux adresse mots de passes
+                                doivent être identiques.</p>
+                            {% for error in form_user_inscription.password.errors %}
+                                <p class="error_form">{{ error | safe }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="id_confirmer_votre_mot_de_passe" class="label-register">Confirmez votre mot de
+                                passe <span class="obligatoire">*</span></label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_user_inscription.confirmer_votre_mot_de_passe class="form-control" %}
+                        </div>
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;" id="errors_password_confirm">
+                            <p class="error_form displaynone" id="password_confirm_obligatoire">Ce champ est
+                                obligatoire.</p>
+                            {% for error in form_user_inscription.confirmer_votre_mot_de_passe.errors %}
+                                <p class="error_form">{{ error | safe }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;" id="errors_password_confirm">
+                            <div class="g-recaptcha" data-sitekey="6LcIOV8UAAAAAO0kQRvjLmlOt7Q08VEubXgfvG6l"></div>
+                        </div>
+                    </div>
+
+
+                    <input type="button" name="next" class="next action-button" value="Suivant"
+                           onclick="click_suivant(2,this)"/>
+
+                </fieldset>
+                <!-- Step 2 Vos coordonnées -->
+                <fieldset>
+                    <h2 class="fs-title">Vos coordonnées</h2>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="email" class="label-register">Civilité <span
+                                    class="obligatoire">*</span></label>
+                        </div>
+                        <div class="col-md-8" style="text-align:left;line-height: 57px; ">
+                            {% for radio in form_profil_inscription.civilite %}
+                                <span class="genre" style="padding-right: 50px;" style="padding-top:10px;">
+                                {% render_field radio %}
+                            </span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;">
+                            <p class="error_form displaynone" id="civilite_obligatoire">Ce champ est obligatoire.</p>
+                            {% for error in form_profil_inscription.civilite.errors %}
+                                <p class="error_form">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="id_last_name" class="label-register">Nom <span
+                                    class="obligatoire">*</span></label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_user_inscription.last_name class="form-control" %}
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;">
+                            <p class="error_form displaynone" id="nom_obligatoire">Ce champ est obligatoire.</p>
+                            {% for error in form_user_inscription.last_name.errors %}
+                                <p class="error_form">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="id_first_name" class="label-register">Prénom <span class="obligatoire">*</span></label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_user_inscription.first_name class="form-control" %}
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;">
+                            <p class="error_form displaynone" id="prenom_obligatoire">Ce champ est obligatoire.</p>
+                            {% for error in form_user_inscription.first_name.errors %}
+                                <p class="error_form">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                    <div class="row" id="row_entreprise_etablissement">
+                        <div class="col-md-4">
+                            <label for="id_nom_entreprise" class="label-register">Entreprise / Etablissement <span
+                                    class="obligatoire" id="obligatoire_span_entreprise">*</span></label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_profil_inscription.nom_entreprise class="form-control" %}
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;">
+                            <p class="error_form displaynone" id="entreprise_obligatoire">Ce champ est obligatoire.</p>
+                            {% for error in form_profil_inscription.nom_entreprise.errors %}
+                                <p class="error_form">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="id_adresse_profile" class="label-register">Adresse <span
+                                    class="obligatoire">*</span></label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_profil_inscription.adresse_profile class="form-control" %}
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;">
+                            <p class="error_form displaynone" id="adresse_obligatoire">Ce champ est obligatoire.</p>
+                            {% for error in form_profil_inscription.adresse_profile.errors %}
+                                <p class="error_form">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="id_adresse_profile2" class="label-register">Complément d'adresse </label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_profil_inscription.adresse_profile2 class="form-control" %}
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;">
+                            {% for error in form_profil_inscription.adresse_profile2.errors %}
+                                <p class="error_form">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="id_code_postal" class="label-register">Code postal <span
+                                    class="obligatoire">*</span></label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_profil_inscription.code_postal class="form-control" %}
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;">
+                            <p class="error_form displaynone" id="code_postal_obligatoire">Ce champ est obligatoire.</p>
+                            {% for error in form_profil_inscription.code_postal.errors %}
+                                <p class="error_form">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="id_ville" class="label-register">Ville <span
+                                    class="obligatoire">*</span></label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_profil_inscription.ville class="form-control" %}
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;">
+                            <p class="error_form displaynone" id="ville_obligatoire">Ce champ est obligatoire.</p>
+                            {% for error in form_profil_inscription.ville.errors %}
+                                <p class="error_form">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="id_pays" class="label-register">Pays <span class="obligatoire">*</span></label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_profil_inscription.pays class="form-control" %}
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;">
+                            <p class="error_form displaynone" id="pays_obligatoire">Ce champ est obligatoire.</p>
+                            {% for error in form_profil_inscription.pays.errors %}
+                                <p class="error_form">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="id_tel" class="label-register">Téléphone </label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_profil_inscription.tel class="form-control" %}
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;">
+                            {% for error in form_profil_inscription.tel.errors %}
+                                <p class="error_form">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="id_tel_portable" class="label-register">Téléphone portable </label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_profil_inscription.tel_portable class="form-control" %}
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;">
+                            {% for error in form_profil_inscription.tel_portable.errors %}
+                                <p class="error_form">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="id_telecopie" class="label-register">Télécopie </label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_profil_inscription.telecopie class="form-control" %}
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;">
+                            {% for error in form_profil_inscription.telecopie.errors %}
+                                <p class="error_form">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="id_website" class="label-register">Site web </label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_profil_inscription.website class="form-control" %}
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;">
+                            {% for error in form_profil_inscription.website.errors %}
+                                <p class="error_form">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                    <input type="button" name="previous" class="previous action-button-previous" value="Précédant"
+                           onclick="click_precedant(1);"/>
+                    <input type="button" name="next" class="next action-button" value="Suivant"
+                           onclick="click_suivant(3,this);"/>
+                </fieldset>
+                <!-- Step 3 Votre activité -->
+                <fieldset>
+                    <h2 class="fs-title">Votre activité <span id="activite_optionnel">(Optionnel)</span></h2>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="email" class="label-register">Votre activité principale <span
+                                    class="obligatoire" id="activite_span_obligatoire">*</span></label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_profil_inscription.activite class="form-control" %}
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;">
+                            <p class="error_form displaynone" id="activite_obligatoire">Ce champ est obligatoire.</p>
+                            {% for error in form_profil_inscription.activite.errors %}
+                                <p class="error_form">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                    <div class="row displaynone" id="row_autres_activite_principale">
+                        <div class="col-md-4">
+                            <label for="email" class="label-register">(en cas d'autres) Précisez <span
+                                    class="obligatoire" id="autre_span_obligatoire">*</span></label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_profil_inscription.autres class="form-control" %}
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;">
+                            <p class="error_form displaynone" id="autres_obligatoire">En choisissant "Autres", Ce champ
+                                est obligatoire.</p>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="email" class="label-register">Taille de votre entreprise <span
+                                    class="obligatoire" id="taille_span_obligatoire">*</span></label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_profil_inscription.taille_entreprise class="form-control" %}
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;">
+                            <p class="error_form displaynone" id="taille_obligatoire">Ce champ est obligatoire.</p>
+                            {% for error in form_profil_inscription.taille_entreprise.errors %}
+                                <p class="error_form">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="email" class="label-register">Votre fonction <span class="obligatoire"
+                                                                                           id="fonction_span_obligatoire">*</span></label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_profil_inscription.fonction class="form-control" %}
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;">
+                            <p class="error_form displaynone" id="fonction_obligatoire">Ce champ est obligatoire.</p>
+                            {% for error in form_profil_inscription.fonction.errors %}
+                                <p class="error_form">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="email" class="label-register">Votre département / service <span
+                                    class="obligatoire" id="departement_span_obligatoire">*</span></label>
+                        </div>
+                        <div class="col-md-8">
+                            {% render_field form_profil_inscription.departement class="form-control" %}
+                        </div>
+
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-8" style="text-align:left;">
+                            <p class="error_form displaynone" id="departement_obligatoire">Ce champ est obligatoire.</p>
+                            {% for error in form_profil_inscription.departement.errors %}
+                                <p class="error_form">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+
+                    <input type="button" name="previous" class="previous action-button-previous" value="Précédant"
+                           onclick="click_precedant(2);"/>
+                    <input type="button" name="next" class="next action-button" value="Suivant"
+                           onclick="click_suivant(4,this);"/>
+                </fieldset>
+                <!-- Step 4 Confirmation -->
+                <fieldset>
+                    <h2 class="fs-title">Confirmation</h2>
+                    <label for="conditions">
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="pull-right">
+                                    <input type="checkbox" name="conditions" id="conditions" style="width:auto;">
+                                </div>
+                            </div>
+                            <div class="col-8" style="text-align:left;">
+                                Je reconnais avoir pris connaissance et accepté <a href="" style="color:#ea4c0f;">les
+                                conditions générales d'utilisations</a> <span class="obligatoire">*</span>
+                            </div>
+
+                            <div class="col-4">
+                                <div class="pull-right">
+                                </div>
+                            </div>
+                            <div class="col-8" style="text-align:left;">
+                                <p class="error_form displaynone" id="conditions_obligatoire">Accepter nos termes est
+                                    obligatoire.</p>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br>
+
+
+                    <input type="button" name="previous" class="previous action-button-previous" value="Précédant"
+                           onclick="click_precedant(3);"/>
+                    <input type="button" name="submit_button" class="submit action-button" value="Confirmer"
+                           onclick="submit_form()"/>
+                </fieldset>
+                {% csrf_token %}
+            </form>
+            <!-- link to designify.me code snippets -->
+            <div class="deja-compte">
+                <p>Vous avez déjà un compte? <a href="/login/" style="color:#ea4c0f;">Connectez-vous</a></p>
             </div>
+            <!-- /.link to designify.me code snippets -->
         </div>
+    </div>
+    <!-- /.MultiStep Form -->
+
 {% endblock %}
 
 {% block scripts %}
     {{ block.super }}
+
+    <script>
+
+        //jQuery time
+        var current_fs, next_fs, previous_fs; //fieldsets
+        var left, opacity, scale; //fieldset properties which we will animate
+        var animating; //flag to prevent quick multi-click glitches
+
+        function click_next_button(button) {
+            if (animating) return false;
+            animating = true;
+
+            current_fs = $(button).parent();
+            next_fs = $(button).parent().next();
+
+            //activate next step on progressbar using the index of next_fs
+            $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+
+            //show the next fieldset
+            next_fs.show();
+            //hide the current fieldset with style
+            current_fs.animate({opacity: 0}, {
+                step: function (now, mx) {
+                    //as the opacity of current_fs reduces to 0 - stored in "now"
+                    //1. scale current_fs down to 80%
+                    scale = 1 - (1 - now) * 0.2;
+                    //2. bring next_fs from the right(50%)
+                    left = (now * 50) + "%";
+                    //3. increase opacity of next_fs to 1 as it moves in
+                    opacity = 1 - now;
+                    current_fs.css({
+                        'transform': 'scale(' + scale + ')',
+                        'position': 'absolute'
+                    });
+                    next_fs.css({'left': left, 'opacity': opacity});
+                },
+                duration: 800,
+                complete: function () {
+                    current_fs.hide();
+                    animating = false;
+                },
+                //this comes from the custom easing plugin
+                easing: 'easeInOutBack'
+            });
+
+            next_fs.css("position", 'inherit');
+
+        };
+
+        $(".previous").click(function () {
+            if (animating) return false;
+            animating = true;
+
+            current_fs = $(this).parent();
+            previous_fs = $(this).parent().prev();
+
+            //de-activate current step on progressbar
+            $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+
+            //show the previous fieldset
+            previous_fs.show();
+            //hide the current fieldset with style
+            current_fs.animate({opacity: 0}, {
+                step: function (now, mx) {
+                    //as the opacity of current_fs reduces to 0 - stored in "now"
+                    //1. scale previous_fs from 80% to 100%
+                    scale = 0.8 + (1 - now) * 0.2;
+                    //2. take current_fs to the right(50%) - from 0%
+                    left = ((1 - now) * 50) + "%";
+                    //3. increase opacity of previous_fs to 1 as it moves in
+                    opacity = 1 - now;
+                    current_fs.css({'left': left});
+                    previous_fs.css({'transform': 'scale(' + scale + ')', 'opacity': opacity});
+                },
+                duration: 800,
+                complete: function () {
+                    current_fs.hide();
+                    animating = false;
+                },
+                //this comes from the custom easing plugin
+                easing: 'easeInOutBack'
+            });
+
+
+            previous_fs.css("position", 'inherit');
+
+        });
+
+
+        function isValidEmailAddress(emailAddress) {
+            var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+            return pattern.test(emailAddress);
+        }
+
+
+        function click_suivant(page, button) {
+            if (page == 2) //Bouton PAge 1 to 2
+            {
+                var erreur = 0;
+
+                profil = $('#id_votre_profile option:selected');
+                email = $('#id_email');
+                confirm_email = $('#confirm_email');
+                password = $('#id_password');
+                confirm_password = $('#id_confirmer_votre_mot_de_passe');
+
+
+                if (profil.text() == "Vous êtes un étudiant" || profil.text() == "Vous êtes un particulier") {
+                    $('#row_entreprise_etablissement').css("display", "none");
+                }
+                else {
+                    $('#row_entreprise_etablissement').css("display", "flex");
+                }
+
+                if (password.val() == "") {
+                    password.css("box-shadow", '0px 0px 2px 1px red');
+                    $('#password_obligatoire').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    $('#password_obligatoire').css("display", "none");
+                }
+
+                if (confirm_password.val() == "") {
+                    confirm_password.css("box-shadow", '0px 0px 2px 1px red');
+                    $('#password_confirm_obligatoire').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    $('#password_confirm_obligatoire').css("display", "none");
+                }
+
+                if (password.val() != confirm_password.val()) {
+                    confirm_password.css("box-shadow", '0px 0px 2px 1px  red');
+                    password.css("box-shadow", '0px 0px 2px 1px  red');
+                    $('#password_identique').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    $('#password_identique').css("display", "none");
+                }
+
+                if (profil.text() == "") {
+                    profil.css("box-shadow", '0px 0px 2px 1px red');
+                    $('#profil_obligatoire').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    $('#profil_obligatoire').css("display", "none");
+                }
+
+                if (email.val() == "") {
+                    email.css("box-shadow", '0px 0px 2px 1px  red');
+                    $('#email_obligatoire').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    $('#email_obligatoire').css("display", "none")
+                }
+
+
+                if (confirm_email.val() == "") {
+                    confirm_email.css("box-shadow", '0px 0px 2px 1px  red');
+                    $('#confirm_email_obligatoire').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    $('#confirm_email_obligatoire').css("display", "none");
+                }
+
+                if (!isValidEmailAddress(email.val())) {
+                    email.css("box-shadow", '0px 0px 2px 1px  red');
+                    $('#email_email').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    $('#email_email').css("display", "none");
+                }
+
+
+                if (!isValidEmailAddress(confirm_email.val())) {
+                    email.css("box-shadow", '0px 0px 2px 1px  red');
+                    $('#confirm_email_email').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    $('#confirm_email_email').css("display", "none");
+                }
+
+                if (confirm_email.val() != email.val()) {
+                    confirm_email.css("box-shadow", '0px 0px 2px 1px  red');
+                    $('#email_identique').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    $('#email_identique').css("display", "none");
+                }
+
+                if (erreur == 0) {
+                    if ((profil.text() == "Vous êtes un professionnel" || profil.text() == "Vous êtes un journaliste/éditeur")) {
+                        $('#obligatoire_span_entreprise').css("display", "inline");
+                        $('#activite_span_obligatoire').css("display", "inline");
+                        $('#autre_span_obligatoire').css("display", "inline");
+                        $('#taille_span_obligatoire').css("display", "inline");
+                        $('#fonction_span_obligatoire').css("display", "inline");
+                        $('#departement_span_obligatoire').css("display", "inline");
+
+                        $('#activite_optionnel').css("display", "none")
+                    }
+                    else {
+
+                        $('#obligatoire_span_entreprise').css("display", "none");
+                        $('#activite_span_obligatoire').css("display", "none");
+                        $('#autre_span_obligatoire').css("display", "none");
+                        $('#taille_span_obligatoire').css("display", "none");
+                        $('#fonction_span_obligatoire').css("display", "none");
+                        $('#departement_span_obligatoire').css("display", "none");
+                        $('#activite_optionnel').css("display", "inline")
+
+                    }
+                    confirm_email.css("box-shadow", '0px 0px 0px 0px  red');
+                    email.css("box-shadow", '0px 0px 0px 0px  red');
+                    password.css("box-shadow", '0px 0px 0px 0px  red');
+                    confirm_password.css("box-shadow", '0px 0px 0px 0px  red');
+                    profil.css("box-shadow", '0px 0px 0px 0px  red');
+                    click_next_button(button);
+
+                    myFunction(x, 300, 185)// Call listener function at run time
+
+
+                    $('html,body').animate({
+                        scrollTop: $('#main_inscription').offset().top
+                    }, 300);
+                }
+
+
+            }
+            else if (page == 3) //Bouton PAge 2 to 3
+            {
+                var profil = $('#id_votre_profile option:selected');
+                var erreur = 0;
+
+                nom = $('#id_last_name');
+                prenom = $('#id_first_name');
+                entreprise = $('#id_nom_entreprise');
+                adresse = $('#id_adresse_profile');
+                code_postal = $('#id_code_postal');
+                ville = $('#id_ville');
+                pays = $('#id_pays');
+
+                if (nom.val() == "") {
+                    nom.css("box-shadow", '0px 0px 2px 1px  red');
+                    $('#nom_obligatoire').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    $('#nom_obligatoire').css("display", "none")
+                }
+
+                if (prenom.val() == "") {
+                    prenom.css("box-shadow", '0px 0px 2px 1px  red');
+                    $('#prenom_obligatoire').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    $('#prenom_obligatoire').css("display", "none")
+                }
+
+                if (entreprise.val() == "" && (profil.text() == "Vous êtes un professionnel" || profil.text() == "Vous êtes un journaliste/éditeur")) {
+                    entreprise.css("box-shadow", '0px 0px 2px 1px  red');
+                    $('#entreprise_obligatoire').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    entreprise.css("box-shadow", '0px 0px 0px 0px  red');
+                    $('#entreprise_obligatoire').css("display", "none")
+                }
+
+
+                if (adresse.val() == "") {
+                    adresse.css("box-shadow", '0px 0px 2px 1px  red');
+                    $('#adresse_obligatoire').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    $('#adresse_obligatoire').css("display", "none")
+                }
+
+                if (code_postal.val() == "") {
+                    code_postal.css("box-shadow", '0px 0px 2px 1px  red');
+                    $('#code_postal_obligatoire').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    $('#code_postal_obligatoire').css("display", "none")
+                }
+
+                if (ville.val() == "") {
+                    ville.css("box-shadow", '0px 0px 2px 1px  red');
+                    $('#ville_obligatoire').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    $('#ville_obligatoire').css("display", "none");
+                    ville.css("box-shadow", '0px 0px 2px 1px  red');
+                }
+
+                if (pays.val() == "") {
+                    $('#pays_obligatoire').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    $('#pays_obligatoire').css("display", "none")
+                }
+
+                if (erreur == 0) {
+                    nom.css("box-shadow", '0px 0px 0px 0px  red');
+                    prenom.css("box-shadow", '0px 0px 0px 0px  red');
+                    entreprise.css("box-shadow", '0px 0px 0px 0px  red');
+                    adresse.css("box-shadow", '0px 0px 0px 0px  red');
+                    code_postal.css("box-shadow", '0px 0px 0px 0px  red');
+                    ville.css("box-shadow", '0px 0px 0px 0px  red');
+                    pays.css("box-shadow", '0px 0px 0px 0px  red');
+
+                    click_next_button(button);
+                    $('#main_inscription').css("min-height", "100vh");
+                    $('html,body').animate({
+                        scrollTop: $('#main_inscription').offset().top
+                    }, 300);
+                }
+            }
+            else if (page == 4) // Page 3 to 4
+            {
+                var erreur = 0;
+
+                activite = $('#id_activite option:selected');
+                autres = $('#id_autres');
+                taille = $('#id_taille_entreprise option:selected');
+                fonction = $('#id_fonction option:selected');
+                departement = $('#id_departement option:selected');
+
+                profil = $('#id_votre_profile option:selected');
+                is_pro = (profil.text() == "Vous êtes un professionnel" || profil.text() == "Vous êtes un journaliste/éditeur");
+
+
+                if (activite.text() == "---------" && is_pro) {
+                    $('#id_activite').css("box-shadow", '0px 0px 2px 1px red');
+                    $('#activite_obligatoire').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    $('#activite_obligatoire').css("display", "none");
+                }
+
+                if (taille.text() == "---------" && is_pro) {
+                    $('#id_taille_entreprise').css("box-shadow", '0px 0px 2px 1px red');
+                    $('#taille_obligatoire').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    $('#taille_obligatoire').css("display", "none");
+                }
+
+                if (fonction.text() == "---------" && is_pro) {
+                    $('#id_fonction').css("box-shadow", '0px 0px 2px 1px red');
+                    $('#fonction_obligatoire').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    $('#fonction_obligatoire').css("display", "none");
+                }
+
+                if (autres.val() == "" && activite.text() == "Autres" && is_pro) {
+                    $('#id_autres').css("box-shadow", '0px 0px 2px 1px red');
+                    $('#autres_obligatoire').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    $('#autres_obligatoire').css("display", "none");
+                }
+
+                if (departement.text() == "---------" && is_pro) {
+                    $('#id_departement').css("box-shadow", '0px 0px 2px 1px red');
+                    $('#departement_obligatoire').css("display", "block");
+                    erreur++;
+                }
+                else {
+                    $('#departement_obligatoire').css("display", "none");
+                }
+
+                if (erreur == 0) {
+                    $('#id_activite').css("box-shadow", '0px 0px 0px 0px  red');
+                    $('#id_autres').css("box-shadow", '0px 0px 0px 0px red');
+                    $('#id_taille_entreprise').css("box-shadow", '0px 0px 0px 0px  red');
+                    $('#id_fonction').css("box-shadow", '0px 0px 0px 0px  red');
+                    $('#id_departement').css("box-shadow", '0px 0px 0px 0px  red');
+
+                    click_next_button(button);
+                    $('#main_inscription').css("min-height", "100vh");
+                    $('html,body').animate({
+                        scrollTop: $('#main_inscription').offset().top
+                    }, 300);
+                }
+            }
+        }
+
+        function click_precedant(page) {
+            if (page == 1) {
+                $('#main_inscription').css("min-height", "100vh");
+                $('html,body').animate({
+                    scrollTop: $('#main_inscription').offset().top
+                }, 300);
+            }
+            else if (page == 2) {
+                myFunction(x, 300, 185) // Call listener function at run time
+                $('html,body').animate({
+                    scrollTop: $('#main_inscription').offset().top
+                }, 300);
+            }
+            else if (page == 3) {
+                $('#main_inscription').css("min-height", "100vh");
+                $('html,body').animate({
+                    scrollTop: $('#main_inscription').offset().top
+                }, 300);
+            }
+            else if (page == 4) {
+                $('#main_inscription').css("min-height", "100vh");
+                $('html,body').animate({
+                    scrollTop: $('#main_inscription').offset().top
+                }, 300);
+            }
+        }
+
+
+        var x = window.matchMedia("(max-width: 700px)")
+
+        function myFunction(x, h, h2) {
+            h = typeof h !== 'undefined' ? h : 100;
+            h2 = typeof h2 !== 'undefined' ? h2 : 300;
+            if (x.matches) { // If media query matches
+                $('#main_inscription').css("min-height", h + "vh");
+            } else {
+                $('#main_inscription').css("min-height", h2 + "vh");
+            }
+        }
+
+        x.addListener(myFunction) // Attach listener function on state changes
+        $('#id_civilite_0').attr("checked", "checked");
+
+        $(document).ready(function () {
+            $(window).keydown(function (event) {
+                if (event.keyCode == 13) {
+                    event.preventDefault();
+                    return false;
+                }
+            });
+        });
+
+        function submit_form() {
+
+            console.log($('#conditions').is(':checked'))
+            if ($('#conditions').is(':checked') == true) {
+                $('#conditions_obligatoire').css("display", "none")
+                $('#msform').submit();
+            }
+            else {
+                $('#conditions_obligatoire').css("display", "block")
+                console.log($('#conditions').is(':checked'))
+            }
+
+        };
+
+
+        /* Event Select Activie on change */
+
+        $('#id_activite').on('change', function (e) {
+            activite = $('#id_activite option:selected');
+
+            if (activite.text() == "Autres") {
+                $('#row_autres_activite_principale').css("display", "flex");
+            }
+            else {
+                $('#row_autres_activite_principale').css("display", "none");
+            }
+        });
+
+    </script>
 {% endblock %}

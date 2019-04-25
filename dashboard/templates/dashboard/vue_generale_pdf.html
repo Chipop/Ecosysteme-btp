@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="wrapper wrapper-content wrapper-content-custom" id="page_to_pdf">
+        <div class="row">
+
+            <button >Generate PDF</button>
+            <a href="/dashboard/render/pdf/">generate pdf</a>
+
+            <div class="col-lg-12">
+                <div class="pull-right">
+                    <span class="clickable" title="Filtrer" id="icon-filtrer-ga"
+                          style="font-size: 18px;font-weight: bold;">
+                         <i class="glyphicon glyphicon-filter"></i> FILTRER
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-lg-12">
+                <div class="search-filters pull-right">
+
+                    <select id="multiselect-modules" multiple="multiple">
+                        <option value="reseausocial">Réseau social</option>
+                        <option value="journal">Journal</option>
+                        <option value="e_commerce">Ecommerce</option>
+                        <option value="qa">Q&A</option>
+                    </select>
+
+
+                    <div class="btn-group" style="margin-left:20px;">
+
+                        <div id="reportrange_top"
+                             style="background: #fff; cursor: pointer; padding: 5px 5px; border: 1px solid #ccc; width: 100%;    margin-right: 13px; ">
+                            <i class="fa fa-calendar"></i>&nbsp;
+                            <span></span> <i class="fa fa-caret-down"></i>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" id="btn-filtrer-ga">Filtrer</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-3">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-users fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Inscrits</span>
+                            <h2 class="font-bold">{{ utilisateurs }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-envelope fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Non lus</span>
+                            <h2 class="font-bold">{{ non_lus }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-3">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-newspaper-o fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Articles</span>
+                            <h2 class="font-bold">{{ articles }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-shopping-cart fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Commandes</span>
+                            <h2 class="font-bold">{{ commandes }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-4">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-product-hunt fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Produits</span>
+                            <h2 class="font-bold">{{ produits }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-question-circle-o fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Questions</span>
+                            <h2 class="font-bold">{{ questions }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-4">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-commenting-o fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Réponses</span>
+                            <h2 class="font-bold">{{ reponses }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-bullhorn fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Annonces</span>
+                            <h2 class="font-bold">X</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-book fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Cours</span>
+                            <h2 class="font-bold">X</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Visites </h5>
+                    </div>
+
+                    <div class="ibox-content">
+                        <div id="visites-totales-chart-container"></div>
+                        <div id="visites-totales-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-12">
+
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <h3>Pages les plus visitées </h3>
+
+                        <div id="pages-plus-visites-chart-container"></div>
+                        <div id="pages-plus-visites-view-selector-container" style="display:none;"></div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Canaux principaux</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="visitors-channels-container"></div>
+                        <div id="visitors-channels-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Source des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content ibox-source-traffic">
+                        <div id="traffic-source-chart-container"></div>
+                        <div id="traffic-source-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Appareils des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="appareils-chart-container"></div>
+                        <div id="appareils-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Origine des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="origine-chart-container"></div>
+                        <div id="origine-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Comportements des visiteurs</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="new-returning-visitors-container"></div>
+                        <div id="new-returning-visitors-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <h3>Pages où passe l'utilisateur le plus de temps (secondes) <span class="pull-right"></span>
+                        </h3>
+
+                        <div id="pages-plus-temps-chart-container"></div>
+                        <div id="pages-plus-temps-view-selector-container" style="display:none;"></div>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+</body>
+</html>

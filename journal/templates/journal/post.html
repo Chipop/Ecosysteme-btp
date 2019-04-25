@@ -1,16 +1,68 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static chipop_social_share %}
 
 {% block title %}
     {{ article.small_title }}
 {% endblock %}
 
 {% block style %}
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/brands.css" integrity="sha384-n9+6/aSqa9lBidZMRCQHTHKJscPq6NW4pCQBiMmHdUCvPN8ZOg2zJJTkC7WIezWv" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/fontawesome.css" integrity="sha384-vd1e11sR28tEK9YANUtpIOdjGW14pS87bUBuOIoBILVWLFnS+MCX9T6MMf0VdPGq" crossorigin="anonymous">
+
     <style>
         .trendingNow {
             padding-bottom: 10px;
         }
     </style>
+
+    <script>
+        function share_question(id) {
+            var url = "{% url 'share_article' id=0 %}".replace('0',id);
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function (response) {
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log("Une erreur s'est produite!", "Veuillez réessayer.", "error");
+                }
+            });
+        }
+
+        function like_article(id) {
+            var url = "{% url 'like_article' id=0 %}".replace('0',id);
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function (response) {
+                    document.getElementById("nb_likes").innerHTML = parseInt($('#nb_likes').text())+1;
+                    $('#btn_like_article').prop("disabled","true");
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log("Une erreur s'est produite!", "Veuillez réessayer.", "error");
+                }
+            });
+        }
+
+        function signal_article(id) {
+            var url = "{% url 'signal_article' id=0 %}".replace('0',id);
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function (response) {
+                    $('#btn_signal_article').prop("disabled","true");
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log("Une erreur s'est produite!", "Veuillez réessayer.", "error");
+                }
+            });
+        }
+    </script>
+
 {% endblock %}
 
 {% block script %}
@@ -25,6 +77,9 @@
             zIndex: 1
         });
     });
+
+
+
 {% endblock %}
 
 {% block content %}
@@ -88,13 +143,6 @@
 					
 						<!-- ARTICLE POST -->
 						<article class="article article-post">
-                            {% if article.share_enable %}
-							<div class="article-share">
-								<a href="#" class="facebook"><i class="fa fa-facebook"></i></a>
-								<a href="#" class="twitter"><i class="fa fa-twitter"></i></a>
-								<a href="#" class="google"><i class="fa fa-google-plus"></i></a>
-							</div>
-                            {% endif %}
 							<div class="article-main-img">
 								<img src="{{ article.primary_image.image.url }}" alt="{{ article.primary_image.description }}">
 							</div>
@@ -117,7 +165,51 @@
                                         <li><i class="fa fa-eye"></i> {{ article.view_number }}</li>
                                     {% endif %}
 									<li><i class="fa fa-comments"></i> {{ article.comment_set.count }}</li>
+									<li><i class="fa fa-thumbs-up"></i> <span  id="nb_likes">{{ article.likes }}</span></li>
+                                    <li><button id="btn_like_article" onclick="like_article({{ article.id }});" class="btn btn-primary btn-sm btnLike">J'aime <i class="fa fa-thumbs-up"></i></button></li>
+                                    <li><button id="btn_signal_article" onclick="signal_article({{ article.id }});" class="btn btn-danger btn-sm">Signaler  <i class="fa fa-exclamation"></i></button></li>
 								</ul>
+
+
+
+                            {% if article.share_enable %}
+                            <table class="social-links" style="margin-top:13px;">
+                                        <tr>
+                                            <td onclick="share_question({{ article.id }});" id="facebook_share">
+                                                {% post_to_facebook article "Partager" %}
+                                            </td>
+
+                                            <td>&nbsp;</td>
+
+                                            <td onclick="share_question({{ article.id }});" id="facebook_share" style="">
+                                                {% post_to_twitter "" article "Tweet" %}
+                                            </td>
+
+                                            <td></td>
+
+                                            <td onclick="share_question({{ article.id }});" id="facebook_share" style="">
+                                                {% post_to_linkedin "" article "Partager" %}
+                                            </td>
+
+                                            <td></td>
+
+                                            <td onclick="share_question({{ article.id }});" id="facebook_share" style="">
+                                                {% post_to_messenger "" article "Partager" %}
+                                            </td>
+
+                                            <td></td>
+
+                                            <td onclick="share_question({{ article.id }});" id="facebook_share" style="">
+                                                {% post_to_whatsapp "" article "Partager" %}
+                                            </td>
+
+                                            <td></td>
+
+                                        </tr>
+                                    </table>
+                                <br>
+                            {% endif %}
+
                                 <div id="content_article">
                                     {% autoescape off %}
                                     {{ article.content }}

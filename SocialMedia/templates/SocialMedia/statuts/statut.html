@@ -1,0 +1,593 @@
+{% load staticfiles %}
+{% load nbsp filename humanize urlize_targetblank %}
+
+<div data-id="{{ statut.id }}" class="infinite-item st background-white">
+
+
+    <div class="st_content_infos" data-id="{{ statut.id }}">
+        {# Informations sur le publicateur #}
+        <div class="publicateur-infos display-flex ">
+            {# Photo de profil #}
+            <div>
+                <a href="#">
+                    <img class="st_photo_profil" src="
+                        {% if statut.is_entreprise_statut %}
+
+
+                        {% if statut.mur_entreprise.entreprise.logo %}{{ statut.mur_entreprise.entreprise.logo.url }}{% else %}{% static 'SocialMedia/defaults/default_profil.png' %}{% endif %}
+                        {% else %}
+
+
+                        {% if statut.publisher.photo_profil %}{{ statut.publisher.photo_profil.image.url }}{% else %}{% static 'SocialMedia/defaults/default_profil.png' %}{% endif %}
+                        {% endif %}
+                        "
+                         alt="">
+                </a>
+            </div>
+
+
+            {# Informations #}
+            <div class="st_infos_profil">
+                <a href="">
+                    <h3 class="st_profil_name break-words">
+                        {% if statut.is_entreprise_statut %}
+                            <a class="st_publisher"
+                               href="{% url 'SocialMedia:page_entreprise' id_page_entreprise=statut.mur_entreprise.id %}">{{ statut.mur_entreprise.entreprise.nom |title }}</a>
+                        {% else %}
+                            <a class="st_publisher"
+                               href="{% url 'SocialMedia:getProfil' pk=statut.publisher.user.profil.id %}">{{ statut.publisher.user.first_name |title }} {{ statut.publisher.user.last_name |title }}</a>
+                            {% if statut.is_group_statut %}
+                                <i class="fa fa-angle-right"></i>  <a class="st_publisher"
+                               href="{% url 'SocialMedia:groupe' pk=statut.mur_groupe.id %}">{{ statut.mur_groupe.nom|title }} </a>
+                            {% endif %}
+                        {% endif %}
+                    </h3>
+                    {% if  statut.is_entreprise_statut %}
+                        {% if request.user.profil in statut.mur_entreprise.administrateurs.all or request.user.profil in statut.mur_entreprise.moderateurs.all %}
+                            <span class="st_job_profil text-muted break-words">Par: {{ statut.publisher.user.first_name |title }} {{ statut.publisher.user.last_name |title }}</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="st_job_profil text-muted break-words">{% if statut.publisher.resume %}
+                            {{ statut.publisher.resume }}{% endif %}</span>
+                    {% endif %}
+                    <span class="st_job_profil text-muted break-words"
+                          title="{{ statut.date_statut }}">{{ statut.date_statut|naturaltime }}</span>
+                </a>
+            </div>
+
+            {# Menu #}
+
+            <div class="st_menu" data-id="{{ statut.id }}">
+
+                <div class="st_icon_menu" onclick="open_menu(this)">
+                    <i class="fa fa-ellipsis-h color_black"></i>
+                </div>
+
+                <ul class="st_menu_list " role="menu">
+                    <li>
+                        <div class="st_menu_item" data-link="{{ request.META.HTTP_HOST }}{{ statut.get_absolute_url }}"
+                             onclick="st_copy_link(this);">
+                            <i class="st_menu_item_icon  fa fa-link"></i>
+                            <div class="st_menu_item_description">
+                                Copier le lien vers le post
+                            </div>
+                        </div>
+                    </li>
+
+                    {% if statut.is_entreprise_statut %}
+                        {% if request.user.profil in statut.mur_entreprise.moderateurs.all or request.user.profil in statut.mur_entreprise.administrateurs.all %}
+                            <li>
+                                <div class="st_menu_item" data-toggle="modal" data-target="#st_update_content_modal"
+                                     data-id="{{ statut.id }}" onclick="st_update_content_call_modal(this);" data-type="{{ statut.type }}">
+                                    <i class="st_menu_item_icon  fa fa-pencil"></i>
+                                    <div class="st_menu_item_description">
+                                        Modifier le statut
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="st_menu_item" data-id="{{ statut.id }}" data-type="{{ statut.type }}" onclick="st_delete(this);">
+                                    <i class="st_menu_item_icon  fa fa-times"></i>
+                                    <div class="st_menu_item_description">
+                                        Supprimer le statut
+                                    </div>
+                                </div>
+                            </li>
+                        {% else %}
+                            <li>
+                                <div class="st_menu_item" data-toggle="modal" data-type="{{ statut.type }}"
+                                     data-target="#st_signal_modal" data-id="{{ statut.id }}"
+                                     onclick="st_signal_call_modal(this);">
+                                    <i class="st_menu_item_icon  fa fa-flag"></i>
+                                    <div class="st_menu_item_description">
+                                        Signaler le statut
+                                    </div>
+                                </div>
+                            </li>
+                        {% endif %}
+                    {% elif statut.is_group_statut %}
+                        {% if request.user.profil in statut.mur_groupe.moderators.all or request.user.profil in statut.mur_groupe.admins.all %}
+                            <li>
+                                <div class="st_menu_item" data-toggle="modal" data-target="#st_update_content_modal"
+                                     data-id="{{ statut.id }}" onclick="st_update_content_call_modal(this);" data-type="{{ statut.type }}">
+                                    <i class="st_menu_item_icon  fa fa-pencil"></i>
+                                    <div class="st_menu_item_description">
+                                        Modifier le statut
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="st_menu_item" data-id="{{ statut.id }}" data-type="{{ statut.type }}" onclick="st_delete(this);">
+                                    <i class="st_menu_item_icon  fa fa-times"></i>
+                                    <div class="st_menu_item_description">
+                                        Supprimer le statut
+                                    </div>
+                                </div>
+                            </li>
+                        {% else %}
+                            <li>
+                                <div class="st_menu_item" data-toggle="modal" data-type="{{ statut.type }}"
+                                     data-target="#st_signal_modal" data-id="{{ statut.id }}"
+                                     onclick="st_signal_call_modal(this);">
+                                    <i class="st_menu_item_icon  fa fa-flag"></i>
+                                    <div class="st_menu_item_description">
+                                        Signaler le statut
+                                    </div>
+                                </div>
+                            </li>
+                        {% endif %}
+                    {% elif statut.is_profil_statut %}
+                        {% if statut.publisher == request.user.profil %}
+                            <li>
+                                <div class="st_menu_item" data-toggle="modal" data-target="#st_update_content_modal"
+                                     data-id="{{ statut.id }}" onclick="st_update_content_call_modal(this);" data-type="{{ statut.type }}">
+                                    <i class="st_menu_item_icon  fa fa-pencil"></i>
+                                    <div class="st_menu_item_description">
+                                        Modifier le statut
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="st_menu_item" data-id="{{ statut.id }}" data-type="{{ statut.type }}" onclick="st_delete(this);">
+                                    <i class="st_menu_item_icon  fa fa-times"></i>
+                                    <div class="st_menu_item_description">
+                                        Supprimer le statut
+                                    </div>
+                                </div>
+                            </li>
+                        {% else %}
+
+                            <li>
+                                <div class="st_menu_item" data-toggle="modal" data-type="{{ statut.type }}"
+                                     data-target="#st_signal_modal" data-id="{{ statut.id }}"
+                                     onclick="st_signal_call_modal(this);">
+                                    <i class="st_menu_item_icon  fa fa-flag"></i>
+                                    <div class="st_menu_item_description">
+                                        Signaler le statut
+                                    </div>
+                                </div>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+            </div>
+
+
+        </div>
+
+        {# Statut Content #}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="st_contenu  break-words" data-id="{{ statut.id }}">
+                    {{ statut.contenu_statut|urlize|urlize_targetblank }}
+                </div>
+            </div>
+
+            {% if statut.is_link_statut %}
+                <div class="col-lg-12">
+                    <div class="st_link_preview">
+                        <div style="display:flex;">
+                            <a class="st_link_preview_href" target="_blank" href="{{ statut.link_url }}">
+                                <div class="flex-2">
+                                    <img id="st_link_preview_image"
+                                         src="{{ statut.link_icon }}" alt="">
+                                </div>
+                            </a>
+
+                            <a target="_blank" class="st_link_preview_href st_link_preview_href_content"
+                               href="{{ statut.link_url }}">
+                                <div class="flex-2 st_link_preview_content_result">
+
+                                    <h3 id="st_preview_link_title">{{ statut.link_title }}</h3>
+                                    <p id="st_preview_link_description">{{ statut.link_description }}</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% elif statut.images.all.count > 0 %}
+                <div class="col-lg-12 st_images">
+
+                    <div data-id="{{ statut.id }}" class="st_gallerie_photos lgp">
+
+                        {% if statut.images.all.count == 1 %}
+                            {% for image in statut.images.all %}
+                                <a class="st_1_image" href="
+
+
+
+
+
+
+
+                                        {% if image.fichier %}{{ image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}">
+                                    <img src="
+
+
+
+
+
+
+
+                                            {% if image.fichier %}{{ image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}"/>
+                                </a>
+                            {% endfor %}
+                        {% endif %}
+
+                        {% if statut.images.all.count == 2 %}
+                            {% for image in statut.images.all %}
+                                <a class="st_2_image" href="
+
+
+
+
+
+
+
+                                        {% if image.fichier %}{{ image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}">
+                                    <img src="
+
+
+
+
+
+
+
+                                            {% if image.fichier %}{{ image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}"/>
+                                </a>
+                            {% endfor %}
+                        {% endif %}
+
+
+                        {% if statut.images.all.count == 3 %}
+
+                            {% for image in statut.images.all %}
+                                {% if forloop.counter == 1 %}
+                                    <a class="st_1_image" href="
+
+
+
+
+
+
+
+                                            {% if image.fichier %}{{ image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}">
+                                        <img src="
+
+
+
+
+
+
+
+                                                {% if image.fichier %}{{ image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}"/>
+                                    </a>
+                                {% else %}
+                                    <a class="st_2_image" href="
+
+
+
+
+
+
+
+                                            {% if image.fichier %}{{ image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}">
+                                        <img src="
+
+
+
+
+
+
+
+                                                {% if image.fichier %}{{ image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}"/>
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+
+                        {% if statut.images.all.count == 4 %}
+                            {% for image in statut.images.all %}
+                                {% if forloop.counter == 1 %}
+                                    <a class="st_1_image" href="
+
+
+
+
+
+
+
+                                            {% if image.fichier %}{{ image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}">
+                                        <img src="
+
+
+
+
+
+
+
+                                                {% if image.fichier %}{{ image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}"/>
+                                    </a>
+                                {% else %}
+                                    <a class="st_3_image" href="
+
+
+
+
+
+
+
+                                            {% if image.fichier %}{{ image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}">
+                                        <img src="
+
+
+
+
+
+
+
+                                                {% if image.fichier %}{{ image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}"/>
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+
+                        {% if statut.images.all.count >= 5 %}
+                            {% for image in statut.images.all %}
+                                {% if forloop.counter == 1 %}
+                                    <a class="st_1_image" href="
+
+
+
+
+
+
+
+                                            {% if image.fichier %}{{ image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}">
+                                        <img src="
+
+
+
+
+
+
+
+                                                {% if image.fichier %}{{ image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}"/>
+                                    </a>
+                                {% elif forloop.counter <= 3 %}
+                                    <a class="st_3_image" href="
+
+
+
+
+
+
+
+                                            {% if image.fichier %}{{ image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}">
+                                        <img src="
+
+
+
+
+
+
+
+                                                {% if image.fichier %}{{ image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}"/>
+                                    </a>
+                                {% elif forloop.counter  == 4 %}
+                                    <a class="st_3_image st_more_image" href="
+
+
+
+
+
+
+
+                                            {% if image.fichier %}{{ image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}">
+                                        <img src="
+
+
+
+
+
+
+
+                                                {% if image.fichier %}{{ image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}"/>
+                                        <span>+{{ statut.images.all.count|add:"-4" }}</span>
+                                    </a>
+                                {% elif forloop.counter  >= 5 %}
+                                    <a style="display:none;" class="st_3_image" href="
+
+
+
+
+
+
+
+                                            {% if image.fichier %}{{ image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}">
+                                        <img src="
+
+
+
+
+
+
+
+                                                {% if image.fichier %}{{ image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}"/>
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+
+                    </div>
+                </div>
+
+            {% elif statut.videos.all.count == 1 %}
+                {% for video in statut.videos.all %}
+                    <div class="col-lg-12 st_videos clear-both">
+                        <video class="lg-video-object lg-html5" controls preload="none" width="100%">
+                            <source src="{% if video.fichier %}{{ video.fichier.url }}{% endif %}" type="video/mp4">
+                            Votre navigateur ne support pas le lecteur vidéo.
+                        </video>
+                    </div>
+                {% endfor %}
+            {% elif statut.files.all.count >= 0 %}
+                <div class="col-lg-12 ">
+                    <div class="st_contenu">
+                        {% for file in statut.files.all %}
+                            {% if file.fichier %}
+                                <p><i class="st_publier_fichier_icon fa fa-paperclip"></i> <a download
+                                                                                              href="{{ file.fichier.url }}"
+                                                                                              class="st_file_name">{{ file.fichier|filename }}</a>
+                                </p>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+    {# Social count likes, share, video  views #}
+    <div class="row ">
+        <div class="col-lg-12 ">
+            <ul class="st_social_count">
+                <li><span onclick="st_get_likers(this)" data-type="original" data-id="{{ statut.id }}" class="st_social_count_underline"
+                          data-toggle="modal" data-target="#likers_modal"><span data-id="{{ statut.id }}"
+                                                                                class="st_nb_likes">{{ statut.likes.all.count }}</span>
+                    J'aime</span></li>
+                <li><span onclick="st_get_more_comments(this);" data-max="{{ statut.get_max_comment_id }}"
+                          class="st_social_count_underline st_comments_count_more" data-id="{{ statut.id }}"
+                          data-page="{% if statut.commentaire_set.all.count > 0 %}1{% else %}0{% endif %}"><span
+                        data-id="{{ statut.id }}"
+                        class="st_nb_comments">{{ statut.commentaire_set.all.count }}</span>
+                    Commentaires</span></li>
+
+            </ul>
+        </div>
+    </div>
+
+    {# Social Buttons likes, comment,share #}
+    <div class="row ">
+        <div class="col-lg-12">
+            <ul class="st_social_buttons">
+                <li class="{% if request.user.profil in statut.likes.all %}st_social_button_active{% endif %}"
+                    data-id="{{ statut.id }}"
+                    data-liked="{% if request.user.profil in statut.likes.all %}true{% else %}false{% endif %}"
+                    data-type="original" onclick="st_like(this);"><i class="fa fa-thumbs-o-up"></i></li>
+                <li data-id="{{ statut.id }}" onclick="st_comment_focus(this);"><i class="fa fa-comments-o"></i></li>
+                <li data-toggle="modal" data-target="#share_statut_modal" data-id="{{ statut.id }}" onclick="st_share_modal(this);"><i class="fa fa-share-square-o"></i></li>
+            </ul>
+        </div>
+    </div>
+
+    {# Comments and  Comment form #}
+
+    <div class="row st_comment_box">
+        <div class="col-lg-12 ">
+
+            {# Formulaire de commentaire  #}
+            <div class="st_comment_form_box relative">
+                <div class="st_comment_user_image">
+                    <img src="
+
+
+
+
+
+                            {% if user.profil.photo_profil %}{{ user.profil.photo_profil.image.url }}{% else %}{% static 'SocialMedia/defaults/default_profil.png' %}{% endif %}"
+                         alt="FirstName LastName">
+                </div>
+
+                <div class="st_comment_form">
+                    <form data-id="{{ statut.id }}" data-type="{{ statut.type }}" onsubmit="add_comment(event, this)"
+                          novalidate="" enctype="multipart/form-data">
+
+                        <input data-id="{{ statut.id }}" class="st_comment_input"
+                               onkeyup="st_show_comment_publish_button(this,'st_{{ statut.id }}_comment_submit_button');"
+                               type="text" placeholder="Ajouter un  commentaire..." name="comment_content"
+                               autocomplete="off">
+
+                        <div>
+                            <input type="file" name="comment_image" id="st_comment_img_{{ statut.id }}"
+                                   class="st_comment_input hidden_input_file" data-id="{{ statut.id }}"
+                                   onchange="imagePreview(this,$('.st_comment_img_tag[data-id={{ statut.id }}]'))"/>
+                            <label class="st_comment_img_input_label" for="st_comment_img_{{ statut.id }}"><i
+                                    class="fa  fa-camera"></i></label>
+                        </div>
+
+                        <div data-id="{{ statut.id }}" class="st_comment_img_preview_box">
+
+                            <div data-id="{{ statut.id }}" class="st_comment_img_tag">
+                            </div>
+
+                            <div data-id="{{ statut.id }}"
+                                 onclick="st_close_comment_img_preview(this,$('.st_comment_input[data-id={{ statut.id }}]'));"
+                                 class="st_comment_img_close_div">
+                                <i class="st_link_preview_close_icon fa fa-times-rectangle"></i>
+                            </div>
+
+                        </div>
+
+                        <button class=" btn btn-primary btn_status display_none"
+                                id="st_{{ statut.id }}_comment_submit_button" type="submit">Publier
+                        </button>
+
+                    </form>
+                </div>
+
+            </div>
+
+            {#  Commentaires sur les statuts #}
+
+            <div class="st_comments" data-id="{{ statut.id }}">
+            </div>
+
+            <div onclick="st_get_more_comments(this);" data-max="{{ statut.get_max_comment_id }}"
+                 data-page="{% if statut.commentaire_set.all.count > 0 %}1{% else %}0{% endif %}"
+                 class="st_comments_load_more" data-id="{{ statut.id }}">Charger plus de commentaires
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="st_scripts">
+        {#  Scripts necessaire pour le statut #}
+
+        {# Initialisation gallerie Photo + video #}
+
+        <script>
+            lightGallery(document.getElementById('gallerie-photos-{{ statut.id }}'), {
+                thumbnail: true
+            });
+
+            lightGallery(document.getElementById('st_initialise_video_{{ statut.id }}'));
+        </script>
+
+    </div>
+
+
+</div>
+
+

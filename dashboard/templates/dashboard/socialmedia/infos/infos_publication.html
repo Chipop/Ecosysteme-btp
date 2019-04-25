@@ -1,0 +1,431 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+
+{% block title %}
+    Publication | Réseau social | {{ block.super }}
+{% endblock title %}
+
+{% block stylesheets %}
+
+    {{ block.super }}
+
+    <link href="{% static 'dashboard/css/plugins/summernote/summernote-bs4.css' %}" rel="stylesheet">
+
+    <style>
+        #myCarousel .list-inline {
+            white-space: nowrap;
+            /* overflow-x: auto; */
+        }
+
+        #myCarousel .carousel-indicators {
+            position: static;
+            left: initial;
+            width: initial;
+            margin-left: initial;
+        }
+
+        #myCarousel .carousel-indicators > li {
+            width: initial;
+            height: initial;
+            text-indent: initial;
+        }
+
+        #myCarousel .carousel-indicators > li.active img {
+            opacity: 0.7;
+        }
+    </style>
+
+
+{% endblock stylesheets %}
+
+
+{% block content %}
+
+    <div class="wrapper wrapper-content  animated fadeInRight" style="width:100%">
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class=" float-left">
+                    <a href="{% url 'dashboard:socialmedia_publications' %}">
+                        <button class="btn btn-primary dim"><i class="fa fa-arrow-left"></i> Liste de publications
+
+                        </button>
+                    </a>
+
+                </div>
+
+                <div class=" float-right">
+                    <a href="{% url 'dashboard:socialmedia_delete_publication' id_publication=publication.id %}">
+                        <button id="btn_lancer_compagne" class="btn btn-danger dim">
+                            <i class="fa fa-trash"></i> Supprimer
+                        </button>
+                    </a>
+
+                    <a href="{% url 'dashboard:socialmedia_update_publication_all' id_publication=publication.id %}">
+                        <button class="btn btn-success dim"><i class="fa fa-pencil"></i> Modifier</button>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-eye fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Vues</span>
+                            <h2 class="font-bold">{{ publication.views_number }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-exclamation-circle fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Signalements</span>
+                            <h2 class="font-bold signal_actif">{{ publication.get_signals.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+
+            <div class="col-lg-4">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-comment fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Commentaires </span>
+                            <h2 class="font-bold">{{ publication.get_commentaires.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-thumbs-up fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>J'aime</span>
+                            <h2 class="font-bold">{{ publication.likes.all.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-share fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span> Partages </span>
+                            <h2 class="font-bold">{{ publication.shares }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="row">
+
+            {% if publication.statut_signales.all.count > 0 %}
+                <div class="col-lg-12" style="text-align: center; padding:15px;font-weight: bold;" >
+                    <button data-toggle="modal" data-target="#modalSignalements" class="btn btn-primary">Gérer les signalements (<span class="signal_actif">{{ publication.get_signals.count }}</span>
+                        actifs)
+                    </button>
+                </div>
+            {% endif %}
+
+            <div class="col-lg-6" style="margin:auto;">
+
+
+                <div class="social-feed-box">
+
+                    <div class="social-avatar">
+                        <a href="#" class="float-left">
+                            <img alt="image"
+                                 src="{% if publication.publisher.photo_profil.image %} {{ publication.publisher.photo_profil.image.url }}  {% else %} {% static 'dashboard/img/default_profil_m.png' %} {% endif %}">
+                        </a>
+                        <div class="media-body">
+                            <a href="{% url 'dashboard:socialmedia_infos_profile' id_user=publication.publisher.id %}">
+                                {{ publication.publisher.user.first_name | title }} {{ publication.publisher.user.last_name | title }}
+                            </a>
+                            <small class="text-muted">{{ publication.date_statut }}</small>
+                        </div>
+                    </div>
+                    <div class="social-body">
+                        <p>
+                            {{ publication.contenu_statut }}
+
+                            {% if publication.images.all.count > 0 %}
+                                <div class="container">
+
+                                    <!-- main slider carousel -->
+                                    <div class="row">
+                                        <div class="col-lg-8 offset-lg-2" id="slider">
+                                            <div id="myCarousel" class="carousel slide">
+                                                <!-- main slider carousel items -->
+                                                <div class="carousel-inner">
+                                                    {% for image in publication.images.all %}
+                                                        <div class=" item {% if forloop.first %}active{% endif %} carousel-item"
+                                                             data-slide-number="{{ forloop.counter0 }}">
+                                                            <img src="
+
+
+
+                                                                    {% if image.fichier %}{{ image.fichier.url }}{% endif %}"
+                                                                 class="img-fluid">
+                                                        </div>
+                                                    {% endfor %}
+
+                                                    {% comment %}
+                                                            <a class="carousel-control left pt-3" href="#myCarousel"
+                                                               data-slide="prev"><i class="fa fa-chevron-left"></i></a>
+                                                            <a class="carousel-control right pt-3" href="#myCarousel"
+                                                               data-slide="next"><i class="fa fa-chevron-right"></i></a>
+                                                   {% endcomment %}
+
+                                                </div>
+                                                <!-- main slider carousel nav controls -->
+                                                <ul class="carousel-indicators list-inline">
+                                                    {% for image in publication.images.all %}
+                                                        <li class="list-inline-item {% if forloop.first %}active{% endif %}">
+                                                            <a id="carousel-selector-{{ forloop.counter0 }}"
+                                                               class="selected"
+                                                               data-slide-to="{{ forloop.counter0 }}"
+                                                               data-target="#myCarousel">
+                                                                <img src="
+
+
+
+
+                                                                        {% if image.fichier %}{{ image.fichier.url }}{% endif %}"
+                                                                     class="img-fluid">
+                                                            </a>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <!--/main slider carousel-->
+                                </div>
+                            {% elif publication.files.all.count > 0 %}
+                                {% for file in publication.files.all %}
+                                    <p style="font-weight:bold;"><a target="_blank" href="{{ file.fichier.url }}"> <i
+                                            class="fa fa-paperclip"></i> {{ file.fichier.name }} </a></p>
+                                {% endfor %}
+
+                            {% elif publication.videos.all.count == 1 %}
+                                {% for video in publication.videos.all %}
+                                    <div class="col-lg-12 st_videos clear-both">
+                                        <video class="lg-video-object lg-html5" controls preload="none" width="100%">
+                                            <source src="{% if video.fichier %}{{ video.fichier.url }}{% endif %}"
+                                                    type="video/mp4">
+                                            Votre navigateur ne support pas le lecteur vidéo.
+                                        </video>
+                                    </div>
+                                {% endfor %}
+                            {% elif publication.is_link_statut %}
+                                <div class="col-lg-12" >
+                                    <a href="{{ publication.link_url }}" target="_blank">
+                                        <div style="display:flex;border: 1px solid #dedede;padding:7px;">
+                                        <div class="flex-1" style="    margin: auto 0;padding:11px;">
+                                            <img height="50" width="50" src="{% if publication.link_icon %}{{ publication.link_icon }}{% else %}{% static 'dashboard/img/angular_logo.png' %}{% endif %}" alt="">
+                                        </div>
+                                        <div class="flex-6">
+                                            <h4 style="color:#333;">{{ publication.link_title }}</h4>
+                                            <p style="color:#333;">{{ publication.link_description }}</p>
+                                        </div>
+                                    </div>
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </p>
+                        {{ publication.likes.all.count }} <i class="fa fa-thumbs-up"></i> {{ publication.shares }} <i
+                            class="fa fa-share"></i>
+                    </div>
+                    <div class="social-footer">
+                        {% for comment in publication.get_commentaires %}
+                            <div class="social-comment ">
+                                <a href="#" class="float-left ">
+                                    <img alt="image" style="  width: 40px; height: 40px;"
+                                         src="{% if comment.user.photo_profil.image %} {{ comment.user.photo_profil.image.url }}  {% else %} {% static 'dashboard/img/default_profil_m.png' %} {% endif %}">
+                                </a>
+                                <div class="media-body">
+                                    <a href="{% url 'dashboard:socialmedia_infos_profile' id_user=comment.user.id %}">
+                                        {{ comment.user.user.first_name | title }} {{ comment.user.user.last_name | title }}
+                                    </a>
+                                    <p>{{ comment.content }}</p>
+                                    <p>
+                                        {% if comment.image.fichier %}
+                                            <a href="{{ comment.image.fichier.url }}" target="_blank"><img
+                                                    height="150" style="width:auto;"
+                                                    src="{{ comment.image.fichier.url }}" alt=""> </a>
+                                        {% endif %}
+                                    </p>
+
+                                    <a href="#" class="small"><i
+                                            class="fa fa-thumbs-up"></i> {{ comment.likes.all.count }}</a>
+                                    -
+                                    <small class="text-muted">{{ comment.date_commentaire }}</small>
+                                </div>
+                                {% for reponse in comment.replies %}
+                                    <div class="social-comment">
+                                        <a href="#" class="float-left">
+                                            <img alt="image" style="  width: 40px; height: 40px;"
+                                                 src="{% if comment.user.photo_profil.image %} {{ comment.user.photo_profil.image.url }}  {% else %} {% static 'dashboard/img/default_profil_m.png' %} {% endif %}">
+                                        </a>
+                                        <div class="media-body">
+                                            <a href="{% url 'dashboard:socialmedia_infos_profile' id_user=reponse.user.id %}">
+                                                {{ reponse.user.user.first_name | title }} {{ reponse.user.user.last_name | title }}
+                                            </a>
+                                            <p>{{ reponse.content }}</p>
+                                            <p>
+                                                {% if reponse.image.fichier %}
+                                                    <a href="{{ reponse.image.fichier.url }}" target="_blank"><img
+                                                            height="150" style="width:auto;"
+                                                            src="{{ reponse.image.fichier.url }}" alt=""> </a>
+                                                {% endif %}
+                                            </p>
+
+                                            <a href="#" class="small"><i
+                                                    class="fa fa-thumbs-up"></i> {{ reponse.likes.all.count }}</a>
+                                            -
+                                            <small class="text-muted">{{ reponse.date_commentaire }}</small>
+
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- The Modal -->
+    <div class="modal" id="modalSignalements">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Signalements</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body" style="    overflow-y: auto;  max-height: 70vh;">
+                    <div>
+                        <p><strong>Actifs</strong> : <span class="signal_actif">{{ publication.get_signals.count }}</span> | <strong>Total</strong>
+                            : {{ publication.statut_signales.all.count }}</p>
+                    </div>
+                    <hr>
+                    {% for signal in publication.statut_signales.all %}
+                        <div>
+                            <p><strong>De la part de</strong> : <a href="{% url 'dashboard:socialmedia_infos_profile' id_user=signal.signal_sender.id %}">{{ signal.signal_sender.user.get_full_name|title }}</a> </p>
+                            <p><strong>Date</strong> : {{ signal.date_signale }} </p>
+                            <p><strong>Cause</strong> : {{ signal.cause }} </p>
+                            <p>
+                                {% if signal.active %}
+                                    <button data-id="{{ signal.id }}" data-action="desactiver" onclick="activate_signal(this);" class="btn btn-primary">Désactiver le signal</button>
+                                {% else %}
+                                    <button data-id="{{ signal.id }}" data-action="activer" onclick="activate_signal(this);" class="btn btn-danger">Activer le signal</button>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <hr>
+                    {% endfor %}
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal">Fermer</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script>
+        $('#dashboard_socialmedia').addClass("active");
+        $('#socialmedia_liste_publication').addClass("active");
+
+        function activate_signal(button) {
+            let id  = $(button).attr('data-id');
+            let action  = $(button).attr('data-action');
+
+            let data = {'action': action, 'id': id};
+            $.ajax({
+                url: "{% url  'dashboard:socialmedia_activate_signal' id_signal=0 %}".replace("0",id), type: 'GET', data: data, success: function (response) {
+                }, success: function (response) {
+                    console.log(response)
+                    if(response.action=="desactiver"){
+                        $(button).attr("data-action",'activer')
+                        $(button).text("Activer le signal")
+                        $(button).removeClass("btn-primary")
+                        $(button).addClass("btn-danger ")
+                    }else{
+                        $(button).attr("data-action",'desactiver')
+                        $(button).text("Désactiver le signal")
+                        $(button).removeClass("btn-danger")
+                        $(button).addClass("btn-primary")
+                    }
+
+                    $('.signal_actif').text(response.signals_actifs);
+
+                }, error: function () {
+                }, complete: function () {
+
+                }, stop: function (e) {
+                }
+            })
+        }
+    </script>
+
+
+
+
+
+{% endblock scripts %}
+

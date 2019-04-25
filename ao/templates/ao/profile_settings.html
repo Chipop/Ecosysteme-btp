@@ -1,0 +1,444 @@
+{% extends 'ao/base_small.html' %}
+
+{% load static %}
+
+{% block style %}
+
+    <style>
+        .simplebar-content{
+            background: #fafafa;
+        }
+        .upload-button1{
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+        }
+        .file-upload1{
+            opacity: 0;
+            pointer-events: none;
+            position: absolute;
+        }
+        .profile-pic1{
+            height: 100%;
+            width: 100%;
+            transition: all .3s ease;
+            object-fit: cover;
+        }
+    </style>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+        function avatarSwitcher1() {
+            var readURL1 = function(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('.profile-pic1').attr('src', e.target.result);
+                    }
+                    ;
+                    reader.readAsDataURL(input.files[0]);
+                }
+            };
+            $(".file-upload1").on('change', function() {
+                readURL1(this);
+            });
+            $(".upload-button1").on('click', function() {
+                $(".file-upload1").click();
+            });
+        }
+        avatarSwitcher1();
+
+        {% if status %}
+            Snackbar.show({
+                text: 'Profil modifié avec succès',
+            });
+        {% endif %}
+        {% if status == False %}
+            Snackbar.show({
+                text: 'Veuillez vérifier la recaptcha',
+            });
+        {% endif %}
+
+    </script>
+
+{% endblock %}
+
+{% block sidebar %}
+
+<div class="dashboard-sidebar">
+		<div class="dashboard-sidebar-inner" data-simplebar>
+			<div class="dashboard-nav-container">
+
+				<!-- Responsive Navigation Trigger -->
+				<a href="#" class="dashboard-responsive-nav-trigger">
+					<span class="hamburger hamburger--collapse" >
+						<span class="hamburger-box">
+							<span class="hamburger-inner"></span>
+						</span>
+					</span>
+					<span class="trigger-title">Profil Détails</span>
+				</a>
+
+				<!-- Navigation -->
+				<div class="dashboard-nav">
+					<div class="dashboard-nav-inner">
+
+                        {% if company is None %}
+                            <div id="profile-details">
+                                <div class="header-image">
+                                    <a href="{% url 'ao:profile' profile.id %}">
+                                        {% if profile.photo_profil.image.url is not None %}
+                                            <img src="{{ profile.photo_profil.image.url }}" alt="">
+                                        {% else %}
+                                            <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                        {% endif %}
+                                    </a>
+                                </div>
+
+                                <div class="header-details">
+                                    <h3 style="padding: 25px; text-align: center; padding-bottom: 0;">{{ profile.user.first_name|capfirst }} {{ profile.user.last_name|upper }}</h3>
+                                    <h4 style="text-align: center">{{ profile.fonction }}</h4>
+                                </div>
+                            </div>
+
+                            <ul data-submenu-title="Liens rapides">
+                                <li><a href="{% url 'ao:profile' profile.id %}"><i class="icon-material-outline-assignment"></i> Appels d'offres</a></li>
+                                <li><a href="{% url 'ao:saves' profile.id %}"><i class="icon-material-outline-star-border"></i> Enregistrement</a></li>
+                            </ul>
+                        {% else %}
+                            <div id="profile-details">
+                                <div class="header-image">
+                                    <a href="#">
+                                        {% if company.logo.url is not None %}
+                                            <img src="{{  company.logo.url }}" alt="">
+                                        {% else %}
+                                            <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                        {% endif %}
+                                    </a>
+                                </div>
+
+                                <div class="header-details">
+                                    <h3 style="padding: 25px; text-align: center; padding-bottom: 0;">{{ company.name }}</h3>
+                                    <h4 style="text-align: center">{{ company.activity }}</h4>
+                                </div>
+                            </div>
+
+                            <ul data-submenu-title="Liens rapides">
+                                <li><a href="{% url 'ao:profile' profile.id %}"><i class="icon-material-outline-assignment"></i> Appels d'offres</a></li>
+                                <li><a href="{% url 'ao:saves' profile.id %}"><i class="icon-material-outline-star-border"></i> Enregistrement</a></li>
+                            </ul>
+                        {% endif %}
+					</div>
+				</div>
+				<!-- Navigation / End -->
+
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
+
+{% block content %}
+
+<!-- Dashboard Headline -->
+			<div class="dashboard-headline">
+				<h3>Paramètres</h3>
+
+				<!-- Breadcrumbs -->
+				<nav id="breadcrumbs" class="dark">
+					<ul>
+						<li><a href="{% url 'ao:home' %}">Accueil</a></li>
+						<li><a href="{% url 'ao:profile' profile.id %}">Profil</a></li>
+						<li>Paramètres</li>
+					</ul>
+				</nav>
+			</div>
+
+			<!-- Row -->
+			<div class="row">
+
+			    <form action="" method="post" enctype="multipart/form-data">
+			        {% csrf_token %}
+
+				<!-- Dashboard Box -->
+				<div class="col-xl-12">
+					<div class="dashboard-box margin-top-0">
+
+						<!-- Headline -->
+						<div class="headline">
+							<h3><i class="icon-material-outline-account-circle"></i> Mon Profil</h3>
+						</div>
+
+						<div class="content with-padding padding-bottom-0">
+
+							<div class="row">
+
+								<div class="col-auto">
+									<div class="avatar-wrapper" data-tippy-placement="bottom" title="Changer Photo de Profil">
+									    {% if profile.photo_profil.image.url is not None %}
+                                            <img class="profile-pic" src="{{ profile.photo_profil.image.url }}" alt="">
+                                        {% else %}
+                                            <img class="profile-pic" src="{% static 'ao/images/user-avatar-placeholder.png' %}" alt="" />
+                                        {% endif %}
+										<div class="upload-button"></div>
+										<input class="file-upload" type="file" accept="image/*" name="image"/>
+									</div>
+								</div>
+
+								<div class="col">
+									<div class="row">
+
+										<div class="col-xl-6">
+											<div class="submit-field">
+												<h5>Prénom</h5>
+												<input type="text" class="with-border" required name="name" value="{{ profile.user.first_name }}">
+											</div>
+										</div>
+
+										<div class="col-xl-6">
+											<div class="submit-field">
+												<h5>Nom</h5>
+												<input type="text" class="with-border" required name="lastname" value="{{ profile.user.last_name }}">
+											</div>
+										</div>
+
+                                        <div class="col-xl-6">
+											<div class="submit-field">
+												<h5>Email</h5>
+												<input type="text" style="cursor: not-allowed;" class="with-border" disabled value="{{ profile.user.email }}">
+											</div>
+										</div>
+
+										<div class="col-xl-6">
+											<!-- Account Type -->
+											<div class="submit-field">
+												<h5>Fonction</h5>
+												<select class="selectpicker with-border" name="function" data-size="7" title="Sélectionner une fonction" required data-live-search="true">
+												    {% for f in functions %}
+												        {% if profile.fonction == f %}
+                                                            <option value="{{ f }}" selected>{{ f }}</option>
+											            {% else %}
+											                <option value="{{ f }}">{{ f }}</option>
+											            {% endif %}
+											        {% endfor %}
+											    </select>
+											</div>
+										</div>
+
+										<div class="col-xl-6">
+											<div class="submit-field">
+												<h5>Téléphone</h5>
+												<input type="text" class="with-border" name="phone" value="{{ profile.tel_portable }}">
+											</div>
+										</div>
+
+										<div class="col-xl-6">
+											<div class="submit-field">
+												<h5>Fax</h5>
+												<input type="text" name="fax" class="with-border" value="{{ profile.tel_fixe }}">
+											</div>
+										</div>
+
+										<div class="col-xl-12">
+											<div class="submit-field">
+												<h5>Présentez-vous</h5>
+												<textarea cols="30" rows="5" class="with-border" name="resume">{{ profile.resume }}</textarea>
+											</div>
+										</div>
+
+										{% if company is None %}
+                                            <div class="col-xl-12">
+                                                <div style="margin-bottom: 15px;">
+                                                    <script src='https://www.google.com/recaptcha/api.js'></script>
+                                                    <div class="g-recaptcha" style="display: inline-block;" data-sitekey="6LcIOV8UAAAAAO0kQRvjLmlOt7Q08VEubXgfvG6l"></div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+                {% if company is not None %}
+				<!-- Dashboard Box -->
+				<div class="col-xl-12">
+					<div class="dashboard-box">
+
+						<!-- Headline -->
+						<div class="headline">
+							<h3><i class="icon-line-awesome-briefcase"></i> Mon Entreprise</h3>
+						</div>
+
+						<div class="content with-padding">
+							<div class="row">
+
+								<div class="col-auto">
+									<div class="avatar-wrapper" data-tippy-placement="bottom" title="Change Avatar">
+									    {% if company.logo.url is not None %}
+                                            <img class="profile-pic1" src="{{  company.logo.url }}" alt="">
+                                        {% else %}
+                                            <img class="profile-pic1" src="{% static 'ao/images/company-logo-05.png' %}">
+                                        {% endif %}
+										<div class="upload-button1"></div>
+										<input class="file-upload1" type="file" accept="image/*" name="image_e"/>
+									</div>
+								</div>
+
+								<div class="col">
+									<div class="row">
+
+										<div class="col-xl-6">
+											<div class="submit-field">
+												<h5>Nom d'entreprise</h5>
+												<input type="text" class="with-border" required name="name_e" value="{{ company.name }}">
+											</div>
+										</div>
+
+										<div class="col-xl-6">
+											<div class="submit-field">
+												<h5>Activité</h5>
+												<input type="text" class="with-border" required name="activity" value="{{ company.activity }}">
+											</div>
+										</div>
+
+										<div class="col-xl-6">
+											<!-- Account Type -->
+											<div class="submit-field">
+												<h5>Ville</h5>
+												<input type="text" class="with-border" required name="city_e" value="{{ company.city }}">
+											</div>
+										</div>
+
+										<div class="col-xl-6">
+											<div class="submit-field">
+												<h5>Code postal</h5>
+												<input type="text" class="with-border" name="code_e" required value="{{ company.codePostal }}">
+											</div>
+										</div>
+
+										<div class="col-xl-12">
+											<div class="submit-field">
+												<h5>Adresse</h5>
+												<input type="text" class="with-border" name="address_e" required value="{{ company.address }}">
+											</div>
+										</div>
+								    </div>
+								</div>
+							</div>
+							<div class="row">
+							    <div class="col-xl-12">
+                                    <div class="submit-field">
+                                        <h5>Description de l'entreprise</h5>
+                                        <textarea cols="30" rows="5" class="with-border" name="desc_e" required>{{ company.description }}</textarea>
+                                    </div>
+                                </div>
+							    <div class="col-xl-4">
+                                    <div class="submit-field">
+                                        <h5>Email</h5>
+                                        <input type="email" required class="with-border" name="email_e" value="{{ company.mail }}">
+                                    </div>
+                                </div>
+							    <div class="col-xl-4">
+                                    <div class="submit-field">
+                                        <h5>Téléphone</h5>
+                                        <input type="text" required class="with-border" name="tel_e" value="{{ company.telephone }}">
+                                    </div>
+                                </div>
+							    <div class="col-xl-4">
+                                    <div class="submit-field">
+                                        <h5>Fax</h5>
+                                        <input type="text" required class="with-border" name="fax_e" value="{{ company.fax }}">
+                                    </div>
+                                </div>
+							    <div class="col-xl-4">
+                                    <div class="submit-field">
+                                        <h5>Registre du Commerce</h5>
+                                        <input type="text" required class="with-border" name="rc_e" value="{{ company.trade_registry }}">
+                                    </div>
+                                </div>
+							    <div class="col-xl-4">
+                                    <div class="submit-field">
+                                        <h5>Facebook</h5>
+                                        <input type="url" class="with-border" name="fb_e" value="{{ company.facebook }}">
+                                    </div>
+                                </div>
+							    <div class="col-xl-4">
+                                    <div class="submit-field">
+                                        <h5>Twitter</h5>
+                                        <input type="url" class="with-border" name="twitter_e" value="{{ company.twitter }}">
+                                    </div>
+                                </div>
+							    <div class="col-xl-4">
+                                    <div class="submit-field">
+                                        <h5>Youtube</h5>
+                                        <input type="url" class="with-border" name="youtube_e" value="{{ company.youtube }}">
+                                    </div>
+                                </div>
+							    <div class="col-xl-4">
+                                    <div class="submit-field">
+                                        <h5>LinkedIn</h5>
+                                        <input type="url" class="with-border" name="linkedin_e" value="{{ company.linkedIn }}">
+                                    </div>
+                                </div>
+
+							    <div class="col-xl-4">
+                                    <div class="submit-field">
+                                        <h5>Github</h5>
+                                        <input type="url" class="with-border" name="github_e" value="{{ company.github }}">
+                                    </div>
+                                </div>
+                                <div class="col-xl-12">
+                                    <div>
+                                        <script src='https://www.google.com/recaptcha/api.js'></script>
+                                        <div class="g-recaptcha" style="display: inline-block;" data-sitekey="6LcIOV8UAAAAAO0kQRvjLmlOt7Q08VEubXgfvG6l"></div>
+                                    </div>
+                                </div>
+							</div>
+						</div>
+					</div>
+				</div>
+				{% else %}
+
+				<div class="col-xl-12">
+					<div class="dashboard-box">
+
+						<!-- Headline -->
+						<div class="headline">
+							<h3><i class="icon-line-awesome-briefcase"></i> Mon Entreprise</h3>
+						</div>
+
+                        <div class="content with-padding">
+                            <div class="row">
+                                <div class="col-auto">
+                                    <!-- Button -->
+                                    <div class="col-xl-12">
+                                        <a href="{% url 'ao:be_company' %}" style="margin-top: 0 !important;" class="button ripple-effect big margin-top-30">Créer votre profil d'entreprise</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+				{% endif %}
+
+
+				<!-- Button -->
+				<div class="col-xl-12">
+					<button type="submit" class="button ripple-effect big margin-top-30">Enregistrer les changements</button>
+				</div>
+
+			    </form>
+			</div>
+			<!-- Row / End -->
+
+{% endblock %}

@@ -3,6 +3,7 @@ from django.utils.safestring import mark_safe
 
 from .models import *
 
+admin.site.register(ResultSearch)
 
 class CateGoryOneInline(admin.StackedInline):
     model = CommerceSCategoryOne
@@ -25,6 +26,7 @@ class CategoryAdmin(admin.ModelAdmin):
                 height=obj.image.height,
                 )
             )
+
 
     @staticmethod
     def display_image(obj):
@@ -310,7 +312,7 @@ class MessageSupplierAdmin(admin.ModelAdmin):
 class ShopAdmin(admin.ModelAdmin):
     readonly_fields = ["_image_profile", '_image_cover']
     search_fields = ['name', 'description', ]
-    list_display = ('id', 'image_profile_', 'name', 'owner', 'date_creation', 'approved')
+    list_display = ('id', 'image_profile_', 'name', 'owner', 'date_creation', 'approved','date_creation')
     list_filter = ('approved', 'date_creation', )
 
     @staticmethod

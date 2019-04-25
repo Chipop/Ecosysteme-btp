@@ -1,0 +1,509 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}
+    Liste des commandes | Ecommerce | {{ block.super }}
+{% endblock title %}
+
+{% block stylesheets %}
+
+    {{ block.super }}
+
+
+    <link href="{% static 'dashboard/css/plugins/Datatable/datatable.css' %}" rel="stylesheet">
+    <link href="{% static 'dashboard/css/plugins/Datatable/Datatable_Boostrap4.min.css' %}" rel="stylesheet">
+    <!-- Sweet Alert -->
+    <link href="{% static 'dashboard/css/plugins/sweetalert/sweetalert.css' %}" rel="stylesheet">
+    <!-- Toastr style -->
+    <link href="{% static 'dashboard/css/plugins/toastr/toastr.min.css' %}" rel="stylesheet">
+
+    <link href="{% static 'dashboard/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css' %}"
+          rel="stylesheet">
+
+    <style>
+        .checkbox label{
+                margin-top: -14px;
+        }
+    </style>
+
+{% endblock stylesheets %}
+
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+
+        <div class="row">
+        </div>
+
+
+        <div class="row">
+
+
+            <div id="window_liste_emails" class="col-lg-12 animated fadeInRight">
+                <div class="mail-box-header">
+
+                    <h2>
+                        Commandes ({{ commandes.count }})
+                    </h2>
+                    <div class="mail-tools tooltip-demo m-t-md">
+
+                    </div>
+                </div>
+                <div class="mail-box">
+
+                    <div class="col-lg-12">
+                        <div class="btn-group pull-right">
+
+                            <div id="reportrange"
+                                 style="background: #fff; cursor: pointer; padding: 5px 5px; border: 1px solid #ccc; width: 100%;    margin-right: 13px; ">
+                                <i class="fa fa-calendar"></i>&nbsp;
+                                <span></span> <i class="fa fa-caret-down"></i>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <table id="example" class="table table-striped table-bordered" style="width:100%">
+                        <thead>
+                        <tr>
+                            <th style="width:24px;">
+
+                                <div class="checkbox checkbox-success" style="margin-left: 7px;"
+                                     onchange="check_all(this)">
+                                    <input type="checkbox" class="custom-control-input" id="check_all"
+                                           name="example1">
+                                    <label class=" " for="check_all"></label>
+                                </div>
+                            </th>
+                            <th>ID</th>
+                            <th>Client</th>
+                            <th>Date de création</th>
+                            <th>Statut</th>
+                            <th>Paiement</th>
+                            <th>Livraison</th>
+                            <th>Numero de suivi</th>
+                            <th>Total</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for commande in commandes %}
+                            <tr id="tr-{{ commande.id }}">
+                                <td>
+                                    <div class="checkbox checkbox-success" style="margin-left: 7px;">
+                                        <input type="checkbox" class="custom-control-input" id="chk-{{ commande.id }}"
+                                               name="example-{{ commande.id }}">
+                                        <label class=" " for="chk-{{ commande.id }}"></label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="{% url 'dashboard:marketplace_order' id_order=commande.id %}">#{{ commande.id }}</a>
+                                </td>
+                                <td>
+                                    <a href="">{{ commande.user.user.first_name | title }} {{ commande.user.user.last_name | title }}</a>
+                                </td>
+                                <td>{{ commande.date | date:"d/m/Y" }} </td>
+                                <td id="td-status-{{ commande.id }}">
+                                    {% if commande.status == "Created" %}
+                                        <span class="badge badge-success">{{ commande.status }}</span>
+                                    {% elif commande.status == "Processing" %}
+                                        <span class="badge badge-warning">{{ commande.status }}</span>
+                                    {% elif commande.status == "Shipped" %}
+                                        <span class="badge badge-primary">{{ commande.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ commande.payment_method }}</td>
+                                <td>{{ commande.delivery_method }}</td>
+                                <td>
+                                    {% if commande.track_number is None %}
+                                        -
+                                    {% else %}
+                                        {{ commande.track_number }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if commande.amount is None %}
+                                        0
+                                    {% else %}
+                                        {{ commande.amount | intcomma }}
+                                    {% endif %}
+                                    DH
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+
+
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script>
+        $('#dashboard_marketplace').addClass("active");
+        $('#marketplace_orders').addClass("active");
+    </script>
+
+
+    <!-- Data picker -->
+    <script src="{% static 'dashboard/js/plugins/datapicker/bootstrap-datepicker.js' %}"></script>
+
+
+    <!-- Date range use moment.js same as full calendar plugin -->
+    <script src="{% static 'dashboard/js/plugins/fullcalendar/moment.min.js' %}"></script>
+
+
+
+    <!-- Date range picker -->
+    <script src="{% static 'dashboard/js/plugins/daterangepicker/daterangepicker.js' %}"></script>
+
+
+    <script src="{% static 'dashboard/js/plugins/Datatable/pdfmake.js' %}"></script>
+    <script src="{% static 'dashboard/js/plugins/Datatable/pdfmake_font.js' %}"></script>
+    <script src="{% static 'dashboard/js/plugins/Datatable/Datatable.js' %}"></script>
+    <script src="{% static 'dashboard/js/plugins/dataTables/datetime-moment.js' %}"></script>
+    <!-- Sweet alert -->
+    <script src="{% static 'dashboard/js/plugins/sweetalert/sweetalert.min.js' %}"></script>
+
+
+    <script>
+
+        //Date Range Config + Initialisation
+
+
+        var start_date = moment().subtract(365, 'days').format('MM/DD/YYYY');
+        var end_date = moment().format('MM/DD/YYYY');
+
+        $('#reportrange span').html("du " + moment().subtract(365, 'days').format('DD/MM/YYYY') + ' au ' + moment().format('DD/MM/YYYY'));
+
+        $('#reportrange').daterangepicker({
+            format: 'DD/MM/YYYY',
+            startDate: moment().subtract(365, 'days'),
+            endDate: moment(),
+            minDate: '01/01/2012',
+            maxDate: '31/12/2099',
+            dateLimit: {days: 29200},
+            showDropdowns: true,
+            showWeekNumbers: true,
+            timePicker: false,
+            timePickerIncrement: 1,
+            timePicker12Hour: true,
+            ranges: {
+                "Aujourd'hui": [moment(), moment()],
+                'Hier': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Les 7 derniers jours': [moment().subtract(6, 'days'), moment()],
+                'Les 30 derniers jours': [moment().subtract(29, 'days'), moment()],
+                'Ce mois': [moment().startOf('month'), moment().endOf('month')],
+                'Le mois dernier': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            },
+            opens: 'left',
+            drops: 'down',
+            buttonClasses: ['btn', 'btn-sm'],
+            applyClass: 'btn-primary',
+            cancelClass: 'btn-default',
+            separator: ' to ',
+            locale: {
+                applyLabel: 'Filtrer',
+                cancelLabel: 'Annuler',
+                fromLabel: 'Du',
+                toLabel: 'Au',
+                customRangeLabel: 'Filtre personnalisé',
+                daysOfWeek: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+                monthNames: ['Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+                firstDay: 1
+            },
+        }, function (start, end, label) {
+            //console.log(start.toISOString(), end.toISOString(), label);
+            $('#reportrange span').html("du " + start.format('DD/MM/YYYY') + ' au ' + end.format('DD/MM/YYYY'));
+        });
+
+
+        // Checkbox all setting
+        function check_all(checkbox) {
+            if ($("#check_all").is(':checked') == true) {
+                $('input:checkbox:not("#check_all")').prop('checked', 'true');
+            } else {
+                $('input:checkbox:not("#check_all")').prop('checked', false);
+            }
+        }
+
+        // Datatable Config + liaison DataTable with DateRangePicker
+        $(document).ready(function () {
+
+
+            $('#example').DataTable({
+                "lengthMenu": [10, 25, 50, 75, 100],
+                "pageLength": 10,
+                "pagingType": "full_numbers",// Premier Dernier Predecant suivant + numbers
+                fixedHeader: true,
+                //Boutons
+                dom: 'Bfrltip',
+                buttons: [
+                    {
+                        text: '<i data-toggle="tooltip" data-placement="top" title="Supprimer" class="fa fa-trash danger" ></i>',
+                        className: 'btn btn-danger ',
+                        action: function () {
+
+                            ids = [];
+
+                            $('input:checkbox:checked:not("#check_all")').each(function () {
+                                var $this = $(this);
+
+                                id_checkbox = $(this).attr('id').replace("chk-", "");
+
+                                ids.push(id_checkbox)
+                            });
+
+                            swal({
+                                title: "La suppression des commandes est définitive !",
+                                text: "Êtes-vous sûrs de vouloir continuer?",
+                                type: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#DD6B55",
+                                confirmButtonText: "Supprimer",
+                                closeOnConfirm: false
+                            }, function (isConfirm) {
+                                if (!isConfirm) return;
+                                $.ajax({
+                                    url: "{% url 'dashboard:delete_orders' %}",
+                                    type: "GET",
+                                    dataType: "json",
+                                    data: {'ids[]': ids},
+                                    success: function (response) {
+                                        if (response.status === "success") {
+                                            swal(response.message, "", "success");
+
+                                            //Supprimer les tr du tableau des admins supprimés
+                                            for (i = 0; i <= ids.length; i++) {
+                                                $('#tr-' + ids[i]).remove()
+                                            }
+                                        }
+                                        else if (response.status === "error") {
+                                            swal(response.message, "Veuillez réessayer.", "error");
+                                        }
+                                    },
+                                    error: function (xhr, ajaxOptions, thrownError) {
+                                        swal("Une erreur s'est produite!", "Veuillez réessayer.", "error");
+                                    }
+                                });
+                            });
+                        }
+                    },
+                    {
+                        extend: "excelHtml5",
+                        text: "<i data-toggle=\"tooltip\" data-placement=\"top\" title=\"Exporter en format EXCEL\" class=\"fa fa-file-excel-o\"></i>",
+                        className: 'btn btn-white btn-actions-datatable',
+                        title: "LISTE DES COMMANDES",
+                    },
+                    {
+                        extend: "pdfHtml5",
+                        text: "<i data-toggle=\"tooltip\" data-placement=\"top\" title=\"Exporter en format PDF\" class=\"fa fa-file-pdf-o\"></i>",
+                        className: 'btn btn-white btn-actions-datatable',
+                        title: "LISTE DES COMMANDES",
+                        customize: function (doc) {
+                            doc.content[1].margin = [20, 0, 0, 0] //left, top, right, bottom
+                        },
+
+                    },
+                    {
+                        extend: "csvHtml5",
+                        text: "<i data-toggle=\"tooltip\" data-placement=\"top\" title=\"Exporter en format CSV\" class=\"fa fa-file\"></i>",
+                        className: 'btn btn-white btn-actions-datatable',
+                        title: "LISTE DES COMMANDES",
+                    },
+
+                    {
+                        extend: 'print',
+                        text: "<i data-toggle=\"tooltip\" data-placement=\"top\" title=\"Imprimer\" class=\"fa fa-print\"></i>",
+                        className: 'btn btn-white btn-actions-datatable',
+                        title: "LISTE DES COMMANDES",
+                    },
+
+                    {
+                        text: '<div class="btn-group">\n' +
+                        '                            <button  data-toggle="dropdown" class="btn btn-primary dropdown-toggle btn-list-fin" aria-expanded="false">Changer le statut</button>\n' +
+                        '                            <ul class="dropdown-menu" x-placement="bottom-start" style="position: absolute; top: 33px; left: 0px; will-change: top, left;">\n' +
+                        '                                <li><a class="dropdown-item" onclick="change_statut(\'Created\');">Marquer comme "Created"</a></li>\n' +
+                        '                                <li><a class="dropdown-item" onclick="change_statut(\'Processing\');">Marquer comme "Processing"</a></li>\n' +
+                        '                                <li><a class="dropdown-item" onclick="change_statut(\'Shipped\');">Marquer comme "Shipped"</a></li>\n' +
+                        '                                \n' +
+                        '                                \n' +
+                        '                                \n' +
+                        '                            </ul>\n' +
+                        '                        </div>',
+                        className: 'btn-custom-dropdown btn-custom-activation-color ',
+                    },
+
+                ],
+                //Internationalisation
+                language: {
+                    processing: "Traitement en cours...",
+                    search: "Rechercher&nbsp;:",
+                    lengthMenu: "Afficher _MENU_ &eacute;l&eacute;ments",
+                    info: "Affichage de l'&eacute;lement _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
+                    infoEmpty: "Affichage de l'&eacute;lement 0 &agrave; 0 sur 0 &eacute;l&eacute;ments",
+                    infoFiltered: "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+                    infoPostFix: "",
+                    loadingRecords: "Chargement en cours...",
+                    zeroRecords: "Aucun &eacute;l&eacute;ment &agrave; afficher",
+                    emptyTable: "Aucune donnée disponible dans le tableau",
+                    paginate: {
+                        first: "«",
+                        previous: "‹",
+                        next: "›",
+                        last: "»"
+                    },
+                    aria: {
+                        sortAscending: ": activer pour trier la colonne par ordre croissant",
+                        sortDescending: ": activer pour trier la colonne par ordre décroissant"
+                    }
+                },
+                order: [[1, 'asc']],
+                //Premier champ : Checkbox : pas de tri sur ce champs
+                "columnDefs": [{
+                    "targets": 0,
+                    "orderable": false
+                }]
+            });
+
+            // custom Date Range Search for DataTable
+            $.fn.dataTable.ext.search.push(
+                function (settings, data, dataIndex) {
+
+
+                    var min = new Date(start_date);
+                    var max = new Date(end_date);
+                    // need to change str order before making  date obect since it uses a new Date("mm/dd/yyyy") format for short date.
+                    var date_column = data[3].split("/"); // La date qu'on va trier se trouve dans le champ 0 1 [2] de la table ( 3eme champ )
+                    var date_to_sort = new Date(date_column[1] + "/" + date_column[0] + "/" + date_column[2]);
+
+
+                    if (min == null && max == null) {
+                        return true;
+                    }
+                    if (min == null && date_to_sort <= max) {
+                        return true;
+                    }
+                    if (max == null && date_to_sort >= min) {
+                        return true;
+                    }
+                    if (date_to_sort <= max && date_to_sort >= min) {
+                        return true;
+                    }
+                    return false;
+                }
+            );
+
+            // On spécifie le tableau qu'on va manipuler pour la recherche
+            var table = $('#example').DataTable();
+
+            // Datatable Date Tri On Date range change
+            $('#reportrange').on('apply.daterangepicker', function (ev, picker) {
+
+                start_date = picker.startDate.format('MM/DD/YYYY');
+                end_date = picker.endDate.format('MM/DD/YYYY');
+
+                table.draw();
+            });
+
+
+        });
+    </script>
+
+    <script>
+
+        function change_statut(status_name) {
+            if (status_name !== "Created" && status_name !== "Processing" && status_name !== "Shipped") {
+                swal({
+                    position: 'top-end',
+                    type: 'error',
+                    title: 'Une erreur fatale s\'est produite',
+                    showConfirmButton: true,
+                });
+                return;
+            }
+
+            ids = [];
+
+            $('input:checkbox:checked:not("#check_all")').each(function () {
+                var $this = $(this);
+
+                id_checkbox = $(this).attr('id').replace("chk-", "");
+
+                ids.push(id_checkbox)
+            });
+
+            swal({
+                title: "Vous allez changer le statut de ces commandes en "+ status_name,
+                text: "Êtes-vous sûrs de vouloir continuer?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#1ab394",
+                confirmButtonText: "Confirmer",
+                closeOnConfirm: false
+            }, function (isConfirm) {
+                if (!isConfirm) return;
+                $.ajax({
+                    url: "{% url 'dashboard:change_commande_status' status_name=0 %}".replace("0",status_name),
+                    type: "GET",
+                    dataType: "json",
+                    data: {'ids[]': ids},
+                    success: function (response) {
+                        if (response.status === "success") {
+                            swal(response.message, "", "success");
+
+                            //Supprimer les tr du tableau des admins supprimés
+                            for (i = 0; i <= ids.length; i++) {
+                                if(status_name === "Created")
+                                {
+                                    $('#td-status-' + ids[i]).html('<span class="badge badge-success">Created</span>')
+                                }
+                                else if(status_name === "Processing")
+                                {
+                                    $('#td-status-' + ids[i]).html('<span class="badge badge-warning">Processing</span>')
+                                }
+                                else if(status_name === "Shipped")
+                                {
+                                    $('#td-status-' + ids[i]).html('<span class="badge badge-primary">Shipped</span>')
+                                }
+                            }
+                        }
+                        else if (response.status === "error") {
+                            swal(response.message, "Veuillez réessayer.", "error");
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        swal("Une erreur s'est produite!", "Veuillez réessayer.", "error");
+                    }
+                });
+            });
+        }
+
+    </script>
+
+
+
+
+
+
+
+
+
+{% endblock scripts %}
+

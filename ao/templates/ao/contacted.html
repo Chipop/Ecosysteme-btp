@@ -1,0 +1,212 @@
+{% extends 'ao/base.html' %}
+
+{% load static %}
+
+{% block style %}
+
+    <style>
+        #wrapper{
+            background: #fafafa;
+        }
+    </style>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+        // Snackbar for copy to clipboard button
+        $('.copy-url-button').click(function() {
+            Snackbar.show({
+                text: 'Copié à presse-papiers!',
+            });
+        });
+    </script>
+
+{% endblock %}
+
+{% block content %}
+
+    <!-- Titlebar
+================================================== -->
+<div class="single-page-header" data-background-image="{% static 'ao/images/single-company.jpg' %}">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="single-page-header-inner">
+                    <div class="left-side">
+                        <div class="header-image">
+                            {% if company.logo.url is not None %}
+                                <img src="{{ company.logo.url }}" alt="">
+                            {% else %}
+                                <img src="{% static 'ao/images/company-logo-placeholder.png' %}">
+                            {% endif %}
+                        </div>
+                        <div class="header-details">
+                            <h3>{{ company }} <span>{{ company.activity }}</span></h3>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <ul>
+                                        <li style="display: block;"><i class="icon-material-outline-email"></i> {{ company.mail }}</li>
+                                        <li style="display: block;"><i class="icon-feather-phone"></i> {{ company.telephone }}</li>
+                                        <li style="display: block;"><i class="icon-line-awesome-fax"></i> {{ company.fax }}</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-2">
+                                    <ul style="margin-top: 10px">
+                                        <li>
+                                            <a href="{% url 'ao:profile' profile_id %}" style="font-weight: bold; padding: 9px 12px 6px 14px; border: 1px solid; border-radius: 3px;">
+                                                <i class="icon-feather-user" style="font-size: 20px;"></i>
+                                            </a>
+                                        </li>
+                                        <li style="margin-top: 8px">
+                                            <a href="{% url 'ao:saves' profile_id %}" style="font-weight: bold; padding: 9px 12px 6px 14px; border: 1px solid; border-radius: 3px;">
+                                                <i class="icon-feather-star" style="font-size: 20px;"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="right-side">
+                        <!-- Breadcrumbs -->
+                        <nav id="breadcrumbs" class="white">
+                            <ul>
+                                <li><a href="{% url 'ao:home' %}">Accueil</a></li>
+                                <li><a href="{% url 'ao:company' company.id %}">Entreprise</a></li>
+                                <li>Historique des offres envoyées</li>
+                            </ul>
+                        </nav>
+                    </div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- Page Content
+================================================== -->
+<div class="container">
+
+    <!-- Row -->
+    <div class="row">
+
+        <!-- Dashboard Box -->
+        <div class="col-xl-12">
+            <div class="dashboard-box margin-top-0">
+
+                <!-- Headline -->
+                <div class="headline">
+                    <h3><i class="icon-material-outline-business-center"></i> Offres d'Appels d'offres envoyées</h3>
+                </div>
+
+                <div class="content">
+                    <ul class="dashboard-box-list">
+                        {% for ao in aos %}
+                            <li>
+                                <!-- Job Listing -->
+                                <div class="job-listing">
+                                    <!-- Job Listing Details -->
+                                    <div class="job-listing-details">
+                                        <!-- Logo -->
+                                        <a href="{% url 'ao:ao' ao.ao.id %}" class="job-listing-company-logo">
+                                            {% if ao.ao.image is not None %}
+                                                <img src="{{ ao.ao.image }}" alt="">
+                                            {% else %}
+                                                <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                            {% endif %}
+                                        </a>
+                                        <!-- Details -->
+                                        <div class="job-listing-description">
+                                            <h3 class="job-listing-title">
+                                                <a href="{% url 'ao:ao' ao.ao.id %}">{{ ao.ao }}</a>
+                                            </h3>
+                                            <!-- Job Listing Footer -->
+                                            <div class="job-listing-footer">
+                                                <ul>
+                                                    <li><i class="icon-material-outline-business"></i> {{ ao.ao.company }}</li>
+                                                    <li><i class="icon-material-outline-location-on"></i> {{ ao.ao.cities }}</li>
+                                                    <li><i class="{{ ao.ao.category.icon }}"></i> {{ ao.ao.category }}</li>
+                                                    <li><i class="icon-material-outline-access-time"></i> {{ ao.ao.date_limit }}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Buttons -->
+                                <div class="buttons-to-right">
+                                    <a href="{% url 'ao:contact_delete' company.id ao.id %}" class="button red ripple-effect ico" title="Supprimer" data-tippy-placement="left">
+                                        <i class="icon-feather-trash-2"></i></a>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Box -->
+        <div class="col-xl-12">
+            <div class="dashboard-box" style="margin-bottom: 50px;">
+
+                <!-- Headline -->
+                <div class="headline">
+                    <h3><i class="icon-material-outline-face"></i> Offres de Lots envoyées</h3>
+                </div>
+
+                <div class="content">
+                    <ul class="dashboard-box-list">
+                        {% for project in projects %}
+                            <li>
+                                <!-- Job Listing -->
+                                <div class="job-listing">
+                                    <!-- Job Listing Details -->
+                                    <div class="job-listing-details">
+                                        <!-- Logo -->
+                                        <a href="{% url 'ao:project' project.project.ao.id project.project.id %}" class="job-listing-company-logo">
+                                            {% if project.project.ao.image is not None %}
+                                                <img src="{{ project.project.ao.image }}" alt="">
+                                            {% else %}
+                                                <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                            {% endif %}
+                                        </a>
+                                        <!-- Details -->
+                                        <div class="job-listing-description">
+                                            <h3 class="job-listing-title">
+                                                <a href="{% url 'ao:project' project.project.ao.id project.project.id %}">{{ project.project }}</a>
+                                            </h3>
+                                            <!-- Job Listing Footer -->
+                                            <div class="job-listing-footer">
+                                                <ul>
+                                                    <li><i class="icon-material-outline-business"></i> {{ project.project.ao.company }}</li>
+                                                    <li><i class="icon-material-outline-location-on"></i> {{ project.project.cities_s}}</li>
+                                                    <li><i class="{{ project.project.ao.category.icon }}"></i> {{ project.project.categories_s }}</li>
+                                                    <li><i class="icon-material-outline-money"></i> {{ project.project.budget }}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Buttons -->
+                                <div class="buttons-to-right">
+                                    <a href="{% url 'ao:contact_delete' company.id project.id %}" class="button red ripple-effect ico" title="Supprimer" data-tippy-placement="left">
+                                        <i class="icon-feather-trash-2"></i></a>
+                                </div>
+                            </li>
+                        {% endfor %}
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- Row / End -->
+
+
+</div>
+
+
+{% endblock %}

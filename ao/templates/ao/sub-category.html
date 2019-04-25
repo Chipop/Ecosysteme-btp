@@ -1,0 +1,159 @@
+{% extends 'ao/base.html' %}
+
+{% load static %}
+
+{% block style %}
+
+    <style>
+        body{
+            background-color: #fbfbfb;
+        }
+
+        .grid-layout .job-listing{
+            width: calc(100% * (1/3) - 30px);
+        }
+    </style>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+        $("#order").val({{ order }});
+    </script>
+
+{% endblock %}
+
+{% block content %}
+
+    <!-- Spacer -->
+<div class="margin-top-40"></div>
+<!-- Spacer / End-->
+
+<!-- Page Content
+================================================== -->
+<div class="container">
+	<div class="row">
+		<div class="col-xl-12 col-lg-12 content-left-offset">
+
+            <h2>
+                Catégorie <strong>{{ sub_category.category.name|capfirst }}</strong> /
+                Sous Catégorie <strong>{{ sub_category }}</strong></h2>
+			<h3 class="page-title">Résultat de la recherche</h3>
+
+			<div class="notify-box margin-top-15">
+				<div class="switch-container">
+				    <h4>Lots trouvés : <strong>{{ count }}</strong></h4>
+                </div>
+
+				<div class="sort-by">
+					<span>Trier par:</span>
+                    <form action="" style="display: inline">
+                        <select class="selectpicker hide-tick" name="order" id="order" onchange="this.form.submit();">
+                            <option value="1">Date Création</option>
+                            <option value="2">Views</option>
+                            <option value="3">Budget</option>
+                        </select>
+                    </form>
+				</div>
+			</div>
+
+			<div class="listings-container grid-layout margin-top-35">
+
+                {% for project in projects %}
+                    <!-- Job Listing -->
+                    <a href="{% url 'ao:project' project.ao.id project.id %}" class="job-listing">
+
+                        <!-- Job Listing Details -->
+                        <div class="job-listing-details">
+                            <!-- Logo -->
+                            <div class="job-listing-company-logo">
+                                {% if project.ao.image is not None %}
+                                    <img src="{{ project.ao.image }}" alt="">
+                                {% else %}
+                                    <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                {% endif %}
+                            </div>
+
+                            <!-- Details -->
+                            <div class="job-listing-description">
+                                <h4 class="job-listing-company">
+                                    {{ project.ao.company }}
+                                    {% if project.ao.type_user != 'particular' %}
+                                        <span class="verified-badge" title="Entreprise" data-tippy-placement="top"></span>
+                                    {% endif %}
+                                </h4>
+                                <h4 class="job-listing-title">{{ project.title }}</h4>
+                            </div>
+                        </div>
+
+                        <!-- Job Listing Footer -->
+                        <div class="job-listing-footer">
+                            {% if profile_id is not None %}
+                                <form style="display: inline" data-url="{% url 'ao:add_save' profile_id project.id %}?type=project" id="form_save">
+                                    <button type="submit" class="add_save">
+                                        <span class="bookmark-icon"></span>
+                                    </button>
+                                </form>
+                            {% endif %}
+                            <ul>
+                                <li><i class="icon-material-outline-location-on"></i> {{ project.cities_s }}</li>
+                                <li><i class="icon-material-outline-account-balance-wallet"></i> {{ project.budget }}</li>
+                                <li><i class="icon-material-outline-access-time"></i> {{ project.creation_date }}</li>
+                            </ul>
+                        </div>
+				    </a>
+                {% endfor %}
+
+			</div>
+
+            <!-- Pagination -->
+            <div class="clearfix"></div>
+            <div class="pagination-container margin-top-20 margin-bottom-20">
+                {% if projects.has_other_pages %}
+                    <nav class="pagination">
+                        <ul>
+                        {% if projects.has_previous %}
+                            <li class="pagination-arrow">
+                                <a href="?page={{ projects.previous_page_number }}" class="ripple-effect">
+                                    <i class="icon-material-outline-keyboard-arrow-left"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="pagination-arrow disabled" style="cursor: not-allowed;">
+                                <a href="javascript:void(0);" class="ripple-effect disabled" style="pointer-events: none;">
+                                    <i class="icon-material-outline-keyboard-arrow-left"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for i in projects.paginator.page_range %}
+                            {% if aos.number == i %}
+                                <li><a href="javascript:void(0);" class="ripple-effect current-page">{{ i }}</a></li>
+                            {% else %}
+                                <li><a href="?page={{ i }}" class="ripple-effect">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if projects.has_next %}
+                            <li class="pagination-arrow">
+                                <a href="?page={{ projects.next_page_number }}" class="ripple-effect"><i class="icon-material-outline-keyboard-arrow-right"></i></a>
+                            </li>
+                        {% else %}
+                            <li class="pagination-arrow" style="cursor: not-allowed;">
+                                <a href="javascript:void(0);" class="ripple-effect" style="pointer-events: none;">
+                                    <i class="icon-material-outline-keyboard-arrow-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            </div>
+            <div class="clearfix"></div>
+            <!-- Pagination / End -->
+
+		</div>
+	</div>
+</div>
+
+{% endblock %}

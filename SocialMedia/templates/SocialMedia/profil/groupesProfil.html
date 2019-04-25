@@ -33,6 +33,11 @@
                                                 <div class="meta">
                                                     <p><i class="fa mr--8 fa-user-o"></i>Groupe {{ groupe.statut_groupe }} / {{ groupe.adherents.all.count|add:groupe.admins.all.count|add:groupe.moderators.all.count  }} Members</p>
                                                 </div>
+
+                                                <div class="desc text-darker">
+                                                    <p>{{ groupe.description }}</p>
+                                                </div>
+
                                                 <div class="action">
                                                     <a href="{% url 'SocialMedia:groupe' groupe.id %}">{{ groupe.description }}<i class="fa ml--10 fa-caret-right"></i></a>
                                                 </div>
@@ -57,23 +62,19 @@
                             <!-- Page Count Start -->
                             <div class="page--count pt--30">
                                 <label class="ff--primary fs--14 fw--500 text-darker">
-                                    <span>Viewing</span>
+                                    <span>Voir</span>
                                     {% if profilGroupes.has_previous %}
                                         <button id="btfirst" href="?page=1" class="btn-link"><i class="fa fa-caret-left"></i><i class="fa fa-caret-left"></i></button>
                                         <button id="btprevious" page="{{ profilGroupes.previous_page_number }}" class="btn-link"><i class="fa fa-caret-left"></i></button>
-                                    {% else %}
-                                        <button id="btfirst" href="1" class="btn-link"><i class="fa fa-caret-left"></i><i class="fa fa-caret-left"></i></button>
-                                        <button id="btprevious" page="1" class="btn-link"><i class="fa fa-caret-left"></i></button>
                                     {% endif %}
-                                        <input id="RequestsPageNum" type="number" name="page-count" value="{{ profilGroupes.number }}" class="form-control form-sm">
+                                    <span style="background-color: #eeeeee;padding-right: 16px;">
+                                        <input id="RequestsPageNum" style="border: none;" type="number" name="page-count" readonly value="{{ profilGroupes.number }}" class="form-control form-sm"> /
+                                        <span id="numPages" style=" margin-left: 14px;">{{ profilGroupes.paginator.num_pages }}</span>
+                                    </soan>
                                     {% if profilGroupes.has_next %}
                                         <button id="btnext" page="{{ profilGroupes.next_page_number }}" class="btn-link"><i class="fa fa-caret-right"></i></button>
                                         <button id="btlast" page="{{ profilGroupes.paginator.num_pages }}" class="btn-link"><i class="fa fa-caret-right"></i><i class="fa fa-caret-right"></i></button>
-                                    {% else %}
-                                        <button id="btnext" page="{{ profilGroupes.paginator.num_pages }}" class="btn-link"><i class="fa fa-caret-right"></i></button>
-                                        <button id="btlast" page="{{ profilGroupes.paginator.num_pages }}" class="btn-link"><i class="fa fa-caret-right"></i><i class="fa fa-caret-right"></i></button>
                                     {% endif %}
-                                        <span id="numPages">{{ profilGroupes.paginator.num_pages }}</span>
 
                                 </label>
                             </div>

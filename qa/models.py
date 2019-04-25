@@ -1,178 +1,257 @@
 from django.db import models
-from django.contrib.auth.models import User
-from django_markdown.models import MarkdownField
-from main_app.models import *
-from ckeditor.fields import RichTextField  
-from ckeditor_uploader.fields import RichTextUploadingField
-import datetime
+from django.urls import reverse
+from django.utils.deconstruct import deconstructible
+
+from main_app.models import Profil
+
+import time
+import os
+import uuid
 
 
+# QA Model
+class Category(models.Model):
+    title = models.CharField(max_length=30)
+    description = models.TextField()
 
-# Create your models here.
-class Tag(models.Model):
-    slug = models.SlugField(max_length=100, unique=True)
-    date = models.DateTimeField(default=datetime.datetime.today(), blank=True)
     def __str__(self):
-        return self.slug
+        return self.title
+
 
     class Meta:
-        ordering = ('slug',)
+        verbose_name_plural = 'QA Catégories'
+        verbose_name = "QA Catégorie"
+
+    def tracking_get_admin_url(self):
+        return ""
+
+    def tracking_get_absolute_url(self):
+        return reverse('qa:category', kwargs={'category_id':self.id})
+
+    def tracking_get_description(self):
+        return self.title
 
 
-###################################################################################
-
-# class Profil(models.Model):
-#     user = models.OneToOneField(User, on_delete=True)
-#     points = models.IntegerField(default=0)
-
-#     website = models.URLField(blank=True)
-#     picture = models.ImageField(upload_to='qa/static/profile_images', blank=True)
-#     date_naissance = models.DateField()
-#     # entreprise = models.ForeignKey(Entreprise,blank=True,null=True,  on_delete=models.CASCADE)
-#     # photo_profil = models.OneToOneField(Image, blank=True,null=True, on_delete=models.CASCADE, related_name="profil_photo")
-#     # photo_couverture = models.OneToOneField(Image, blank=True,null=True, on_delete=models.CASCADE, related_name="photo_cover")
-#     facebook = models.CharField(max_length=300, blank=True, null=True, default="")
-#     youtube = models.CharField(max_length=300, blank=True, null=True, default="")
-#     instagram = models.CharField(max_length=300, blank=True, null=True, default="")
-#     linkedin = models.CharField(max_length=300, blank=True, null=True, default="")
-#     tel = models.CharField(max_length=300, blank=True, null=True, default="")
-#     ville = models.CharField(max_length=300, blank=True, null=True, default="")
-#     pays = models.CharField(max_length=300, blank=True, null=True, default="")
-#     fonction = models.CharField(max_length=300, blank=True, null=True, default="")
-#     service = models.CharField(max_length=300, blank=True, null=True, default="")
-
-#     def __str__(self):
-#         return self.user.username
-
-
-###################################################################################
-
-
-class Categorie(models.Model):
-    title_categorie = models.CharField(max_length=100)
-    description_categorie = models.CharField(max_length=200)
-
+class Tag(models.Model):
+    title = models.CharField(max_length=30)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    create_by = models.ForeignKey(Profil, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.title_categorie
+        return self.title
 
+    class Meta:
+        verbose_name_plural = 'QA Tags'
+        verbose_name = "QA Tag"
 
-###################################################################################
+    def tracking_get_admin_url(self):
+        return ""
+
+    def tracking_get_absolute_url(self):
+        return reverse('qa:blog_tag', kwargs={'tag_id':self.id})
+
+    def tracking_get_description(self):
+        return self.title
+
 
 class Question(models.Model):
-    # question_text = models.CharField(max_length=200)
-    question_text = RichTextUploadingField ()
-    question_title = models.CharField(max_length=200)
-    # question_text = MarkdownField()
-    pub_date = models.DateTimeField('date published')
+    user = models.ForeignKey(Profil, on_delete=models.CASCADE)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    title = models.CharField(max_length=255)
+    content = models.TextField(null=True, blank=True)
+    views_number = models.IntegerField(default=0)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     tags = models.ManyToManyField(Tag)
-    reward = models.IntegerField(default=0)
-    views = models.IntegerField(default=0)
-    user_data = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE)
-    closed = models.BooleanField(default=False)
-    categorie = models.ForeignKey(Categorie, on_delete=models.CASCADE,null=True,blank=True)
-    type_pub = models.CharField(max_length=200 , default='question')
-    user_update = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE,  related_name="update_profil", blank=True, null=True )
-    update_date = models.DateTimeField('date update', blank=True, null=True)
-
+    shares = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.question_text
+        return self.title
+
+    def get_absolute_url(self):
+        return "/qa/question/%i/" % self.id
+
+    def add_view(self):
+        self.views_number = self.views_number + 1
+        self.save()
+
+    def add_share(self):
+        self.shares = self.shares + 1
+        self.save()
 
     @staticmethod
-    def noms_questions():
-        noms_questions = ""
-        for question in Question.objects.all():
-            noms_questions += question.question_title + ","
-        return noms_questions[:-1]
+    def type_o():
+        return 'question'
 
+    class Meta:
+        verbose_name_plural = 'Questions'
+        verbose_name = "Question"
 
-###################################################################################
+    def tracking_get_admin_url(self):
+        return reverse('dashboard:qa_question', kwargs={'id_question':self.id})
+
+    def tracking_get_absolute_url(self):
+        return reverse('qa:question', kwargs={'qst_id':self.id})
+
+    def tracking_get_description(self):
+        return self.title
+
 
 class Answer(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE ,null=True,blank=True)
-    answer_text = RichTextUploadingField()
-    votes = models.IntegerField(default=0)
-    pub_date = models.DateTimeField('date published')
-    user_data = models.ForeignKey('main_app.Profil', on_delete=True)
-
-    def __str__(self):
-        return self.answer_text
-
-
-###################################################################################
-
-class Voter(models.Model):
-    user = models.ForeignKey('main_app.Profil', on_delete=True)
-    answer = models.ForeignKey(Answer, on_delete=True)
-
-
-###################################################################################
-
-class QVoter(models.Model):
-    user = models.ForeignKey('main_app.Profil', on_delete=True)
+    user = models.ForeignKey(Profil, on_delete=models.CASCADE)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    content = models.TextField()
+    likes = models.IntegerField(default=0)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.question.title
 
-###################################################################################
+    def like(self):
+        self.likes = self.likes + 1
+        self.save()
+
+    def dislike(self):
+        self.likes = self.likes - 1
+        self.save()
+
+    @staticmethod
+    def type_o():
+        return 'answer'
+
+
+# BLOG Model
+# For rename the file before save
+@deconstructible
+class PathAndRename(object):
+    def __init__(self, sub_path):
+        self.path = sub_path
+
+    def __call__(self, instance, filename):
+        # eg: filename = 'my uploaded file.jpg'
+        ext = filename.split('.')[-1]  # eg: 'jpg'
+        uid = uuid.uuid4().hex[:10]  # eg: '567ae32f97'
+
+        # eg: 'my-uploaded-file'
+        new_name = '-'.join(filename.replace('.%s' % ext, '').split())
+
+        # eg: 'my-uploaded-file_64c942aa64.jpg'
+        renamed_filename = '%(new_name)s_%(uid)s.%(ext)s' % {'new_name': new_name, 'uid': uid, 'ext': ext}
+
+        # eg: 'images/2017/01/29/my-uploaded-file_64c942aa64.jpg'
+        return os.path.join(self.path, renamed_filename)
+
+
+class Article(models.Model):
+    title = models.CharField(max_length=100)
+    image = models.ImageField(null=True)
+    content = models.TextField()
+    author = models.ForeignKey(Profil, on_delete=models.CASCADE)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    tags = models.ManyToManyField(Tag)
+    views = models.IntegerField(default=0)
+    likes = models.IntegerField(default=0)
+    shares = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return "/qa/blog/article/%i/" % self.id
+
+    def add_view(self):
+        self.views += 1
+        self.save()
+
+    def like(self):
+        self.likes = self.likes + 1
+        self.save()
+
+    def dislike(self):
+        self.likes = self.likes - 1
+        self.save()
+
+    def add_share(self):
+        self.shares = self.shares + 1
+        self.save()
+
+    @staticmethod
+    def type_o():
+        return 'article'
+
+    class Meta:
+        verbose_name_plural = 'QA Articles'
+        verbose_name = "QA Article"
+
+    def tracking_get_admin_url(self):
+        return reverse('dashboard:qa_article', kwargs={'id_article':self.id})
+
+    def tracking_get_absolute_url(self):
+        return reverse('qa:blog_post', kwargs={'article_id':self.id})
+
+    def tracking_get_description(self):
+        return self.title
+
 
 class Comment(models.Model):
-    answer = models.ForeignKey(Answer, on_delete=True)
-    comment_text = models.CharField(max_length=200)
-    pub_date = models.DateTimeField('date published')
-    user_data = models.ForeignKey('main_app.Profil', on_delete=True)
+    user = models.ForeignKey(Profil, on_delete=models.CASCADE, null=True)
+    full_name = models.CharField(max_length=100, null=True)
+    email = models.EmailField(null=True)
+    content = models.TextField()
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    likes = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.comment_text
+        return self.article.title
 
-###################################################################################
+    def like(self):
+        self.likes = self.likes + 1
+        self.save()
 
-class Level(models.Model):
-    libelle = models.CharField(max_length=200)
+    def dislike(self):
+        self.likes = self.likes - 1
+        self.save()
 
-    def __str__(self):
-        return self.libelle
 
-###################################################################################
-
-class Blog_qa(models.Model):
-    # question_text = models.CharField(max_length=200)
-    blog_text = RichTextUploadingField ()
-    blog_title = models.CharField(max_length=200, blank=True, null=True)
-    # question_text = MarkdownField()
-    pub_date = models.DateTimeField('date published', blank=True, null=True)
-    tags = models.ManyToManyField(Tag , blank=True, null=True)
-    reward = models.IntegerField(default=0 , blank=True, null=True)
-    views = models.IntegerField(default=0 , blank=True, null=True)
-    user_data = models.ForeignKey('main_app.Profil', on_delete=True , blank=True, null=True)
-    categorie = models.ForeignKey(Categorie, on_delete=True,null=True,blank=True)
-    user_update = models.ForeignKey('main_app.Profil', on_delete=True,  related_name="update_blog", blank=True, null=True )
-    update_date = models.DateTimeField('date update', blank=True, null=True)
-    photo =  models.ForeignKey('main_app.Image', on_delete=True , blank=True, null=True)
-
+class ContactMessage(models.Model):
+    name = models.CharField(max_length=60)
+    email = models.EmailField()
+    subject = models.CharField(max_length=150)
+    message = models.TextField()
+    send_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.blog_title
+        return self.subject
 
 
-###################################################################################
-
-class Answer_blog(models.Model):
-    blog = models.ForeignKey(Blog_qa, on_delete=True ,null=True,blank=True)
-    answer_text = RichTextUploadingField()
-    votes = models.IntegerField(default=0)
-    pub_date = models.DateTimeField('date published')
-    user_data = models.ForeignKey('main_app.Profil', on_delete=True)
-
-    def __str__(self):
-        return self.answer_text
+class Notification(models.Model):
+    user = models.ForeignKey(Profil, on_delete=models.CASCADE)
+    object = models.CharField(max_length=20)
+    id_object = models.IntegerField()
+    open = models.BooleanField(default=False)
+    creation_date = models.DateTimeField(auto_now_add=True)
 
 
-###################################################################################
+class SignalQuestion(models.Model):
+    creation_date = models.DateTimeField(auto_now_add=True)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profil, null=True, on_delete=models.SET_NULL)
 
-class blog_Voter(models.Model):
-    user = models.ForeignKey('main_app.Profil', on_delete=True)
-    blog = models.ForeignKey(Blog_qa, on_delete=True , related_name="voteblog")
+
+class SignalAnswer(models.Model):
+    creation_date = models.DateTimeField(auto_now_add=True)
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profil, null=True, on_delete=models.SET_NULL)
 
 
-###################################################################################
+class SignalArticle(models.Model):
+    creation_date = models.DateTimeField(auto_now_add=True)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profil, null=True, on_delete=models.SET_NULL)
+
+
+class SignalComment(models.Model):
+    creation_date = models.DateTimeField(auto_now_add=True)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profil, null=True, on_delete=models.SET_NULL)

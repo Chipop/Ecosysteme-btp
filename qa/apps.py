@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class QaConfig(AppConfig):
+class QAConfig(AppConfig):
     name = 'qa'

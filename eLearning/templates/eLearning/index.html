@@ -1,0 +1,154 @@
+{% extends 'eLearning/base.html' %}
+{% load static %}
+{% block content %}
+<section class="hero_single version_2">
+    <div class="wrapper">
+        <div class="container">
+            <h3>Que Voulez-Vous Apprendre?</h3>
+            <p>Augmenter votre expertise en affaires, technologie et développement personnel</p>
+            <form method="get" action="{% url 'eLearning:search' %}">
+                <div id="custom-search-input">
+                    <div class="input-group">
+                        <input type="text" class=" search-query" name="q" placeholder="Ex. Architecture, Specialisation...">
+                        <input type="submit" class="btn_search" value="Chercher">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+<!-- /hero_single -->
+
+<div class="features clearfix">
+    <div class="container">
+        <ul>
+            <li><i class="pe-7s-study"></i>
+                <h4>+200 courss</h4><span>Explorez une variété de nouveaux sujets</span>
+            </li>
+            <li><i class="pe-7s-cup"></i>
+                <h4>Formateurs experts</h4><span>Trouvez le bon instructeur pour vous</span>
+            </li>
+            <li><i class="pe-7s-target"></i>
+                <h4>Se concentrer sur la cible</h4><span>Augmentez votre expertise personnelle</span>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- /features -->
+
+<div class="container-fluid margin_120_0">
+    <div class="main_title_2">
+        <span><em></em></span>
+        <h2>Les Cours Populaires</h2>
+        <p>Cum doctus civibus efficiantur in imperdiet deterruisset.</p>
+    </div>
+    <div id="reccomended" class="owl-carousel owl-theme">
+        <!------------------------------ Course --------------------------------------->
+        {% for course in courses %}
+        <div class="item">
+            <div class="box_grid">
+                <figure>
+                    <form id="formAddToWish{{ course.c.pk }}" method="get" action="{% url 'eLearning:add_to_wish' %}" data-validate-url="{% url 'eLearning:add_to_wish' %}"><input type="hidden" name="course" value="{{ course.c.pk }}"></form>
+                    <a href="javascript:" onclick="wishlist.add('{{ course.c.pk }}', '{{ user.is_authenticated }}')" id="buttonWish{{ course.c.pk }}" class="wish_bt"></a>
+                    <a href="{% url 'eLearning:course' course.c.pk %}">
+                        <div class="preview"><span>Voir cours</span></div><img src="{{ course.c.image.url }}" class="img-fluid" alt="image {{ course.c.name }}"></a>
+                    <div class="price">
+                        {% if course.c.is_free %}Gratuit{% elif course.sale %}{{ course.sale.new_price }} Dh (-{{ course.sale.percentage }}%){% else %}{{ course.c.price }} Dh{% endif %}
+                    </div>
+                </figure>
+                <div class="wrapper">
+                    <small>{{ course.c.category.category.name }} > {{ course.c.category.name }}</small>
+                    <h3>{{ course.c.name }}</h3>
+                    <p>{% autoescape off %}{{ course.c.description|striptags|truncatewords:20 }}{% endautoescape %}</p>
+                    <div class="rating">
+                        {% for i in "*****" %}
+                            {% if forloop.counter <= course.ratting %}
+                               <i class="icon_star voted"></i>
+                            {% elif forloop.counter == course.ratting|add:"1" and course.rattingInt < course.ratting %}
+                                    <i class="icon_star-half_alt voted"></i>
+                            {% else %}
+                                <i class="icon_star_alt"></i>
+                            {% endif %}
+                        {% endfor %}
+                        <small>({{ course.number }})</small>
+                    </div>
+                </div>
+                <ul>
+                    <li><i class="icon_clock_alt"></i> {{ course.c.duration }}</li>
+                    <li><i class="icon_like"></i> {{ course.c.like }}</li>
+                    <li><a href="{% url 'eLearning:course' course.c.pk %}">Voir Cours</a></li>
+                </ul>
+            </div>
+        </div>
+        {% endfor %}
+        <!------------------------------ /Course --------------------------------------->
+    </div>
+    <!-- /carousel -->
+    <div class="container">
+        <p class="btn_home_align"><a href="{% url 'eLearning:courses_list' %}" class="btn_1 rounded">Voir tous les cours</a></p>
+    </div>
+    <!-- /container -->
+    <hr>
+</div>
+<!-- /container -->
+
+<div class="container margin_30_95">
+    <div class="main_title_2">
+        <span><em></em></span>
+        <h2>Catégories Des Courss</h2>
+        <p>Cum doctus civibus efficiantur in imperdiet deterruisset.</p>
+    </div>
+    <div class="row">
+        <!------------------------------ Categories --------------------------------------->
+        {% for category in categories %}
+        <div class="col-lg-4 col-md-6 wow" data-wow-offset="150">
+            <a href="{% url 'eLearning:category' category.c.pk %}" class="grid_item">
+                <figure class="block-reveal">
+                    <div class="block-horizzontal"></div>
+                    <img src="{{ category.c.image.url }}" class="img-fluid" alt="">
+                    <div class="info">
+                        <small><i class="ti-layers"></i>{{ category.number }} Programmes</small>
+                        <h3>{{ category.c.name }}  </h3>
+                    </div>
+                </figure>
+            </a>
+        </div>
+        {% endfor %}
+        <!------------------------------ /Categories -------------------------------------->
+    </div>
+    <!-- /row -->
+</div>
+<!-- /container -->
+
+<div class="call_section">
+    <div class="container clearfix">
+        <div class="col-lg-5 col-md-6 float-right wow" data-wow-offset="250">
+            <div class="block-reveal">
+                <div class="block-vertical"></div>
+                <div class="box_1">
+                    <h3>Devenir Formateur</h3>
+                    <p>Transformez vos connaissances en véritable opportunité et touchez des millions de personnes du monde entier.</p>
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'eLearning:upgrade' %}" class="btn_1 rounded">Devenir Formateur</a>
+                    {% else %}
+                        <a href="#" class="btn_1 rounded">Devenir Formateur</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/call_section-->
+{% endblock %}
+
+{% block script %}
+
+    <script>
+        set_hero_height();
+
+        $( window ).resize(function() {
+          set_hero_height();
+        });
+    </script>
+
+{% endblock %}

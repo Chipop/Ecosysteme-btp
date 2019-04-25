@@ -1,0 +1,396 @@
+{% extends 'ao/base.html' %}
+
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'ao/css/autocomplete.css' %}">
+    <style>
+        #intro-keywordsautocomplete-list div{
+            padding-left: 28px;
+        }
+        #intro-keywordsautocomplete-list{
+            margin-left: 0;
+            margin-right: 0;
+            top: 68px
+        }
+    </style>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'ao/js/autocomplete.js' %}"></script>
+    <script>
+          let autocomplete_strings = [];
+          {% for s in auto_keywords %}
+              autocomplete_strings.push("{{s}}");
+          {% endfor %}
+          autocomplete(document.getElementById("intro-keywords"), autocomplete_strings);
+
+          autocomplete_strings = [];
+          {% for s in auto_cities %}
+              autocomplete_strings.push("{{s}}");
+          {% endfor %}
+          autocomplete(document.getElementById("autocomplete-input"), autocomplete_strings);
+    </script>
+{% endblock %}
+
+{% block content %}
+
+<!-- Intro Banner
+================================================== -->
+<!-- add class "disable-gradient" to enable consistent background overlay -->
+<div class="intro-banner" data-background-image="{% static 'ao/images/home-background.jpg' %}"
+     xmlns="http://www.w3.org/1999/html">
+	<div class="container">
+		
+		<!-- Intro Headline -->
+		<div class="row">
+			<div class="col-md-12">
+				<div class="banner-headline">
+					<h3>
+						<strong>Ajouter votre offre ou réaliser une à tout moment.</strong>
+						<br>
+                        <span>Des milliers de utilisateurs utilisent <strong class="color">AO</strong> pour réaliser leurs lots</span>
+					</h3>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Search Bar -->
+		<div class="row">
+			<div class="col-md-12">
+                <form action="{% url 'ao:search' %}" method="post">
+                    {% csrf_token %}
+                    <div class="intro-banner-search-form margin-top-95">
+
+                        <!-- Search Field -->
+                        <div class="intro-search-field with-autocomplete">
+                            <label for="autocomplete-input" class="field-title ripple-effect">Où?</label>
+                            <div class="input-with-icon">
+                                <input id="autocomplete-input" name="city" type="text" placeholder="Entrez une ville">
+                                <i class="icon-material-outline-location-on"></i>
+                            </div>
+                        </div>
+
+                        <!-- Search Field -->
+                        <div class="intro-search-field">
+                            <label for ="intro-keywords" class="field-title ripple-effect">Quelle offre vous cherchez?</label>
+                            <input id="intro-keywords" name="title" type="text" placeholder="Titre de l'offre ou mots clés">
+                        </div>
+
+                        <!-- Button -->
+                        <div class="intro-search-button">
+                            <button type="submit" class="button ripple-effect">Chercher</button>
+                        </div>
+                    </div>
+                </form>
+			</div>
+		</div>
+
+		<!-- Stats -->
+		<div class="row">
+			<div class="col-md-12">
+				<ul class="intro-stats margin-top-45 hide-under-992px">
+					<li>
+						<strong class="counter">{{ created_offer }}</strong>
+						<span>Offres Publié</span>
+					</li>
+					<li>
+						<strong class="counter">{{ created_projects }}</strong>
+						<span>Lots Publié</span>
+					</li>
+					<li>
+						<strong class="counter">{{ pro_count }}</strong>
+						<span>Professionnels</span>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+
+<!-- Content
+================================================== -->
+<!-- Category Boxes -->
+<div class="section margin-top-65">
+	<div class="container">
+		<div class="row">
+			<div class="col-xl-12">
+
+				<div class="section-headline centered margin-bottom-15">
+					<h3>Catégories des Appels d'offres populaires</h3>
+				</div>
+
+				<!-- Category Boxes Container -->
+				<div class="categories-container">
+                    {% for category in categories %}
+                        <!-- Category Box -->
+                        <a href="{% url 'ao:category' category.id %}" class="category-box">
+                            <div class="category-box-icon">
+                                <i class="{{ category.icon }}"></i>
+                            </div>
+                            <div class="category-box-counter">{{ category.count_ao }}</div>
+                            <div class="category-box-content">
+                                <h3>{{ category }}</h3>
+                                <p>{{ category.subs }}</p>
+                            </div>
+                        </a>
+                    {% endfor %}
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Category Boxes / End -->
+
+
+<!-- Features Jobs -->
+<div class="section gray margin-top-45 padding-top-65 padding-bottom-75">
+	<div class="container">
+		<div class="row">
+			<div class="col-xl-12">
+				
+				<!-- Section Headline -->
+				<div class="section-headline margin-top-0 margin-bottom-35">
+					<h3>Appels d'offres Récents</h3>
+					<a href="{% url 'ao:search' %}" class="headline-link">Afficher tous</a>
+				</div>
+				
+				<!-- Jobs Container -->
+				<div class="listings-container compact-list-layout margin-top-35">
+
+                    {% for ao in aos %}
+                        <!-- Job Listing -->
+					    <a href="{% url 'ao:ao' ao.id %}" class="job-listing with-apply-button">
+
+						<!-- Job Listing Details -->
+						<div class="job-listing-details">
+
+							<!-- Logo -->
+							<div class="job-listing-company-logo">
+                                {% if ao.image is not None %}
+                                    <img src="{{ ao.image }}" alt="">
+                                {% else %}
+                                    <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                {% endif %}
+								
+							</div>
+
+							<!-- Details -->
+							<div class="job-listing-description">
+								<h3 class="job-listing-title">{{ ao.title }}</h3>
+
+								<!-- Job Listing Footer -->
+								<div class="job-listing-footer">
+									<ul>
+										<li><i class="icon-material-outline-person-pin"></i> {{ ao.full_user_name }} <div class="verified-badge" title="Verified Employer" data-tippy-placement="top"></div></li>
+										<li><i class="icon-material-outline-money"></i> {{ ao.budget }} Dh</li>
+										<li><i class="{{ ao.category.icon }}"></i> {{ ao.category }}</li>
+										<li><i class="icon-material-outline-access-time"></i> {{ ao.creation_date }}</li>
+									</ul>
+								</div>
+							</div>
+
+							<!-- Apply Button -->
+							<span class="list-apply-button ripple-effect">Voir Détails</span>
+						</div>
+					</a>
+                    {% endfor %}
+
+				</div>
+				<!-- Jobs Container / End -->
+
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Featured Jobs / End -->
+
+
+<!-- Features Cities -->
+<!--
+<div class="section margin-top-65 margin-bottom-65">
+	<div class="container">
+		<div class="row">
+			<div class="col-xl-12">
+				<div class="section-headline centered margin-top-0 margin-bottom-45">
+					<h3>Villes en vedette</h3>
+				</div>
+			</div>
+            {% for city in cities %}
+                <div class="col-xl-3 col-md-6">
+                    <a href="{% url 'ao:city' city.id %}" class="photo-box" data-background-image="{{ city.image.url }}">
+                        <div class="photo-box-content">
+                            <h3>{{ city }}</h3>
+                            <span>{{ city.aos_count }}</span>
+                        </div>
+                    </a>
+			    </div>
+            {% endfor %}
+        </div>
+	</div>
+</div>
+-->
+<!-- Features Cities / End -->
+
+<!-- Icon Boxes -->
+<div class="section padding-top-65 padding-bottom-65">
+	<div class="container">
+		<div class="row">
+
+			<div class="col-xl-12">
+				<!-- Section Headline -->
+				<div class="section-headline centered margin-top-0 margin-bottom-5">
+					<h3>Comment ça marche?</h3>
+				</div>
+			</div>
+
+			<div class="col-xl-4 col-md-4">
+				<!-- Icon Box -->
+				<div class="icon-box with-line">
+					<!-- Icon -->
+					<div class="icon-box-circle">
+						<div class="icon-box-circle-inner">
+							<i class="icon-line-awesome-lock"></i>
+							<div class="icon-box-check"><i class="icon-material-outline-check"></i></div>
+						</div>
+					</div>
+					<h3>Créer un compte</h3>
+					<p>Bring to the table win-win survival strategies to ensure proactive domination going forward.</p>
+				</div>
+			</div>
+
+			<div class="col-xl-4 col-md-4">
+				<!-- Icon Box -->
+				<div class="icon-box with-line">
+					<!-- Icon -->
+					<div class="icon-box-circle">
+						<div class="icon-box-circle-inner">
+							<i class="icon-line-awesome-legal"></i>
+							<div class="icon-box-check"><i class="icon-material-outline-check"></i></div>
+						</div>
+					</div>
+					<h3>Poster une offre</h3>
+					<p>Efficiently unleash cross-media information without. Quickly maximize return on investment.</p>
+				</div>
+			</div>
+
+			<div class="col-xl-4 col-md-4">
+				<!-- Icon Box -->
+				<div class="icon-box">
+					<!-- Icon -->
+					<div class="icon-box-circle">
+						<div class="icon-box-circle-inner">
+							<i class=" icon-line-awesome-trophy"></i>
+							<div class="icon-box-check"><i class="icon-material-outline-check"></i></div>
+						</div>
+					</div>
+					<h3>Choisissez un expert</h3>
+					<p>Nanotechnology immersion along the information highway will close the loop on focusing solely.</p>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>
+<!-- Icon Boxes / End -->
+
+
+<!-- Testimonials -->
+<div class="section gray padding-top-65 padding-bottom-55">
+
+	<div class="container">
+		<div class="row">
+			<div class="col-xl-12">
+				<!-- Section Headline -->
+				<div class="section-headline centered margin-top-0 margin-bottom-5">
+					<h3>Témoignages</h3>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Categories Carousel -->
+	<div class="fullwidth-carousel-container margin-top-20">
+		<div class="testimonial-carousel testimonials">
+
+			<!-- Item -->
+			<div class="fw-carousel-review">
+				<div class="testimonial-box">
+					<div class="testimonial-avatar">
+						<img src="{% static 'ao/images/user-avatar-small-02.jpg' %}" alt="">
+					</div>
+					<div class="testimonial-author">
+						<h4>Sindy Forest</h4>
+						 <span>Entrepreneur</span>
+					</div>
+					<div class="testimonial">Efficiently unleash cross-media information without cross-media value. Quickly maximize timely deliverables for real-time schemas. Dramatically maintain clicks-and-mortar solutions without functional solutions.</div>
+				</div>
+			</div>
+
+			<!-- Item -->
+			<div class="fw-carousel-review">
+				<div class="testimonial-box">
+					<div class="testimonial-avatar">
+						<img src="{% static 'ao/images/user-avatar-small-01.jpg' %}" alt="">
+					</div>
+					<div class="testimonial-author">
+						<h4>Tom Smith</h4>
+						 <span>Entrepreneur</span>
+					</div>
+					<div class="testimonial">Completely synergize resource taxing relationships via premier niche markets. Professionally cultivate one-to-one customer service with robust ideas. Dynamically innovate resource-leveling customer service for state of the art.</div>
+				</div>
+			</div>
+
+			<!-- Item -->
+			<div class="fw-carousel-review">
+				<div class="testimonial-box">
+					<div class="testimonial-avatar">
+						<img src="{% static 'ao/images/user-avatar-placeholder.png' %}" alt="">
+					</div>
+					<div class="testimonial-author">
+						<h4>Sebastiano Piccio</h4>
+						 <span>Employer</span>
+					</div>
+					<div class="testimonial">Completely synergize resource taxing relationships via premier niche markets. Professionally cultivate one-to-one customer service with robust ideas. Dynamically innovate resource-leveling customer service for state of the art.</div>
+				</div>
+			</div>
+
+			<!-- Item -->
+			<div class="fw-carousel-review">
+				<div class="testimonial-box">
+					<div class="testimonial-avatar">
+						<img src="{% static 'ao/images/user-avatar-small-03.jpg' %}" alt="">
+					</div>
+					<div class="testimonial-author">
+						<h4>David Peterson</h4>
+						 <span>Directeur</span>
+					</div>
+					<div class="testimonial">Collaboratively administrate turnkey channels whereas virtual e-tailers. Objectively seize scalable metrics whereas proactive e-services. Seamlessly empower fully researched growth strategies and interoperable sources.</div>
+				</div>
+			</div>
+
+			<!-- Item -->
+			<div class="fw-carousel-review">
+				<div class="testimonial-box">
+					<div class="testimonial-avatar">
+						<img src="{% static 'ao/images/user-avatar-placeholder.png' %}" alt="">
+					</div>
+					<div class="testimonial-author">
+						<h4>Marcin Kowalski</h4>
+                        <span>Entrepreneur</span>
+					</div>
+					<div class="testimonial">Efficiently unleash cross-media information without cross-media value. Quickly maximize timely deliverables for real-time schemas. Dramatically maintain clicks-and-mortar solutions without functional solutions.</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<!-- Categories Carousel / End -->
+
+</div>
+<!-- Testimonials / End -->
+
+{% endblock %}

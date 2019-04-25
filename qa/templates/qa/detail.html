@@ -1,10 +1,12 @@
 {% extends 'base_qa.html' %}
-{% load django_markdown %}
+
 {% load static %}
 {% load crispy_forms_tags %}
 {% load i18n %}
+{% load questions_tags %}
 
 {% block style %}
+<script src='{% static "js/jquery.min.js"  %}'></script>
 <style type="text/css">
  .qtext
 {
@@ -85,7 +87,7 @@
                 <div class="col-md-12 col-sm-12 col-xs-12">
                   <h3><a  href="#"> {{ question.question_title }} </a></h3>
                   {% if user.id == question.user_data.user.id  or user.profil.mylevel.id == 2 %}
-                    <form action="/updateq/{{ question.id }}" >
+                    <form action="/qa/updateq/{{ question.id }}" >
                       <button class="btncomt pull-right" > <li class="glyphicon glyphicon-edit" ></li> {% trans "Modifier" %}</button>
                     </form>
                   {% endif %}
@@ -97,7 +99,7 @@
                   </p>
                   <div class="tagcloud"> 
                     {% for tag in question.tags.all %}
-                    <a href="/tag/{{ tag.slug|slugify }}/">{{ tag.slug }}</a>
+                    <a href="/qa/tag/{{ tag.slug|slugify }}/">{{ tag.slug }}</a>
                     {% endfor %}
                   </div>
                 </div>
@@ -106,10 +108,119 @@
                 <!-- ******* vote Questions ************** -->
                 <div class="pad-ver pull-right">
                                 {% if user.is_authenticated %}
-                                  <a class="btn btn-sm btn-default btn-hover-success" data-toggle="tooltip" data-placement="bottom" data-original-title="Like This Answer" href="/qa/thumb/{{ user.id }}/{{ question.id }}/0/"><i class="fa fa-thumbs-up"></i>
-                                  </a>
+
+                                <button class="btncomt" type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_answer" ><small><span class="glyphicon glyphicon-comment" aria-hidden="true" ></span> Commenter &nbsp;</small></button>
+
+                                |
+                                  <!-- <a class="btn btn-sm btn-default btn-hover-success" data-toggle="tooltip" data-placement="bottom" data-original-title="Like This Answer" href="/qa/thumb/{{ user.id }}/{{ question.id }}/0/"><i class="fa fa-thumbs-up"></i>
+                                  </a> -->
+                                  <button data-id="0" class="btn btn-sm btn-default btn-hover-success" data-toggle="tooltip" data-placement="bottom" id="upvote" {% if qvote == 0 %} disabled {% endif %} ><i class="fa fa-thumbs-up" ></i>
+                                  </button>
+
+                    <!-- <button id="likes" data-id="{{question.id}}" class="btn btn-mini btn-success glyphicon glyphicon-heart pull-right" type="button">
+                      {% if question.reward > 0 %} ({{ question.reward }}) {% endif %} -- {{ test.nb }}
+                    </button> -->
+
+
+
                                   <!-- {{ question.qvoter_set.count }} --> 
-                                  <a class="btn btn-sm btn-default btn-hover-danger" href="/qa/thumb/{{ user.id }}/{{ question.id }}/1/" data-original-title="Spam" data-placement="bottom" data-toggle="tooltip"><i class="fa fa-thumbs-down"></i></a> ( {{ question.reward }} )
+                                  <!-- <a class="btn btn-sm btn-default btn-hover-danger" href="/qa/thumb/{{ user.id }}/{{ question.id }}/1/" data-original-title="Spam" data-placement="bottom" data-toggle="tooltip"><i class="fa fa-thumbs-down"></i></a>  -->
+                                  <button data-id="1" class="btn btn-sm btn-default btn-hover-success" data-toggle="tooltip" data-placement="bottom" id="downvote" {% if qvote == 1 %} disabled {% endif %} ><i class="fa fa-thumbs-down" ></i>
+                                  </button>
+
+                                  <span id="qst_vote" > ( {{ question.reward }} ) </span> 
+                                  
+
+<script type="text/javascript">
+    $('#upvote').on('click', function(event){
+        event.preventDefault();
+        var element = $(this);
+
+        $.ajax({
+            url : '/qa/like_treasure/',
+            type : 'GET',
+            // data : { treasure_id : $(this).attr("data-id")},
+            data : { question_id : {{question.id}} , profil:{{ user.id }} , op_code :0 },
+
+            success : function(data){
+              if (data.success){
+                    $('#qst_vote').html('( '+data.likes+' )');
+                    $("#upvote").attr("disabled","True");
+                }
+                else
+                {
+                  $('#qst_vote').html('( '+data.likes+' )');
+                  $("#downvote").removeAttr("disabled");
+                }
+
+                // element.html(' ' + data.nb);
+                
+            }
+        });
+    });
+
+
+    $('#downvote').on('click', function(event){
+        event.preventDefault();
+        var element = $(this);
+
+        $.ajax({
+            url : '/qa/like_treasure/',
+            type : 'GET',
+            // data : { treasure_id : $(this).attr("data-id")},
+            data : { question_id : {{question.id}} , profil:{{ user.id }} , op_code :1 },
+
+            success : function(data){
+              if (data.success){
+                    $('#qst_vote').html('( '+data.likes+' )');
+                    $("#downvote").attr("disabled","True");
+                }
+                else
+                {
+                  $('#qst_vote').html('( '+data.likes+' )');
+                  $("#upvote").removeAttr("disabled");
+                }
+
+                // element.html(' ' + data.nb);
+                
+            }
+        });
+    });
+
+
+    // You need these methods to add the CSRF token using jQuery
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    var csrftoken = getCookie('csrftoken');
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+</script>
+
                                 {% endif %}
                   </div>
                 <!-- ******* end vote Questions ************** -->                                
@@ -135,7 +246,7 @@
                     {% if answer.user_data.photo_profil.image.url %}
                       <img class="img-sm" alt="Profile Picture" src="{{ answer.user_data.photo_profil.image.url }}">
                     {% else %}
-                      <img class="img-sm"  src='{% static "qa/images/p1.png" %}'>
+                      <img class="img-sm"  src='{% static "images/p1.png" %}'>
                     {% endif %}
                   </a>
 
@@ -143,12 +254,29 @@
                 <div class="media-body">
                   <div class="mar-btm">
 
-                   <!--  {% if user.id == question.user_data.user.id  or user.profil.mylevel.id == 2 %}
-                    <form action="/updateq/{{ question.id }}" >
-                      <button  onclick="myFunction({{ question.id }} , {{ user.id }})" type="button" class="btn btn-primary pull-right " data-toggle="modal" data-target="#exampleModal" class="btncomt pull-right" > <li class="glyphicon glyphicon-edit" ></li> {% trans "Modifier" %}</button>
-                    </form>
-                  {% endif %} -->
+                    {% if user.id == question.user_data.user.id  or user.profil.mylevel.id == 2 %}
+                    
+                      <!-- class="btn btn-primary pull-right " -->
+                      <div class="dropdown pull-right">
+                            <span class="dropdown-toggle" type="button" data-toggle="dropdown">
+                                <span class="[ glyphicon glyphicon-chevron-down ]"></span>
+                            </span>
+                            <ul class="dropdown-menu" role="menu">
+                                <li role="presentation">
+                                  <button style="z-index: 40; width: 100%;"  onclick="update_answer({{ answer.id }})" type="button"  data-toggle="modal" data-target="#add_answer" class="btncomt btn" > <li class="glyphicon glyphicon-edit" ></li> Modifier </button>
+                                </li>
+                                <li role="presentation">
+                                  <button style="z-index: 40; width: 100%;"  onclick="deleteanswer({{ answer.id }})" type="button"  data-toggle="modal" data-target="#model_deleteanswer" class="btncomt btn" > <li class="glyphicon glyphicon-trash" ></li> Supprimer</button>
+                                </li>
+                            </ul>
+                        </div>
 
+                     <!--  <button style="z-index: 40;"  onclick="update_answer({{ answer.id }})" type="button"  data-toggle="modal" data-target="#add_answer" class="btncomt pull-right" > <li class="glyphicon glyphicon-edit" ></li> </button>
+
+                      <button style="z-index: 40;"  onclick="deleteanswer({{ answer.id }})" type="button"  data-toggle="modal" data-target="#model_deleteanswer" class="btncomt pull-right" > <li class="glyphicon glyphicon-trash" ></li> </button> -->
+                    
+                  {% endif %}
+                  <br>
                     <h4><a href="#" class="btn-link text-semibold media-heading box-inline">{{ answer.user_data.user.username }}</a></h4>
                     <p class="text-muted text-sm"><i class="fa fa-calendar fa-lg"></i> {{ answer.pub_date }}</p>
 
@@ -164,10 +292,113 @@
                   </div>
                   <div class="pad-ver pull-right">
 
-                    <a class="btn btn-sm btn-default btn-hover-success" data-toggle="tooltip" data-placement="bottom" data-original-title="Like This Answer" href="/qa/vote/{{ user.id }}/{{ answer.id }}/{{ question.id }}/0/"><i class="fa fa-thumbs-up"></i>
+                    <!-- <a class="btn btn-sm btn-default btn-hover-success" data-toggle="tooltip" data-placement="bottom" data-original-title="Like This Answer" href="/qa/vote/{{ user.id }}/{{ answer.id }}/{{ question.id }}/0/"><i class="fa fa-thumbs-up"></i>
                     </a>
+
                     ( {{ answer.votes }} )
-                    <a class="btn btn-sm btn-default btn-hover-danger" href="/qa/vote/{{ user.id }}/{{ answer.id }}/{{ question.id }}/1/" data-original-title="Spam" data-placement="bottom" data-toggle="tooltip"><i class="fa fa-thumbs-down"></i></a>
+                    <a class="btn btn-sm btn-default btn-hover-danger" href="/qa/vote/{{ user.id }}/{{ answer.id }}/{{ question.id }}/1/" data-original-title="Spam" data-placement="bottom" data-toggle="tooltip"><i class="fa fa-thumbs-down"></i></a> -->
+
+                    
+                      {% with answer|can_vote_answer:user as vote_code  %}
+                   
+                        <button data-id="0" class="btn btn-sm btn-default btn-hover-success" data-toggle="tooltip" data-placement="bottom" id="upvoteans{{answer.id}}" 
+                      {% if vote_code == 0  or user.id == answer.user_data.user.id %} disabled {% endif %} ><i class="fa fa-thumbs-up" ></i>
+                                      </button>
+                                     <button data-id="1" class="btn btn-sm btn-default btn-hover-success" data-toggle="tooltip" data-placement="bottom" id="downvote{{answer.id}}" {% if vote_code == 1 or user.id == answer.user_data.user.id  %} disabled {% endif %} ><i class="fa fa-thumbs-down" ></i>
+                                     </button>
+                                     <span id="qst_vote{{answer.id}}" >( {{ answer.votes }} ) </span>
+                      {% endwith %}
+                    
+<script type="text/javascript">
+    $('#upvoteans{{answer.id}}').on('click', function(event){
+        event.preventDefault();
+        var element = $(this);
+
+        $.ajax({
+            url : '/qa/like_answer/',
+            type : 'GET',
+            // data : { treasure_id : $(this).attr("data-id")},
+            data : { answer_id : {{answer.id}} , profil:{{ user.id }} , op_code :0 },
+
+            success : function(data){
+              if (data.success){
+                    $('#qst_vote{{answer.id}}').html('( '+data.likes+' )');
+                    $("#upvoteans{{answer.id}}").attr("disabled","True");
+                }
+                else
+                {
+                  $('#qst_vote{{answer.id}}').html('( '+data.likes+' )');
+                  $("#downvote{{answer.id}}").removeAttr("disabled");
+                }
+
+                // element.html(' ' + data.nb);
+                
+            }
+        });
+    });
+
+
+    $('#downvote{{answer.id}}').on('click', function(event){
+        event.preventDefault();
+        var element = $(this);
+
+        $.ajax({
+            url : '/qa/like_answer/',
+            type : 'GET',
+            // data : { treasure_id : $(this).attr("data-id")},
+            data : { answer_id : {{answer.id}} , profil:{{ user.id }} , op_code :1 },
+
+            success : function(data){
+              if (data.success){
+                    $('#qst_vote{{answer.id}}').html('( '+data.likes+' )');
+                    $("#downvote{{answer.id}}").attr("disabled","True");
+                }
+                else
+                {
+                  $('#qst_vote{{answer.id}}').html('( '+data.likes+' )');
+                  $("#upvoteans{{answer.id}}").removeAttr("disabled");
+                }
+
+                // element.html(' ' + data.nb);
+                
+            }
+        });
+    });
+
+
+    // You need these methods to add the CSRF token using jQuery
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    var csrftoken = getCookie('csrftoken');
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+</script>
+
 
                   </div>
                   
@@ -189,6 +420,11 @@
                         <div class="col-md-4 pull-right" >
                           <a href="/profile/{{ comment.user_data.user.id }}">{{ comment.user_data.user.username }}</a> ,
                           <small>{{ comment.pub_date }}</small>
+                          {% if user.id == comment.user_data.user.id  or user.profil.mylevel.id == 2 %}
+                          <button  onclick="updatecomment({{ comment.id }} )" type="button"  data-toggle="modal" data-target="#exampleModal" class="btncomt pull-right" > <li class="glyphicon glyphicon-edit" ></li> </button>
+
+                          <button  onclick="deletecomment({{ comment.id }} )" type="button"  data-toggle="modal" data-target="#model_deletecmt" class="btncomt pull-right" > <li class="glyphicon glyphicon-trash" ></li> </button>
+                          {% endif %}
                         </div>
                       </div>
                         
@@ -202,7 +438,7 @@
 
                     
                     <br>
-                        <hr>
+                      
                         <form action="/qa/comment/{{ answer.id }}/" method="post">
                           {% csrf_token %}
                           <input type="text" class="col-md-12" name="comment">
@@ -255,26 +491,15 @@ function funComment(a_id) {
 
             {% if user.is_authenticated %}
             {% if question.closed == False %}
-             <form method="post" action="/answer/">
-                 {% csrf_token %}
-                <div class="form-group">
-                    <label>{% trans "Postez votre réponse" %}</label>
-                    <div>
-                      {{ form_a.media }}
-                      {{ form_a.answer_text }}
-                  </div>
-              </div>
-                <input type="hidden" name="question" value="{{ question.id }}">
-                <input type="hidden" name="user" value="{{ user.id }}">
-                <button class="btn btn-primary btn-lg btn-block">{% trans "Postez votre réponse" %}</button>
-
-              </form>
+             
               {% else %}
               <h2>La question est fermer</h2>
               {% endif %}
               {% else %}
-              <h2 style="  background: #E5E5E5; height: 40px;"><center>
-              <a style="color: #15a4fa; font-size: 25px;" href="/main/login">{% trans "Connectez-vous ou inscrivez-vous pour voir et répondre" %}</a></center></h2>
+              <div class="row" style="  background: #E5E5E5;">
+                          <h2 style="  background: #E5E5E5; "><center>
+                          <a style="color: #15a4fa; font-size: 25px;" href="/qa/login">{% trans "Connectez-vous ou inscrivez-vous pour voir et répondre" %}</a></center></h2>
+                          </div>
              {% endif %} 
             <!-- Thread Reply End -->
           </div>
@@ -285,13 +510,13 @@ function funComment(a_id) {
             <!-- sidebar -->
             <div class="side-bar">
               <div class="widget">
-                <div class="widget-image widget-image-sm"> <img alt="image" src='{% static "qa/images/light-background.jpg" %}'>
+                <div class="widget-image widget-image-sm"> <img alt="image" src='{% static "images/light-background.jpg" %}'>
                   <div class="widget-image-content text-center"> 
                     
                     {% if question.user_data.photo_profil.image.url %}
                          <img class="img-thumbnail" alt="avatar" src="{{ question.user_data.photo_profil.image.url }}">
                     {% else %}
-                           <img class="img-thumbnail" alt="avatar" src='{% static "qa/images/p1.png" %}'>
+                           <img class="img-thumbnail" alt="avatar" src='{% static "images/p1.png" %}'>              
                     {% endif %}
 
                     <h2 class="widget-heading text-light"><strong><a style="color: #ffffff;">{{ question.user_data.user.username }}</a></strong></h2>
@@ -343,28 +568,225 @@ function funComment(a_id) {
   </div>
   <!-- =-=-=-=-=-=-= Main Area End =-=-=-=-=-=-= -->
 
-
-
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">{% trans "Postez votre réponse" %}</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Modifier votre commentaire</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
+      <form action="/qa/get_cmt/" method="POST">
       <div class="modal-body">
-        {% include 'qa/answer_form.html' %}
+        
+          {% csrf_token %}
+          <input type="text" name="txt_cmt" id="txt_cmt" class="form-control">
+          <input type="hidden" name="id_cmt" id="id_cmt">
+          <input type="hidden" name="id_question" id="" value="{{ question.id }}">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+        <button type="submit" class="btn btn-primary">Sauvegarder</button>
+      </div>
+
+      
+      
+
+      </form>
     </div>
   </div>
 </div>
+
+
+<div class="modal fade" id="model_deletecmt" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Supprimer </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="/qa/deletecomment/" method="POST">
+      <div class="modal-body">
+        
+          {% csrf_token %}
+          <h3>voulez vous vraiment supprimer ce commentaire ?</h3>
+          <input type="hidden" name="id_cmt_delete" id="id_cmt_delete" >
+          <input type="hidden" name="id_question" id="" value="{{ question.id }}">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+        <button type="submit" class="btn btn-danger">Supprimer</button>
+      </div>
+
+      
+      
+
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="modal fade" id="model_deleteanswer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Supprimer </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="/qa/deleteanswer/" method="POST">
+      <div class="modal-body">
+        
+          {% csrf_token %}
+          <h3>voulez vous vraiment supprimer cette reponse ?</h3>
+          <input type="hidden" name="id_answer_delete" id="id_answer_delete">
+          <input type="hidden" name="id_question" id="" value="{{ question.id }}">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+        <button type="submit" class="btn btn-danger">Supprimer</button>
+      </div>
+
+      
+      
+
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="modal fade" id="add_answer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Poster Votre réponse </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="myForm" action="/qa/answer/" method="POST">
+      <div class="modal-body">
+        
+          {% csrf_token %}
+          <div class="form-group">
+                    <!-- <label>{% trans "Postez votre réponse" %}</label> -->
+                    <div>
+                      {{ form_a.media }}
+                      {{ form_a.answer_text }}
+                  </div>
+              </div>
+
+          <input type="hidden" name="question" value="{{ question.id }}">
+                <input type="hidden" name="user" value="{{ user.id }}">
+                <input type="hidden" name="answer_id" id="answer_id">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+        <button type="submit" class="btn btn-primary ">{% trans "Postez votre réponse" %}</button>
+      </div>
+
+      
+      
+
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+
+
 <script type="text/javascript">
-  function myFunction(qst , user) {
-    document.getElementById("qst").value = qst;
-    document.getElementById("us").value = user;
+  function updatecomment(id_cmt ) {
+    
+    document.getElementById("id_cmt").value = id_cmt;
+
+    $.ajax({
+          url : '/qa/get_cmt/',
+          type : 'GET',
+          // data : { treasure_id : $(this).attr("data-id")},
+          data : { id_cmt : id_cmt , id_question : {{ question.id }} },
+
+          success : function(data){
+            if (data.success){
+                  document.getElementById("txt_cmt").value = data.txt;
+              }
+              else
+              {
+                alert("nonn");
+              }
+
+              // element.html(' ' + data.nb);
+              
+          }
+      }); 
 }
 
+
+ function deletecomment(id_cmt ) {
+    
+    document.getElementById("id_cmt_delete").value = id_cmt;
+
+}
+
+
+ function deleteanswer(id_answer ) {
+    
+    document.getElementById("id_answer_delete").value = id_answer;
+
+}
+
+
+
+
+function update_answer(answer ) {
+  document.getElementById("myForm").action = "/qa/update_answer/";
+    document.getElementById("answer_id").value = answer;
+    // document.getElementById("us").value = user;  
+
+  $.ajax({
+          url : '/qa/update_answer/',
+          type : 'GET',
+          // data : { treasure_id : $(this).attr("data-id")},
+          data : { answer_id : answer },
+
+          success : function(data){
+            if (data.success){
+                  CKEDITOR.instances.id_answer_text.setData(data.txt);
+              }
+              else
+              {
+                alert("nonn");
+              }
+
+              // element.html(' ' + data.nb);
+              
+          }
+      }); 
+
+    
+    // CKEDITOR.instances['editor1'].setData("value..................");
+    // $( 'textarea.editor' ).val( 'My new content' );
+ //    for(var instanceName in CKEDITOR.instances) {
+  //     alert( instanceName );
+  // }
+
+}
 
 $('#exampleModal').on('show.bs.modal', function (event) {
   var button = $(event.relatedTarget) // Button that triggered the modal

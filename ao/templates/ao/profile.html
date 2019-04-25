@@ -1,0 +1,235 @@
+{% extends 'ao/base.html' %}
+
+{% load static %}
+
+{% block style %}
+
+    <style>
+        .bookmark-icon:before{
+            content: "\e777";
+        }
+    </style>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+        // Snackbar for copy to clipboard button
+        $('.copy-url-button').click(function() {
+            Snackbar.show({
+                text: 'Copié à presse-papiers!',
+            });
+        });
+    </script>
+
+{% endblock %}
+
+{% block content %}
+
+    <!-- Titlebar
+================================================== -->
+<div class="single-page-header" data-background-image="{% static 'ao/images/single-company.jpg' %}">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="single-page-header-inner">
+                    {% if company == None %}
+                        <div class="left-side">
+                            <div class="header-image">
+                                {% if profile.photo_profil.image.url is not None %}
+                                    <img src="{{ profile.photo_profil.image.url }}" alt="">
+                                {% else %}
+                                    <img src="{% static 'ao/images/user-avatar-placeholder.png' %}">
+                                {% endif %}
+                            </div>
+                            <div class="header-details">
+                                <h3>{{ profile.user.first_name|capfirst }} {{ profile.user.last_name|upper }}
+                                    <span>{{ profile.fonction }}</span></h3>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <ul>
+                                            <li style="display: block;"><i class="icon-material-outline-email"></i> {{ company.mail }}</li>
+                                            <li style="display: block;"><i class="icon-feather-phone"></i> {{ company.telephone }}</li>
+                                            <li style="display: block;"><i class="icon-line-awesome-fax"></i> {{ company.fax }}</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <ul style="margin-top: 10px">
+                                            <li>
+                                                <a href="{% url 'ao:saves' profile.id %}" style="font-weight: bold; padding: 9px 12px 6px 14px; border: 1px solid; border-radius: 3px;">
+                                                    <i class="icon-feather-star" style="font-size: 20px;"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <p style="padding-top: 6px; font-size: 20px">{{ profile.resume }}</p>
+                            </div>
+                        </div>
+                        <div class="right-side">
+                            <!-- Breadcrumbs -->
+                            <nav id="breadcrumbs" class="white">
+                                <ul>
+                                    <li><a href="{% url 'ao:home' %}">Accueil</a></li>
+                                    <li><a href="javascript:void(0);">Profil</a></li>
+                                    <li>Appels d'offres</li>
+                                </ul>
+                            </nav>
+                        </div>
+                    {% else %}
+                        <div class="left-side">
+                            <div class="header-image">
+                                {% if company.logo.url is not None %}
+                                    <img src="{{ company.logo.url }}" alt="">
+                                {% else %}
+                                    <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                {% endif %}
+                            </div>
+                            <div class="header-details">
+                                <h3>{{ company }} <span>{{ company.activity }}</span></h3>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <ul>
+                                            <li style="display: block;"><i class="icon-material-outline-email"></i> {{ company.mail }}</li>
+                                            <li style="display: block;"><i class="icon-feather-phone"></i> {{ company.telephone }}</li>
+                                            <li style="display: block;"><i class="icon-line-awesome-fax"></i> {{ company.fax }}</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <ul style="margin-top: 10px">
+                                            <li>
+                                                <a href="{% url 'ao:saves' profile.id %}" style="font-weight: bold; padding: 9px 12px 6px 14px; border: 1px solid; border-radius: 3px;">
+                                                    <i class="icon-feather-star" style="font-size: 20px;"></i>
+                                                </a>
+                                            </li>
+                                            <li style="margin-top: 8px">
+                                                <a href="{% url 'ao:contacted' profile.id %}" style="font-weight: bold; padding: 9px 12px 6px 14px; border: 1px solid; border-radius: 3px;">
+                                                    <i class="icon-feather-send" style="font-size: 20px;"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="right-side">
+                            <!-- Breadcrumbs -->
+                            <nav id="breadcrumbs" class="white">
+                                <ul>
+                                    <li><a href="{% url 'ao:home' %}">Accueil</a></li>
+                                    <li><a href="javascript:void(0);">Entreprises</a></li>
+                                    <li>{{ company }}</li>
+                                </ul>
+                            </nav>
+                        </div>
+                    {% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- Page Content
+================================================== -->
+<div class="container">
+	<div class="row">
+
+		<!-- Content -->
+		<div class="col-xl-12 col-lg-12 content-right-offset">
+
+            <h2>Liste des <strong>Appels d'Offres</strong></h2>
+            <div class="listings-container grid-layout margin-top-35">
+
+                {% for ao in aos %}
+                    <!-- Job Listing -->
+                    <a href="{% url 'ao:ao' ao.id %}" class="job-listing">
+
+                        <!-- Job Listing Details -->
+                        <div class="job-listing-details">
+                            <!-- Logo -->
+                            <div class="job-listing-company-logo">
+                                {% if ao.image is not None %}
+                                    <img src="{{ ao.image }}" alt="">
+                                {% else %}
+                                    <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                {% endif %}
+                            </div>
+
+                            <!-- Details -->
+                            <div class="job-listing-description">
+                                <h4 class="job-listing-company">
+                                    {{ ao.company }}
+                                    {% if ao.type_user != 'particular' %}
+                                        <span class="verified-badge" title="Entreprise" data-tippy-placement="top"></span>
+                                    {% endif %}
+                                </h4>
+                                <h4 class="job-listing-title">{{ ao.title }}</h4>
+                            </div>
+                        </div>
+
+                        <!-- Job Listing Footer -->
+                        <div class="job-listing-footer">
+                            <ul>
+                                <li><i class="icon-material-outline-location-on"></i> {{ ao.cities }}</li>
+                                <li><i class="icon-material-outline-account-balance-wallet"></i> {{ ao.budget }}</li>
+                                <li><i class="icon-material-outline-access-time"></i> {{ ao.date_limit }}</li>
+                            </ul>
+                        </div>
+				    </a>
+                {% endfor %}
+
+			</div>
+
+            <!-- Pagination -->
+            <div class="clearfix"></div>
+            <div class="pagination-container margin-top-20 margin-bottom-20">
+                {% if aos.has_other_pages %}
+                    <nav class="pagination">
+                        <ul>
+                        {% if aos.has_previous %}
+                            <li class="pagination-arrow">
+                                <a href="?page={{ aos.previous_page_number }}" class="ripple-effect">
+                                    <i class="icon-material-outline-keyboard-arrow-left"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="pagination-arrow disabled" style="cursor: not-allowed;">
+                                <a href="javascript:void(0);" class="ripple-effect disabled" style="pointer-events: none;">
+                                    <i class="icon-material-outline-keyboard-arrow-left"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for i in aos.paginator.page_range %}
+                            {% if aos.number == i %}
+                                <li><a href="javascript:void(0);" class="ripple-effect current-page">{{ i }}</a></li>
+                            {% else %}
+                                <li><a href="?page={{ i }}" class="ripple-effect">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if aos.has_next %}
+                            <li class="pagination-arrow">
+                                <a href="?page={{ aos.next_page_number }}" class="ripple-effect"><i class="icon-material-outline-keyboard-arrow-right"></i></a>
+                            </li>
+                        {% else %}
+                            <li class="pagination-arrow" style="cursor: not-allowed;">
+                                <a href="javascript:void(0);" class="ripple-effect" style="pointer-events: none;">
+                                    <i class="icon-material-outline-keyboard-arrow-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            </div>
+            <div class="clearfix"></div>
+            <!-- Pagination / End -->
+        </div>
+
+	</div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,172 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% load static %}
+
+{% block title %}
+    Détails du message | Page de garde | {{ block.super }}
+{% endblock title %}
+
+
+{% block stylesheets %}
+
+    {{ block.super }}
+    <!-- Toastr style -->
+    <link href="{% static 'dashboard/css/plugins/toastr/toastr.min.css' %}" rel="stylesheet">
+
+{% endblock stylesheets %}
+
+
+{% block scripts %}
+
+    <script>
+        $('#dashboard_page_garde').addClass("active");
+        $('#dashboard_page_garde_messages_contact').addClass("active");
+    </script>
+
+
+    <!-- Toastr script -->
+    <script src="{% static 'dashboard/js/plugins/toastr/toastr.min.js' %}"></script>
+
+
+    <script>
+        {% if messages %}
+            {% for msg in messages %}
+                {% if msg.tags == "success" %}
+                    toastr.options = {
+                        "closeButton": true,
+                        "debug": false,
+                        "progressBar": true,
+                        "preventDuplicates": false,
+                        "positionClass": "toast-top-right",
+                        "onclick": null,
+                        "showDuration": "400",
+                        "hideDuration": "1000",
+                        "timeOut": "7000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+
+                    Command: toastr["success"]("{{ msg }}")
+
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+
+{% endblock scripts %}
+
+
+{% block content %}
+
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class=" float-left">
+                    <a href="{% url 'dashboard:main_messages' %}">
+                        <button class="btn btn-primary dim">
+                            <i class="fa fa-arrow-left"></i> Boite de réception
+                        </button>
+                    </a>
+                </div>
+
+                <div class=" float-right">
+                    <a href="">
+                        <button id="btn_lancer_compagne" class="btn btn-danger dim">
+                            <i class="fa fa-trash"></i> Supprimer
+                        </button>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-12 animated fadeInRight">
+                <div class="mail-box-header">
+                    <h2>
+                        {{ message.full_name }}
+                    </h2>
+                    <div class="mail-tools tooltip-demo m-t-md">
+
+
+                        <h3>
+                            Sujet: <span class="font-normal">{{ message.sujet }}</span>
+                        </h3>
+                        <h5>
+                            <span class="float-right font-normal">{{ message.date }}</span>
+                            email: <span class="font-normal">{{ message.email }}</span>
+                        </h5>
+                    </div>
+                </div>
+
+                <div class="mail-box">
+
+
+                    <div class="mail-body">
+                        {{ message.message }}
+                    </div>
+
+                </div>
+
+                <div class="mail-box">
+
+                    <div class="mail-body">
+                        <h4>Dernière réponse :</h4> <br>
+                        <h5>Sujet :  <span class="font-normal">RE : {{ message.sujet }}</span> </h5>
+                        <h5>Réponse : </h5>
+                        {% if message.reponse == "" %}
+                            Aucune réponse.
+                        {% else %}
+                            {{ message.reponse | safe }}
+                        {% endif %}
+                    </div>
+
+
+                </div>
+
+                <div class="mail-box">
+
+
+                    <div class="mail-body">
+                        <h4>Répondre :</h4>
+
+                        <form action="{% url 'dashboard:repondre_message' id_message=message.id %}" method="POST">
+                            {% csrf_token %}
+                            {{ form_message.media }}
+
+                            {{ form_message.reponse }}
+
+                            <div class=" row">
+
+                                <div class="col-lg-12">
+                                    <div class="float-right">
+
+                                        <input value="Envoyer" type="submit" class="btn btn-primary"
+                                               style="width:100px;margin-top:15px;">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+{% endblock content %}

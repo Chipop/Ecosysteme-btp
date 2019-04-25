@@ -1,0 +1,321 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+
+{% block title %}
+    Modification d'un journaliste | Journal | {{ block.super }}
+{% endblock title %}
+
+{% block stylesheets %}
+
+    {{ block.super }}
+
+
+    <!-- Toastr style -->
+    <link href="{% static 'dashboard/css/plugins/toastr/toastr.min.css' %}" rel="stylesheet">
+
+
+
+{% endblock stylesheets %}
+
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script>
+        $('#dashboard_news').addClass("active");
+        $('#news_liste_journalistes').addClass("active");
+
+    </script>
+
+    <!-- Toastr script -->
+    <script src="{% static 'dashboard/js/plugins/toastr/toastr.min.js' %}"></script>
+
+    <script>
+        {% if messages %}
+            {% for msg in messages %}
+                {% if msg.tags == "success" %}
+                    toastr.options = {
+                        "closeButton": true,
+                        "debug": false,
+                        "progressBar": true,
+                        "preventDuplicates": false,
+                        "positionClass": "toast-top-right",
+                        "onclick": null,
+                        "showDuration": "400",
+                        "hideDuration": "1000",
+                        "timeOut": "7000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+
+                    Command: toastr["success"]("{{ msg }}")
+
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+
+
+
+
+
+{% endblock scripts %}
+
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class=" float-left">
+                    <a href="{% url 'dashboard:news_infos_journaliste' id_journaliste=journaliste.id %}">
+                        <button class="btn btn-primary dim"><i
+                                class="fa fa-arrow-left"></i> {{ journaliste.first_name.title }} {{ journaliste.last_name.title }}
+                        </button>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="tabs-container">
+
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li><a class="nav-link active show" data-toggle="tab" href="#tab-1"> Informations</a></li>
+                        <li><a class="nav-link" data-toggle="tab" href="#tab-2">Images </a></li>
+                    </ul>
+
+
+                    <div class="tab-content">
+
+
+                        <div role="tabpanel" id="tab-1" class="tab-pane active show">
+                            <div class="panel-body">
+
+                                <div class="">
+
+                                    <h2>
+                                        Modification du journaliste  {{ journaliste.first_name.title }} {{ journaliste.last_name.title }}
+                                    </h2>
+                                    <div class="mail-tools tooltip-demo m-t-md error_color"
+                                         style="padding:5px 50px 0px 50px;">
+
+                                        {% for field in form %}
+                                            {{ field.errors }}
+                                        {% endfor %}
+
+
+                                    </div>
+                                </div>
+                                <div class="" style="padding:5px 50px 25px 50px;">
+
+                                    <h3>Informations <span class="error_color">*</span></h3>
+
+                                    <form action="{% url 'dashboard:update_journaliste' id_journaliste=journaliste.id %}"
+                                          method="POST">
+
+                                        {% csrf_token %}
+                                        {{ form_journaliste.media }}
+
+                                        <div class="form-group row"><label class="col-sm-2 col-form-label"></label>
+
+                                            <div class="col-sm-10">
+                                                <div class="row">
+
+                                                    <div class="col-md-2">
+                                                        <label for="id_category">Prénom</label>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        {% render_field form_journaliste.first_name class="form-control" %}
+                                                    </div>
+
+                                                    <br><br><br>
+
+                                                    <div class="col-md-2">
+                                                        <label for="id_tag">Nom</label>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        {% render_field form_journaliste.last_name class="form-control" %}
+                                                    </div>
+
+
+                                                    <br><br><br>
+
+                                                    <div class="col-md-2">
+                                                        <label for="id_video_url">Tel</label>
+                                                    </div>
+
+                                                    <div class="col-md-10">
+                                                        {% render_field form_journaliste.tel class="form-control" %}
+                                                    </div>
+
+
+                                                    <br><br><br>
+
+                                                    <div class="col-md-12">
+                                                        <label for="id_video_url">Description</label>
+
+                                                    </div>
+
+                                                    <div class="col-md-12">
+                                                        {% render_field form_journaliste.description class="form-control" %}
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <h3>Réseaux sociaux <span class="error_color">*</span></h3>
+
+                                        <div class="form-group row"><label class="col-sm-2 col-form-label"></label>
+
+                                            <div class="col-sm-10">
+                                                <div class="row">
+
+                                                    <div class="col-lg-6">
+                                                        <div class="input-group m-b">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-addon"><i
+                                                                        class="fa fa-facebook"></i></span>
+                                                            </div>
+                                                            {% render_field form_journaliste.facebook %}
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div class="col-lg-6">
+                                                        <div class="input-group m-b">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-addon"><i
+                                                                        class="fa fa-linkedin"></i></span>
+                                                            </div>
+                                                            {% render_field form_journaliste.linkedin %}
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div class="col-lg-6">
+                                                        <div class="input-group m-b">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-addon"><i
+                                                                        class="fa fa-youtube"></i></span>
+                                                            </div>
+                                                            {% render_field form_journaliste.youtube %}
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-6">
+                                                        <div class="input-group m-b">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-addon"><i
+                                                                        class="fa fa-instagram"></i></span>
+                                                            </div>
+                                                            {% render_field form_journaliste.instagram %}
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-6">
+                                                        <div class="input-group m-b">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-addon"><i
+                                                                        class="fa fa-twitter"></i></span>
+                                                            </div>
+                                                            {% render_field form_journaliste.twitter %}
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-6">
+                                                        <div class="input-group m-b">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-addon"><i
+                                                                        class="fa fa-link"></i></span>
+                                                            </div>
+                                                            {% render_field form_journaliste.link %}
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class=" row">
+
+                                            <div class="col-lg-12">
+                                                <div class="float-right">
+
+                                                    <input value="Modifier" type="submit" class="btn btn-success"
+                                                           style="width:100px;">
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </form>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+
+
+                        <div role="tabpanel" id="tab-2" class="tab-pane">
+                            <div class="panel-body">
+                                <div class="form-group row"><label class="col-sm-2 col-form-label"></label>
+
+
+                                    <div class="col-sm-12">
+
+                                        <h3>Photo de profil</h3>
+
+                                        <div class="form-group row"><label class="col-sm-2 col-form-label"></label>
+
+                                            <div class="col-sm-10">
+                                                <div class="row" style="padding-left: 15px;width: 811px;">
+
+                                                    <div class=" col-lg-7">
+                                                        {% render_field form.photo_couverture class="" %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+{% endblock content %}
+
+

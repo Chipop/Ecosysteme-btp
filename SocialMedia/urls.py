@@ -65,9 +65,9 @@ urlpatterns = [
     path('myprofil/modifierInformationsProfil/', views.modifierInformationsProfil, name="modifierInformationsProfil"),
 
     ##Page Entreprise
+    path('entreprise/<int:id_page_entreprise>/', views.page_entreprise, name="page_entreprise"),
     path('creer_entreprise/', views.creer_entreprise, name="creer_entreprise"),
     path('entreprise/<int:id_page_entreprise>/abonnees/', views.entreprise_abonnees, name="entreprise_abonnees"),
-    path('entreprise/<int:id_page_entreprise>/', views.page_entreprise, name="page_entreprise"),
     path('entreprise/desabonner/<int:id_page_entreprise>/', views.neplussuivre_entreprise,
          name="neplussuivre_entreprise"),
     path('entreprise/abonner/<int:id_page_entreprise>/', views.suivre_entreprise, name="suivre_entreprise"),
@@ -81,19 +81,20 @@ urlpatterns = [
          name="page_entreprise_poster_offre"),
 
     #Page entreprise Offre d'emplois
-    path('entreprise/<int:id_page_entreprise>/publier_offre_emploi/', views.creer_offre_emploi, name="creer_offre_emploi"),
+    path('entreprise/offre_emploi/<int:id_offre_emploi>/', views.page_offre_emploi, name="page_offre_emploi"),
     path('entreprise/<int:id_page_entreprise>/offres_emploi/', views.page_offres_emploi_entreprise, name="page_offres_emploi_entreprise"),
+    path('entreprise/<int:id_page_entreprise>/publier_offre_emploi/', views.creer_offre_emploi, name="creer_offre_emploi"),
     path('entreprise/offre_emploi/<int:id_offre_emploi>/postuler/', views.page_offre_emploi_postuler, name="page_offre_emploi_postuler"),
     path('entreprise/offre_emploi/<int:id_offre_emploi>/retirer_candidature/', views.page_offre_emploi_retirer_candidature, name="page_offre_emploi_retirer_candidature"),
     path('entreprise/offre_emploi/<int:id_offre_emploi>/modifier/', views.page_offre_emploi_modifier, name="page_offre_emploi_modifier"),
-    path('entreprise/offre_emploi/<int:id_offre_emploi>/', views.page_offre_emploi, name="page_offre_emploi"),
+    path('entreprise/offre_emploi/<int:id_offre_emploi>/postulants', views.page_offre_emploi_postulants, name="page_offre_emploi_postulants"),
 
     #ajax
     path('entreprise/geteditformulaire/', views.get_modifier_entreprise, name="get_modifier_entreprise"),
     path('entreprise/<int:id_page_entreprise>/modifier_infos/', views.modifier_entreprise, name="modifier_entreprise"),
     path('entreprise/<int:id_page_entreprise>/changer_photo_profil_entreprise/', views.changer_photo_profil_entreprise, name="changer_photo_profil_entreprise"),
     path('entreprise/<int:id_page_entreprise>/changer_photo_couverture_entreprise/', views.changer_photo_couverture_entreprise, name="changer_photo_couverture_entreprise"),
-
+    path('entreprise/offre_emploi/share/', views.offre_emploi_share, name="offre_emploi_share"),
 
     #Haytham
     #Profil/id
@@ -104,6 +105,8 @@ urlpatterns = [
     path('profil/<int:pk>/get-responses-updates', views.getRequestsUpdates, name="getUpdates"),
     path('profil/<int:pk>', views.getProfil, name='getProfil'),
     path('profil/<int:pk>/groupes', views.getProfilGroupes, name='getProfilGroupes'),
+
+    #Groupes
     path('groupe/<int:pk>/', views.groupe, name="groupe"),
     path('groupe/<int:pk>/demandes/', views.demandesGroupe, name="demandesGroupe"),
     path('groupe/<int:pk>/ajax-demandes-groupe/', views.demandesGroupeViaAjax, name="demandesGroupeViaAjax"),
@@ -113,7 +116,7 @@ urlpatterns = [
     path('groupe/<int:pk>/more-comments', views.getMoreCommentsGroupe, name="getMoreComments"),
     path('groupe/<int:pk>/change-photo-couverture-groupe', views.changephotocouverturegroupe, name="changephotocouverturegroupe"),
     path('groupe/<int:pk>/change-photo-profil-groupe', views.changephotoprofilgroupe, name="changephotoprofilgroupe"),
-    path('creer-groupe', views.creer_groupe, name="creer_groupe"),
+    path('creer_groupe', views.creer_groupe, name="creer_groupe"),
 
     #Haytham 2
     #Statut
@@ -190,8 +193,37 @@ urlpatterns = [
     path('search-groupes-more', views.getNextGroupes, name="getNextGroupes"),
     path('search-offres-more', views.getNextOffres, name="getNextOffres"),
 
+    #Reseau
+    path('reseau', views.reseau, name='reseau'),
+    path('reseau/friend', views.communFriend, name="communFriend"),
+    path('reseau/add-contact', views.addContact, name="addContact"),
+    path('reseau/amis', views.Amis, name="Amis"),
 
+    #Chat
+    path('deconnecter/',views.chat_deconnexion,name="chat_deconnexion"),  
 
+    #NotificationsCHecker
+    path('check-notifications/', views.checkNotificationsUpdates, name="checkNotifications"),
+
+    # ajax 2 : Statuts
+    path('add_statut/<int:id>/<str:type_statut>/', views.add_statut, name="add_statut"),
+    path('st_add_comment/', views.st_add_comment, name="st_add_comment"),
+    path('st_add_comment_reply/', views.st_add_comment_reply, name="st_add_comment_reply"),
+    path('statut/like/', views.statut_like, name="statut_like"),
+    path('comment/like/', views.comment_like, name="comment_like"),
+    path('statut/get_likers/', views.statut_get_likers, name="statut_get_likers"),
+    path('comment/get_likers/', views.comment_get_likers, name="comment_get_likers"),
+    path('statut/get_comments/', views.st_get_more_comments, name="st_get_more_comments"),
+    path('statut/update_content/', views.st_update_content, name="st_update_content"),
+    path('statut/delete/', views.st_delete, name="st_delete"),
+    path('statut/signal/', views.st_signal, name="st_signal"),
+    path('comment/update_content/', views.comment_update_content, name="comment_update_content"),
+    path('comment/delete/', views.comment_delete, name="comment_delete"),
+    path('comment/signal/', views.comment_signal, name="comment_signal"),
+    path('statut/share/', views.st_share, name="st_share"),
+
+    # ajax  : LinkPreview : Get Parametre  : url
+    path('link_preview/', views.st_link_preview, name="st_link_preview"),
 
 
     path('home/', views.home, name="home"),

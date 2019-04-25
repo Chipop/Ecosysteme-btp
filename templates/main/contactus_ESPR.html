@@ -1,0 +1,48 @@
+{% extends 'base_ESPR.html' %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block stylesheet %}{{ block.super }}{% endblock %}
+
+{% block title %}{{ block.super }} | Connexion{% endblock %}
+{% block header %}
+{% include 'top_nav.html' %}
+{% endblock %}
+{% block content %}
+
+        <div class="space-70"></div>
+
+     <div class="container">
+            <div class="row">
+                <div class="col-md-12 " style="text-align: center; "> <h1>Nous contacter</h1></div>
+
+                <div class="col-lg-6  ml-auto mr-auto">
+                    <div class="my-login-form">
+                        <form method="POST">
+                            {% csrf_token %}
+                            {% include "messages.html" %}
+
+                            <div class="form-group">
+                                {% render_field contact_form.full_name class="form-control" placeholder="Nom complet.." %}
+                            </div>
+                            <div class="form-group">
+                                {% render_field contact_form.email class="form-control" placeholder="Email.." %}
+                            </div>
+                            <div class="form-group">
+                                {% render_field contact_form.message class="form-control" placeholder="Message.." %}
+                            </div>
+                            <div  class="g-recaptcha" data-sitekey="6LcIOV8UAAAAAO0kQRvjLmlOt7Q08VEubXgfvG6l"></div>
+                            <div class=" text-right">
+                                <button type="submit" class="btn theme-btn-color">Envoyer</button>
+                            </div>
+                        </form><!--login form end-->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+{% endblock %}

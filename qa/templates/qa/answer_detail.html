@@ -1,0 +1,14 @@
+<form method="post" action="/qa/answer/">
+                 {% csrf_token %}
+                <div class="form-group">
+                    <label>{% trans "Postez votre réponse" %}</label>
+                    <div>
+                      {{ form_a.media }}
+                      {{ form_a.answer_text }}
+                  </div>
+              </div>
+                <input type="hidden" name="question" value="{{ question.id }}">
+                <input type="hidden" name="user" value="{{ user.id }}">
+                <button class="btn btn-primary btn-lg btn-block">{% trans "Postez votre réponse" %}</button>
+
+              </form>

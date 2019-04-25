@@ -2,9 +2,10 @@ from django.urls import path
 
 from . import views
 
+
 urlpatterns = [
     # VISITOR URL
-    path('', views.index, name='indexJournal'),
+    path('', views.index, name='index'),
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
     path('privacy/', views.privacy, name='privacy'),
@@ -21,6 +22,11 @@ urlpatterns = [
     path('tag/<slug:tag_name>/', views.tag, name='tag'),
     path('article/<int:article_id>/print/', views.article_print, name='print'),
     path('join_us/', views.join_us, name='join_us'),
+
+    #Share  + Like Article
+    path('article/share/<int:id>/', views.share_article, name='share_article'),
+    path('article/like/<int:id>/', views.like_article, name='like_article'),
+    path('article/signal/<int:id>/', views.signal_article, name='signal_article'),
 
     # JOURNALIST URL
     path('journalist/', views.journalist, name='journalist'),
@@ -46,8 +52,10 @@ urlpatterns = [
          name='journalist_upload_primary_image_video'),
     path('journalist/update_primary_image_video/<int:video_id>/', views.journalist_update_primary_image_video,
          name='journalist_update_primary_image_video'),
+
     path('journalist/upload_image/', views.journalist_upload_image, name='journalist_upload_image'),
     path('journalist/update_image/<int:article_id>/', views.journalist_update_image, name='journalist_update_image'),
+
     path('journalist/create_tag/', views.journalist_create_tag, name='journalist_create_tag'),
     path('journalist/delete_image/<int:image_id>/', views.journalist_delete_image, name="journalist_delete_image"),
     path('journalist/delete_image_update/<int:article_id>/<int:image_id>/', views.journalist_delete_image_update,

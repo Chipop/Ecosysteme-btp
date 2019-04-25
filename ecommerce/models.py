@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 import time
 import os
 import uuid
+
+from django.db.models import Count, Sum
+from django.urls import reverse
 from django.utils.deconstruct import deconstructible
 from django.utils import timezone
 from main_app.models import Profil
@@ -81,10 +84,37 @@ class Brand(models.Model):
         return self.name
 
 
+    class Meta:
+        verbose_name_plural = 'Marques'
+        verbose_name = "Marque"
+
+    def tracking_get_admin_url(self):
+        return ""
+
+    def tracking_get_absolute_url(self):
+        return reverse('e_commerce:products', kwargs={'type_search': 'brand', 'id_search':self.id})
+
+    def tracking_get_description(self):
+        return self.name
+
+
 class Tag(models.Model):
     name = models.CharField(max_length=20)
 
     def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = 'Tags'
+        verbose_name = "Tag"
+
+    def tracking_get_admin_url(self):
+        return ""
+
+    def tracking_get_absolute_url(self):
+        return reverse('e_commerce:products', kwargs={'type_search': 'tag', 'id_search':self.id})
+
+    def tracking_get_description(self):
         return self.name
 
 
@@ -103,6 +133,19 @@ class Shop(models.Model):
     categories = models.ManyToManyField(CommerceSCategoryOne, blank=True)
 
     def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = 'Boutiques'
+        verbose_name = "Boutique"
+
+    def tracking_get_admin_url(self):
+        return reverse('dashboard:marketplace_shop', kwargs={'id_shop':self.id})
+
+    def tracking_get_absolute_url(self):
+        return reverse('e_commerce:supplier', kwargs={'id_supplier':self.id})
+
+    def tracking_get_description(self):
         return self.name
 
 
@@ -131,6 +174,25 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+    class Meta:
+        verbose_name_plural = 'Produits'
+        verbose_name = "Produit"
+
+    def tracking_get_admin_url(self):
+        return reverse('dashboard:marketplace_product', kwargs={'id_product':self.id})
+
+    def tracking_get_absolute_url(self):
+        return reverse('e_commerce:product', kwargs={'id_product':self.id})
+
+    def tracking_get_description(self):
+        return self.name
+
+    def get_nb_stock(self):
+        stocks = Stock.objects.filter(product=self)
+        return stocks.aggregate(Sum('quantity'))['quantity__sum']
+
 
 
 class CommerceInformation(models.Model):
@@ -251,7 +313,7 @@ class Order(models.Model):
     user = models.ForeignKey(Profil, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return 'Order {0} de {1}'.format(str(self.pk), self.user.user.username)
+        return 'Order {0} '.format(str(self.pk))
 
 
 class OrderLine(models.Model):
@@ -332,3 +394,9 @@ class MessageSupplier(models.Model):
 
     def __str__(self):
         return "{} said '{}...'".format(self.name, self.message[:200])
+
+
+class ResultSearch(models.Model):
+    key_word = models.CharField(max_length=255, null=True, blank=True)
+    date_add = models.DateField(auto_now_add=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)

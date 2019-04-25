@@ -24,10 +24,10 @@
                 <div class="member--items border-light-custom" style="background-color:white;">
                     <div class="row gutter--15 AdjustRow">
 
-                        {% for profil in profils %}
+                        {% for profil in profils|slice:":12" %}
                             <div class="col-md-3 col-xs-6 col-xxs-12">
                                 <!-- Member Item Start -->
-                                <div class="member--item online">
+                                <div class="member--item ">
                                     <div class="img img-circle">
                                         <a href="{% url 'SocialMedia:getProfil' profil.id %}" class="btn-link">
                                             <img src="{{ profil.photo_profil.image.url }}" alt=""
@@ -79,6 +79,17 @@
                 </div>
             {% endif %}
 
+                {% if profils.count > 12 %}
+                    <!-- Voir plus Start -->
+                    <div class="page--count pt--30 ">
+                        <label class="ff--primary fs--14 fw--500 text-darker " style="text-align:right;">
+                            <a href="/reseausocial/search_members/?keywords={{ keywords }}">Voir plus</a>
+                        </label>
+                    </div>
+
+                    <!-- Voir plus End -->
+                {% endif %}
+
 
         </div>
         <!-- Member Items End -->
@@ -106,17 +117,17 @@
                     {% for offre in offres|slice:":12" %}
                         <div class="col-md-3 col-xs-6 col-xxs-12">
                             <!-- Member Item Start -->
-                            <div class="member--item online">
+                            <div class="member--item ">
                                 <div class="img">
-                                    <a href="{% url 'SocialMedia:getProfil' offre.id %}" class="btn-link">
-                                        <img src="{{ offre.entreprise.logo.url }}" alt=""
+                                    <a href="{% url 'SocialMedia:page_offre_emploi' offre.id %}" class="btn-link">
+                                        <img src="{{ offre.page_entreprise.entreprise.logo.url }}" alt=""
                                              style="  height: 55px;  ">
                                     </a>
                                 </div>
 
                                 <div class="name">
                                     <h3 class="h6 fs--12">
-                                        <a href="{% url 'SocialMedia:getProfil' offre.id %}"
+                                        <a href="{% url 'SocialMedia:page_offre_emploi' offre.id %}"
                                            class="btn-link">{{ offre.nom_poste }}</a>
                                     </h3>
                                 </div>
@@ -133,7 +144,7 @@
                                 </div>
 
                                 <div class="actions">
-                                    <a href="ss">Voir les détails</a>
+                                    <a href="{% url 'SocialMedia:page_offre_emploi' offre.id %}">Voir les détails</a>
                                 </div>
                             </div>
                             <!-- Member Item End -->
@@ -230,12 +241,11 @@
             <!-- Groupes Items End -->
         {% endif %}
 
-
         <!-- Fin Recherche Groupes -->
-
 
     </div>
     <!-- Main Content End -->
+
 
 
 {% endblock searchcontent %}

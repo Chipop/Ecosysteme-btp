@@ -1,0 +1,213 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+
+{% block title %}
+    Modifier une publication | Réseau social | {{ block.super }}
+{% endblock title %}
+
+{% block stylesheets %}
+
+    {{ block.super }}
+
+
+    <!-- Toastr style -->
+    <link href="{% static 'dashboard/css/plugins/toastr/toastr.min.css' %}" rel="stylesheet">
+
+
+{% endblock stylesheets %}
+
+
+{% block content %}
+
+    <div class="wrapper wrapper-content  animated fadeInRight" style="width:100%">
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class=" float-left">
+                    <a href="{% url 'dashboard:socialmedia_infos_publication' id_publication=publication.id %}">
+                        <button class="btn btn-primary dim"><i
+                                class="fa fa-arrow-left"></i> {{ publication.contenu_statut|truncatechars:"20" }}
+
+                        </button>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-lg-12 text-center">
+                <h2>Modification du statut</h2>
+            </div>
+
+            <div class="col-lg-6" style="margin:auto;">
+
+
+                <div class="social-feed-box">
+
+                    <div class="social-avatar">
+                        <a href="#" class="float-left">
+                            <img alt="image"
+                                 src="{% if publication.photo_profil.image %} {{ publication.publisher.photo_profil.image.url }}  {% else %} {% static 'dashboard/img/default_profil_m.png' %} {% endif %}">
+                        </a>
+                        <div class="media-body">
+                            <a href="{% url 'dashboard:socialmedia_infos_profile' id_user=publication.publisher.id %}">
+                                {{ publication.publisher.user.first_name | title }} {{ publication.publisher.user.last_name | title }}
+                            </a>
+                            <small class="text-muted">{{ publication.date_statut }}</small>
+                        </div>
+                    </div>
+                    <div class="social-body">
+                        <form method="POST"
+                              action="{% url 'dashboard:socialmedia_update_publication' id_publication=publication.id %}">
+                            {% csrf_token %}
+
+                            <textarea name="contenu_publication" id="" cols="30" rows="5" class="form-control"
+                                      required="required">{{ publication.contenu_statut }}</textarea>
+
+                            <input type="submit" class="btn btn-success pull-right" value="Modifier"
+                                   style="margin-top:10px;">
+                            <div class="clearfix">
+
+                            </div>
+                        </form>
+                        {{ publication.likes.all.count }} <i class="fa fa-thumbs-up"></i> {{ publication.shares }} <i
+                            class="fa fa-share"></i>
+                    </div>
+                    <div class="social-footer">
+                        {% for comment in publication.commentaire_set.all %}
+                            <div class="social-comment">
+                                <a href="#" class="float-left">
+                                    <img alt="image"
+                                         src="{% if comment.user.photo_profil.image %} {{ comment.user.photo_profil.image.url }}  {% else %} {% static 'dashboard/img/default_profil_m.png' %} {% endif %}">
+                                </a>
+                                <div class="media-body">
+                                    <a href="{% url 'dashboard:socialmedia_infos_profile' id_user=comment.user.id %}">
+                                        {{ comment.user.user.first_name | title }} {{ comment.user.user.last_name | title }}
+                                    </a>
+
+                                    <a href="#" class="small"> <i
+                                            class="fa fa-thumbs-up"></i> {{ comment.likes.all.count }}</a> -
+                                    <small class="text-muted">{{ comment.date_commentaire }}</small>
+                                    <form method="POST"
+                                          action="{% url 'dashboard:socialmedia_update_publication_comment' id_comment=comment.id id_publication=publication.id %}">
+                                        {% csrf_token %}
+
+                                        <textarea name="contenu_commentaire" id="" cols="30" rows="5"
+                                                  class="form-control"
+                                                  required="required">{{ comment.comment }}</textarea>
+
+                                        <input type="submit" class="btn btn-success pull-right" value="Modifier"
+                                               style="margin-top:10px;">
+                                        <div class="clearfix">
+
+                                        </div>
+                                    </form>
+
+                                    <br>
+                                </div>
+                                {% for reponse in comment.reply_set.all %}
+                                    <div class="social-comment">
+                                        <a href="#" class="float-left">
+                                            <img alt="image"
+                                                 src="{% if comment.user.photo_profil.image %} {{ comment.user.photo_profil.image.url }}  {% else %} {% static 'dashboard/img/default_profil_m.png' %} {% endif %}">
+                                        </a>
+                                        <div class="media-body">
+                                            <a href="#">
+                                                {{ reponse.user.user.first_name | title }} {{ reponse.user.user.last_name | title }}
+                                            </a>
+
+                                            <a href="#" class="small"><i
+                                                    class="fa fa-thumbs-up"></i> {{ reponse.likes.all.count }}</a>
+                                            -
+                                            <small class="text-muted">{{ reponse.date_reply }}</small>
+
+
+                                            <form method="POST"
+                                                  action="{% url 'dashboard:socialmedia_update_publication_reply' id_reply=reponse.id  id_publication=publication.id %}">
+                                                {% csrf_token %}
+
+                                                <textarea name="contenu_reply" id="" cols="30" rows="5"
+                                                          class="form-control"
+                                                          required="required">{{ reponse.replyContent }}</textarea>
+
+                                                <input type="submit" class="btn btn-success pull-right" value="Modifier"
+                                                       style="margin-top:10px;">
+                                                <div class="clearfix">
+
+                                                </div>
+                                            </form>
+                                            <br>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script>
+        $('#dashboard_socialmedia').addClass("active");
+        $('#socialmedia_liste_publication').addClass("active");
+    </script>
+
+    <!-- Toastr script -->
+    <script src="{% static 'dashboard/js/plugins/toastr/toastr.min.js' %}"></script>
+
+
+    <script>
+        {% if messages %}
+            {% for msg in messages %}
+                toastr.options = {
+                    "closeButton": true,
+                    "debug": false,
+                    "progressBar": true,
+                    "preventDuplicates": false,
+                    "positionClass": "toast-top-right",
+                    "onclick": null,
+                    "showDuration": "400",
+                    "hideDuration": "1000",
+                    "timeOut": "7000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+
+
+                Command: toastr["{{ msg.tags }}"]("{{ msg }}")
+
+            {% endfor %}
+        {% endif %}
+    </script>
+
+
+
+
+
+{% endblock scripts %}
+

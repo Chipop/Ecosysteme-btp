@@ -1,0 +1,376 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+
+{% block title %}
+    Groupe | Réseau social | {{ block.super }}
+{% endblock title %}
+
+{% block stylesheets %}
+
+    {{ block.super }}
+
+    <link href="{% static 'dashboard/css/plugins/summernote/summernote-bs4.css' %}" rel="stylesheet">
+
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="wrapper wrapper-content animated fadeInRight" style="width:100%;">
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class=" float-left">
+                    <a href="{% url 'dashboard:socialmedia_groups_list' %}">
+                        <button class="btn btn-primary dim"><i class="fa fa-arrow-left"></i> Listes des groupes</button>
+                    </a>
+
+                </div>
+
+                <div class=" float-right">
+                    <a href="{% url 'dashboard:socialmedia_delete_group' id_group=groupe.id %}">
+                        <button id="btn_lancer_compagne" class="btn btn-danger dim">
+                            <i class="fa fa-trash"></i> Supprimer
+                        </button>
+                    </a>
+
+                    <a href="{% url 'dashboard:socialmedia_update_group' id_group=groupe.id %}">
+                        <button class="btn btn-success dim"><i class="fa fa-pencil"></i> Modifier</button>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-6">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-eye fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Vues</span>
+                            <h2 class="font-bold">{{ groupe.views_number }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-comment fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Posts </span>
+                            <h2 class="font-bold">{{ groupe.statut_mur_groupe.all.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-users fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Abonnés</span>
+                            <h2 class="font-bold">{{ groupe.adherents.all.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div style="background-image:url('{% if groupe.photo_couverture %} {{ groupe.photo_couverture.image.url }} {% else %} {% static "dashboard/img/default_cover.jpg" %} {% endif %}');height:150px;">
+
+                </div>
+
+                <div class="col-lg-12 text-center" style="margin-top:-100px;">
+                    <img height="150" width="150"
+                         src="{% if groupe.photo_profil %} {{ groupe.photo_profil.image.url }} {% else %} {% static 'dashboard/img/group_default_image.png' %} {% endif %}"
+                         class="rounded-circle circle-border m-b-md"
+                         alt="profile">
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <div class="row m-b-lg m-t-lg">
+
+            <div class="col-md-12">
+
+
+                <div style="margin-left:15px; text-align:center;">
+                    <div class="">
+                        <div>
+                            <h2 class="no-margins">
+                                {{ groupe.nom | title }}
+                            </h2>
+                            <h4>{{ groupe.statut_groupe | title }}</h4>
+                            <small>
+                                {{ groupe.description }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+
+                    <a href="{% url 'dashboard:socialmedia_profils_list' %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Membres qui créent le plus de statuts
+                    </a>
+
+                    {% for membre in membres_plus_statut %}
+                        <a href="{% url 'dashboard:socialmedia_infos_profile' id_user=membre.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ membre.user.first_name|title }} {{ membre.user.last_name|title }}
+                                •
+                                <span class="small-text">{{ membre.total_statut }} Statuts</span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun membre actif.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+
+                    <a href="{% url 'dashboard:socialmedia_profils_list' %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Membres qui créent le plus de commentaires
+                    </a>
+
+                    {% for membre in membres_plus_commentaires %}
+                        <a href="{% url 'dashboard:socialmedia_infos_profile' id_user=membre.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ membre.user.first_name|title }} {{ membre.user.last_name|title }}
+                                •
+                                <span class="small-text">{{ membre.total_com }}</span> Commentaires </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun membre actif.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+
+                    <a href="{% url 'dashboard:socialmedia_profils_list' %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Membres qui partagents le plus de statuts
+                    </a>
+
+                    {% for membre in membres_plus_partage_statut %}
+                        <a href="{% url 'dashboard:socialmedia_infos_profile' id_user=membre.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ membre.user.first_name|title }} {{ membre.user.last_name|title }}
+                                •
+                                <span class="small-text">{{ membre.total_share }}</span> Partages </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun membre actif.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-md-6 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_publications' %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Dernières publications de ce groupe <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for last_status in groupe.statut_mur_groupe.all|dictsortreversed:"id"|slice:"6" %}
+                        <a href="{% url 'dashboard:socialmedia_infos_publication' id_publication=last_status.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ last_status.contenu_statut | truncatechars:"30" }} <i class="fa fa-thumbs-up"
+                                                                                             style="color:#1c84c6;"></i>
+                                <span class="small-text">{{ last_status.likes.all.count }}</span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune publication.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+            <div class="col-md-6 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_profils_list' %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Derniers membres <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for last_member in groupe.adherents.all.reverse|slice:"6" %}
+                        <a href="{% url 'dashboard:socialmedia_infos_profile' last_member.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ last_member.user.first_name | title }} {{ last_member.user.last_name | title }} </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun membre.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+            <div class="col-md-6 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_publications' %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Publications les plus aimées <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for last_status in publications_plus_aimes %}
+                        <a href="{% url 'dashboard:socialmedia_infos_publication' id_publication=last_status.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ last_status.contenu_statut | truncatechars:"30" }} <i class="fa fa-thumbs-up"
+                                                                                             style="color:#1c84c6;"></i>
+                                <span class="small-text">{{ last_status.total_likes }}</span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune publication.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+            <div class="col-md-6 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_publications' %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Derniers commentaires <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for commentaire in derniers_commentaires %}
+                        <a href="{% url 'dashboard:socialmedia_infos_publication' id_publication=commentaire.statut.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ commentaire.content | truncatechars:"30" }} <i class="fa fa-thumbs-up"
+                                                                                      style="color:#1c84c6;"></i>
+                                <span class="small-text">{{ commentaire.likes.all.count }}</span></strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun commentaire.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script>
+        $('#dashboard_socialmedia').addClass("active");
+        $('#socialmedia_liste_groupes').addClass("active");
+    </script>
+
+    <!-- blueimp gallery -->
+    <script src="{% static 'dashboard/js/plugins/blueimp/jquery.blueimp-gallery.min.js' %}"></script>
+
+
+
+
+
+    <!-- Sparkline -->
+    <script src="{% static 'dashboard/js/plugins/sparkline/jquery.sparkline.min.js' %}"></script>
+
+    <script>
+        $(document).ready(function () {
+
+
+            $("#sparkline1").sparkline([34, 43, 43, 35, 44, 32, 44, 48], {
+                type: 'line',
+                width: '100%',
+                height: '50',
+                lineColor: '#1ab394',
+                fillColor: "transparent"
+            });
+
+
+        });
+    </script>
+
+
+
+
+
+{% endblock scripts %}
+

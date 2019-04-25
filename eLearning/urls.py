@@ -1,0 +1,71 @@
+from django.urls import path
+from . import views
+
+app_name = 'eLearning'
+urlpatterns = [
+    path('', views.index, name='index'),
+    path('Course/<int:id_course>/', views.course, name='course'),
+    path('Quiz/<int:id_quiz>/', views.quiz, name='quiz'),
+    path('Course/Share/', views.course_share, name="course_share"),
+    path('Teacher/<int:id_teacher>/', views.teacher, name='teacher'),
+    path('Category/<int:id_category>/', views.category, name='category'),
+    path('Search/', views.search, name='search'),
+    path('Courses/', views.courses_list, name='courses_list'),
+    path('Course/Purchase/', views.purchase, name='purchase'),
+    path('Course/Apply-Coupon/', views.apply_coupon, name='apply_coupon'),
+    path('Course/Cart/Apply-Coupon/', views.apply_coupon_cart, name='apply_coupon_cart'),
+    path('Wish-List/', views.wish_list, name='wish_list'),
+    path('Checkout/', views.checkout, name='checkout'),
+    path('Unsubscribe/<int:id_formation>/', views.unsubscribe, name='unsubscribe'),
+    path('Student/Dashboard/', views.student_dashboard, name='student_dashboard'),
+    path('Student/Dashboard/Messages', views.student_messages, name='student_messages'),
+    path('Student/Dashboard/Messages/Mark-as-read', views.mark_as_read, name='mark_as_read'),
+    path('Account/Upgrade/', views.upgrade, name='upgrade'),
+    path('Teacher/Dashboard/', views.teacher_dashboard, name='teacher_dashboard'),
+    path('Teacher/Dashboard/Courses/', views.dashboard_courses, name='dashboard_courses'),
+    path('Teacher/Dashboard/Add-Course/', views.add_course, name='add_course'),
+    path('Teacher/Dashboard/Course/<int:id_course>/', views.manage_course, name='manage_course'),
+    path('Teacher/Message', views.message_to_teacher, name='message_to_teacher'),
+    path('Teacher/Dashboard/Course/<int:id_course>/Delete/<int:page>/<int:filter_by>/', views.delete_course, name='delete_course'),
+    path('Teacher/Dashboard/Course/<int:id_course>/Delete/', views.delete_course_index, name='delete_course_index'),
+    path('Teacher/Dashboard/Course/Send-Mail/', views.teacher_send_mail, name='teacher_send_mail'),
+    path('Teacher/Dashboard/Revues/', views.dashboard_revues, name='dashboard_revues'),
+    path('Teacher/Dashboard/Update-Profile/', views.dashboard_update_profile, name='dashboard_update_profile'),
+    path('Teacher/Dashboard/Messages/', views.dashboard_messages, name='dashboard_messages'),
+    path('Teacher/Dashboard/Message/<int:id_message>', views.dashboard_messages_reply, name='dashboard_messages_reply'),
+    # ------------ Manage Course
+    path('Teacher/Dashboard/Prerequisite-PostSkill/Add', views.add_prerequisite_postskill, name='add_prerequisite_postskill'),
+    path('Teacher/Dashboard/Coupon/Add', views.add_coupon, name='add_coupon'),
+    path('Teacher/Dashboard/Chapter/Add', views.add_chapter, name='add_chapter'),
+    path('Teacher/Dashboard/Quiz/Add', views.add_quiz, name='add_quiz'),
+    path('Teacher/Dashboard/Question/Add', views.add_question, name='add_question'),
+    path('Teacher/Dashboard/Choice/Add', views.add_choice, name='add_choice'),
+
+    path('Teacher/Dashboard/Prerequisite/Delete', views.delete_prerequisite, name='delete_prerequisite'),
+    path('Teacher/Dashboard/Coupon/Delete', views.delete_coupon, name='delete_coupon'),
+    path('Teacher/Dashboard/PostSkill/Delete', views.delete_postskill, name='delete_postskill'),
+    path('Teacher/Dashboard/Part/Delete', views.delete_part, name='delete_part'),
+    path('Teacher/Dashboard/Quiz/Delete', views.delete_quiz, name='delete_quiz'),
+    path('Teacher/Dashboard/Chapter/Delete', views.delete_chapter, name='delete_chapter'),
+    path('Teacher/Dashboard/Question/Delete', views.delete_question, name='delete_question'),
+    path('Teacher/Dashboard/Choice/Delete', views.delete_choice, name='delete_choice'),
+
+    path('Teacher/Dashboard/Price/Update', views.update_price, name='update_price'),
+    path('Teacher/Dashboard/Part/File/Update', views.update_url_part, name='update_url_part'),
+    path('Teacher/Dashboard/Part/URL/Update', views.update_file_part, name='update_file_part'),
+
+    path('Teacher/Dashboard/Send-To-Evaluate', views.send_to_evaluate, name='send_to_evaluate'),
+
+    # --------------- Cart - wish list - progress
+    path('Cart/', views.cart, name='cart'),
+    path('Cart/Add/', views.add_to_cart, name='add_to_cart'),
+    path('Cart/Remove/<int:id_cart>/', views.remove_from_cart, name='remove_from_cart'),
+    path('Cart/Remove/Ajax/', views.remove_from_cart_ajax, name='remove_from_cart_ajax'),
+    path('Wish-List/Add/', views.add_to_wish, name='add_to_wish'),
+    path('Wish-List/Remove/', views.remove_from_wish, name='remove_from_wish'),
+    path('Progress/', views.add_progress, name='add_progress'),
+    path('Course/Rate/', views.course_rate, name='course_rate'),
+    # ------------- Paypal
+    path('paypal/done', views.paypal_done, name='paypal_done'),
+    path('paypal/cancel', views.paypal_cancel, name='paypal_cancel'),
+]

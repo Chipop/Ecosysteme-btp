@@ -1,12 +1,17 @@
 {% load staticfiles %}
 <!DOCTYPE html>
+<html>
 <head>
-    <title> {% block title %} {% endblock title %} </title>
+
+    {% include 'google_analytics_header_script.html' %}
+
+
+    <title> {% block title %} {% endblock title %} - {{ website_title }} </title>
 
 
     {% block stylesheets %}
 
-    <link rel="stylesheet" href="{% static 'main_app/css/main_style.css' %}">
+        <link rel="stylesheet" href="{% static 'main_app/css/main_style.css' %}">
 
     {% endblock stylesheets %}
 
@@ -36,7 +41,6 @@
 
 
 {% block scripts %}
-<script src="{% static 'main_app/js/main_js.js' %}"></script>
 {% endblock scripts %}
 
 

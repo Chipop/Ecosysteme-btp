@@ -1,0 +1,169 @@
+{% extends 'ao/base.html' %}
+
+{% load static %}
+
+{% block style %}
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+        $("#order").val({{ order }});
+    </script>
+
+{% endblock %}
+
+{% block content %}
+
+<!-- Spacer -->
+<div class="margin-top-50"></div>
+<!-- Spacer / End-->
+
+<!-- Page Content
+================================================== -->
+<div class="container">
+    <h2>Ville  <strong>{{ city.name|capfirst }}</strong></h2>
+    <h3 style="font-size: 20px; padding: 10px 0 25px;">
+        {{ city.description }}
+    </h3>
+	<div class="row">
+		<div class="col-xl-3 col-lg-4">
+			<div class="sidebar-container">
+
+				<!-- Location -->
+				<div class="sidebar-widget">
+                    <img style="padding: 6px; border-radius: 5px; margin-top: 6px; background: #f2f2f2;" src="{{ city.image.url }}" alt="">
+				    <h3 style="font-size: 18px; padding-left: 5px; margin-bottom: 10px;" class="margin-top-20">Appels d'offres : <strong>{{ city.aos_count }}</strong></h3>
+				    <h3 style="font-size: 18px; padding-left: 5px; margin-bottom: 10px;">Lots : <strong>{{ city.project_set.count }}</strong></h3>
+				    <h3 style="font-size: 18px; padding-left: 5px; margin-bottom: 10px;">Chiffre d'affaire : <strong>{{ city.budget }}</strong></h3>
+				    <h3 style="font-size: 18px; padding-left: 5px; margin-bottom: 10px;">Budget Moyen : <strong>{{ city.avg_budget }}</strong></h3>
+                </div>
+
+			</div>
+		</div>
+		<div class="col-xl-9 col-lg-8 content-left-offset">
+
+			<h3 class="page-title">Résultat de la recherche</h3>
+
+			<div class="notify-box margin-top-15">
+				<div class="switch-container">
+					<h4>Appels d'offres trouvés : <strong>{{ city.aos_count }}</strong></h4>
+				</div>
+
+				<div class="sort-by">
+					<span>Trier par:</span>
+                    <form action="" style="display: inline">
+                        <select class="selectpicker hide-tick" name="order" id="order" onchange="this.form.submit()">
+                            <option value="1">Date Création</option>
+                            <option value="2">Date Fin</option>
+                            <option value="3">Views</option>
+                        </select>
+                    </form>
+				</div>
+			</div>
+
+			<div class="listings-container compact-list-layout margin-top-35">
+                {% for ao in aos %}
+				<!-- Job Listing -->
+				<a href="{% url 'ao:ao' ao.id %}" class="job-listing">
+
+					<!-- Job Listing Details -->
+					<div class="job-listing-details">
+
+						<!-- Logo -->
+						<div class="job-listing-company-logo">
+                            {% if ao.image is not None %}
+                                <img src="{{ ao.image }}" alt="">
+                            {% else %}
+                                <img src="{% static 'ao/images/company-logo-placeholder.png' %}" alt="">
+                            {% endif %}
+						</div>
+
+						<!-- Details -->
+						<div class="job-listing-description">
+							<h3 class="job-listing-title">{{ ao.title }}</h3>
+
+							<!-- Job Listing Footer -->
+							<div class="job-listing-footer">
+								<ul>
+									<li><i class="icon-material-outline-business"></i> {{ ao.company }}
+                                        {% if ao.type_user != 'particular' %}
+                                            <div class="verified-badge" title="Verified Employer" data-tippy-placement="top"></div>
+                                        {% endif %}
+                                    </li>
+                                    <li><i class="icon-material-outline-account-balance-wallet"></i> {{ ao.budget }}</li>
+                                    <li><i class="icon-material-outline-access-time"></i> {{ ao.creation_date }}</li>
+								</ul>
+							</div>
+						</div>
+
+						<!-- Bookmark -->
+                        {% if profile_id is not None %}
+                        <form style="display: inline" data-url="{% url 'ao:add_save' profile_id ao.id %}?type=ao" id="form_save">
+                            <button type="submit" class="add_save">
+                                <span class="bookmark-icon"></span>
+                            </button>
+                        </form>
+                        {% endif %}
+
+					</div>
+				</a>
+                {% endfor %}
+			</div>
+
+
+			<!-- Pagination -->
+			<div class="clearfix"></div>
+			<div class="row">
+				<div class="col-md-12">
+					<!-- Pagination -->
+					<div class="pagination-container margin-top-60 margin-bottom-60">
+						{% if aos.has_other_pages %}
+                            <nav class="pagination">
+                                <ul>
+                                {% if aos.has_previous %}
+                                    <li class="pagination-arrow">
+                                        <a href="?page={{ aos.previous_page_number }}&order={{ order }}" class="ripple-effect">
+                                            <i class="icon-material-outline-keyboard-arrow-left"></i>
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="pagination-arrow disabled" style="cursor: not-allowed;">
+                                        <a href="javascript:void(0);" class="ripple-effect disabled" style="pointer-events: none;">
+                                            <i class="icon-material-outline-keyboard-arrow-left"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                                {% for i in aos.paginator.page_range %}
+                                    {% if aos.number == i %}
+                                        <li><a href="javascript:void(0);" class="ripple-effect current-page">{{ i }}</a></li>
+                                    {% else %}
+                                        <li><a href="?page={{ i }}&order={{ order }}" class="ripple-effect">{{ i }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if aos.has_next %}
+                                    <li class="pagination-arrow">
+                                        <a href="?page={{ aos.next_page_number }}&order={{ order }}" class="ripple-effect"><i class="icon-material-outline-keyboard-arrow-right"></i></a>
+                                    </li>
+                                {% else %}
+                                    <li class="pagination-arrow" style="cursor: not-allowed;">
+                                        <a href="javascript:void(0);" class="ripple-effect" style="pointer-events: none;">
+                                            <i class="icon-material-outline-keyboard-arrow-right"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                </ul>
+                            </nav>
+                        {% endif %}
+					</div>
+				</div>
+			</div>
+			<!-- Pagination / End -->
+
+		</div>
+	</div>
+</div>
+
+{% endblock %}

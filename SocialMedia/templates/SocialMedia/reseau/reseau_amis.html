@@ -1,0 +1,250 @@
+{% extends "SocialMedia/base_socialmedia.html" %}
+{% load staticfiles %}
+{% load nbsp %}
+{% load widget_tweaks %}
+{% block title %}ESPR ReseauSocial{% endblock %}
+
+{% block stylesheets %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'SocialMedia/css/mur/style1.css' %}" type="text/css"/>
+    <link rel="stylesheet" href="{% static 'SocialMedia/css/mur/style2.css' %}" type="text/css"/>
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- Wrapper Start -->
+    <div class="wrapper">
+
+        <!-- Page Wrapper Start -->
+        <section class="page--wrapper pt--80 pb--20" style="transform: none;padding-top: 20px;">
+            <div class="container">
+                <div class="row">
+
+
+                    <!-- Main Sidebar Start -->
+                    <div class="main--sidebar col-md-3 pb--60" data-trigger="stickyScroll">
+                        <!-- Widget Start -->
+                        <div class="widget" style="    padding: 10px 20px;    background-color: white;">
+                            <div class="row">
+                                <a href="/reseausocial/profil/">
+                                    <div class="col-xs-12 text-center">
+                                        <img src="{{ user.profil.photo_profil.image.url }}"
+                                             class="img-circle" style="width:100px; height: 100px;"
+                                             alt="">
+                                    </div>
+
+                                    <div class="col-xs-12 text-center">
+                                        <h4>{{ user.first_name | title }} {{ user.last_name |title }}</h4>
+                                    </div>
+                                </a>
+                            </div>
+                            <!-- Groupes End -->
+                        </div>
+                        <!-- Widget End -->
+
+                        <!-- Relations Start -->
+                        <div class="widget" style="     padding: 10px 20px;   background-color: white;">
+
+
+                            <!-- Text Widget Start -->
+                            <div class="text--widget text-center">
+                                    <p class="h4 badge" style="font-weight: 500;font-size: 20px;padding: 5px;color: white;">{{ amis }}</p>
+                                    <p style="color:grey;font-size: 16px; font-weight: 500;">Vos relations</p>
+                                <div id="statuts" class="display-flex ivm-view-attr__img-wrapper--expanded ember-view"><!---->
+                                    <a  style="color: #ea4b0f;" href="{% url 'SocialMedia:Amis' %}"><span class="ml--15">Tout voir</span></a><!---->
+                                </div>
+                                    <a href="{% url 'SocialMedia:Amis' %}">
+                                        <div id="statuts" class="mn-connections-summary__social-proof ember-view">
+                                                <div class="mn-social-proof">
+                                                  <div class="mn-social-proof__facepiles">
+                                                    {% for f in friends|slice:"4" %}
+                                                        {% if not forloop.first %}
+                                                            <img style="margin-left: -20px;" class="lazy-image loaded mn-social-proof__profile-image EntityPhoto-circle-2" alt="{{ f.nom }}" height="40" width="40" src="{{ f.photo_profil.image.url }}">
+                                                        {% else %}
+                                                            <img class="lazy-image mn-social-proof__profile-image EntityPhoto-circle-2 loaded" alt="{{ f.nom }}" height="40" width="40" src="{{ f.photo_profil.image.url }}">
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                      <!---->  </div>
+                                                </div>
+                                        </div>
+                                    </a>
+                            </div>
+                            <!-- Text Widget End -->
+                        </div>
+
+                        <div class="widget" style="    padding: 10px 20px;    background-color: white;">
+
+
+                            <!-- Text Widget Start -->
+                            <div class="text--widget text-center">
+                                <div id="statuts" class="display-flex ivm-view-attr__img-wrapper--expanded ember-view"><!---->
+                                    <a  style="color: #ea4b0f;" href="{% url 'SocialMedia:reseau' %}"><span class="ml--15">Trouver des relations</span></a><!---->
+                                </div>
+                            </div>
+                            <!-- Text Widget End -->
+                        </div>
+                    <!-- Main Sidebar End -->
+
+                    <!-- Main Content Start -->
+
+                    </div>
+
+                    <!-- Main Sidebar End -->
+
+                    <!-- Main Content Start -->
+
+
+
+
+
+                   <!-- Activity List Start -->
+<div class="main--sidebar col-md-6 pb--60">
+                                <!-- Activity Items Start -->
+                <div class="member--items border-light-custom" style="background-color:white;margin-top: 0;outline: #cdcfd2 solid 1px;border: none;">
+<header id="status" class="artdeco-card__header">
+      <h3 class="artdeco-card__title" style="    border-bottom: 1px solid rgba(0,0,0,.15);    padding: 13px 16px 16px 16px;margin-top: 0;font-size: 20px;line-height: 28px;    font-weight: 400;">
+        {{ friends.count }} relations
+      </h3>
+    </header>
+
+
+<div id="communFriend">
+</div>
+                    <div class="row gutter--15 AdjustRow activity--items nav  infinite-container">
+
+                                        {% for friend in friends %}
+
+                                            {% include "SocialMedia/reseau/infos_reseau_amis.html" %}
+
+                                        {% endfor %}
+                    {% if not friends %}
+                            <header id="status" class="artdeco-card__header text-center">
+                                  <h3 class="artdeco-card__title" style="    padding: 13px 16px 16px 16px;margin-top: 0;font-size: 20px;line-height: 28px;    font-weight: 400;">
+                                    Aucune relation n'a été trouvée.
+                                  </h3>
+                                </header>
+                    {% endif %}
+                     </div>
+                </div>
+                                            <div class="row text-center">
+                                                <img id="loadingImageMoreComments" style="display: none; width: 40%;" class="img-rounded"  src="{% static 'SocialMedia/Spinner.gif' %}" />
+                                            </div>
+                            <!-- Activity List End -->
+
+
+                        <!-- Load More Button Start -->
+                            {% if contacts.has_next %}
+                            <div class="load-more--btn pt--30 text-center hidden">
+                                <a href="?page={{ contacts.next_page_number }}" class="btn btn-animate infinite-more-link">
+                                    <span><i class="fa ml--10 fa-caret-right"></i></span>
+                                </a>
+                            </div>
+                            {% endif %}
+                        <!-- Load More Button End -->
+
+
+
+
+
+
+
+
+
+
+                    </div>
+
+
+
+
+     </div>
+
+
+            </div>
+
+        </section>
+
+        <!-- Page Wrapper End -->
+    </div>
+
+{% endblock content %}
+{% block scripts %}
+    {{ block.super }}
+
+    <script>
+$('.profil_links_menu li').removeClass('active');
+    $('.profil_links_menu li:eq(1)').addClass('active');
+    </script>
+
+    <script>
+
+
+    var infinite = new Waypoint.Infinite({
+      element: $('.infinite-container')[0],
+      onBeforePageLoad: function () {
+        $('#loadingImageMoreComments').fadeIn(250);
+      },
+      onAfterPageLoad: function ($items) {
+        $('#loadingImageMoreComments').fadeOut(250);
+      }
+    });
+
+
+    function communFriend(id, cid){
+        friendURL = "{% url 'SocialMedia:communFriend' %}";
+        $.ajax({
+                    url: friendURL,
+                    type: 'GET',
+                    data: {'id':id, 'cid':cid},
+                    success: function (data) {
+                        $("#communFriend").html(data);
+                    },
+                    error: function () {
+                    },
+                    complete:function(){
+                        $('#FriendModal').modal('show');
+                    },
+                    stop: function (e) {
+                        swal("Veuiller Verifier Votre Connexion Reseau Puis Ressayer", "Erreur Fatale", "error");
+                    }
+                });
+    }
+
+    function addFriend(e, cid){
+        e.preventDefault();
+        friendURL = "{% url 'SocialMedia:addContact' %}";
+        $.ajax({
+                    url: friendURL,
+                    type: 'GET',
+                    data: {'c_id':cid},
+                    success: function (data) {
+                        $(".cn"+cid).remove();
+                        location.reload();
+                        const toast = swal.mixin({
+                          toast: true,
+                          position: 'bottom-right',
+                          showConfirmButton: false,
+                          timer: 3000
+                        });
+
+                        toast({
+                          type: 'success',
+                          title: 'La demande à été envoyé avec succé'
+                        })
+                    },
+                    error: function () {
+                    },
+                    complete:function(){
+                        $('#FriendModal').modal('show');
+                    },
+                    stop: function (e) {
+                        swal("Veuiller Verifier Votre Connexion Reseau Puis Ressayer", "Erreur Fatale", "error");
+                    }
+                });
+    }
+
+
+
+  </script>
+{% endblock %}
+
+

@@ -141,7 +141,9 @@
 
                             <div style="width: auto;padding-bottom: 30px;">
                                 <div class="cover--avatar" data-overlay="0.3" data-overlay-color="primary">
-
+                                	{% if user.profil not in groupe.admins.all %}
+                                	<a href="{{ groupe.photo_profil.image.url|default:'/media/SocialMedia/default.jpg' }}" data-lightbox="{{ groupe.nom }}" data-title="{{ groupe.nom }}">
+                                	{% endif %}
                                     <div class="photprofilcontainer">
                                         <img id="profilpic" class="image "
                                              src="{{ groupe.photo_profil.image.url|default:'/media/SocialMedia/default.jpg' }}"
@@ -159,6 +161,7 @@
                                         </div>
                                         {% endif %}
                                     </div>
+                                        {% if user.profil not in groupe.admins.all %}</a>{% endif %}
 
                                 </div>
                                 <div class="row">
@@ -313,7 +316,6 @@
         </div>
     </section>
     <!-- Page Wrapper End -->
-
 
 
 {% endblock %}

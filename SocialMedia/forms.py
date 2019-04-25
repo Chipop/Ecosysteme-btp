@@ -173,8 +173,8 @@ class FormPhotoCouvertureEntreprise(forms.ModelForm):
 
 class StatutsForm(forms.Form):
     contenu_statut = forms.CharField(widget=forms.Textarea(attrs={'rows':'1'}))
-    image = forms.ImageField()
-    video = forms.FileField()
-    document = forms.FileField()
+    image = forms.ImageField(widget=forms.FileInput(attrs={'accept':'image/*','multiple':'true'}))
+    video = forms.FileField(widget=forms.FileInput(attrs={'accept':'video/*'}))
+    document = forms.FileField(widget=forms.FileInput(attrs={'accept':'.docx, .pdf, .xls','multiple':'true'}))
 
 

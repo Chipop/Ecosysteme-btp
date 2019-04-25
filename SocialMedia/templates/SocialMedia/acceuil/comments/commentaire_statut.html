@@ -184,14 +184,13 @@
       <div id="ember3131" class="feed-shared-comment-social-bar display-flex ember-view">
           <div class="feed-shared-comment-social-bar__action-group  ">
 
-              <button class="feed-shared-comment-social-bar__action-button Sans-13px-black-55%-semibold pr3 ml0 hoverable-link-text like-button button like ember-view"><!---->
-  <span onclick="likeUnlikeComment(this)" aria-hidden="true" {% if user.profil in comment.likes.all %}lk="-1"{% else %}lk="1"{% endif %} comment="{{ comment.id }}" id="likeComment{{ comment.id }}" class="{% if user.profil in comment.likes.all %}active{% endif %}"> j'aime</span>
+              <button class="feed-shared-comment-social-bar__action-button Sans-13px-black-55%-semibold pr3 ml0 hoverable-link-text like-button button like ember-view" onclick="likeUnlikeComment(this)"  {% if user.profil in comment.likes.all %}lk="-1"{% else %}lk="1"{% endif %} comment="{{ comment.id }}" id="likeComment{{ comment.id }}" class="{% if user.profil in comment.likes.all %}active{% endif %}"> j'aime
 
 <span class="visually-hidden">
     Like patience medinat’s comment
 </span></button>
 
-              <button  onclick="focusReply(this)" comment="{{ comment.id }}" data-control-name="reply" id="ember3133" class="feed-shared-comment-social-bar__action-button Sans-13px-black-55%-semibold pr3 ml0 hoverable-link-text button reply ember-view"><span class="svg-icon-wrap"><span class="visually-hidden">Reply to patience the comment</span><li-icon aria-hidden="true" type="speech-bubble-icon" size="small"><svg viewBox="0 0 24 24" width="24px" height="24px" x="0" y="0" preserveAspectRatio="xMinYMin meet" class="artdeco-icon" focusable="false"><path d="M14,3H2A1,1,0,0,0,1,4v7a1,1,0,0,0,1,1h9l4,3V4A1,1,0,0,0,14,3ZM3,10V5H13v6.11L11.52,10H3ZM5,7h6V8H5V7Z" class="small-icon" style="fill-opacity: 1"></path></svg></li-icon></span>
+              <button  onclick="focusReply(this)" comment="{{ comment.id }}" data-control-name="reply" id="ember3133" class="feed-shared-comment-social-bar__action-button Sans-13px-black-55%-semibold pr3 ml0 hoverable-link-text button reply ember-view"><span class="svg-icon-wrap"><li-icon aria-hidden="true" type="speech-bubble-icon" size="small"><svg viewBox="0 0 24 24" width="24px" height="24px" x="0" y="0" preserveAspectRatio="xMinYMin meet" class="artdeco-icon" focusable="false"><path d="M14,3H2A1,1,0,0,0,1,4v7a1,1,0,0,0,1,1h9l4,3V4A1,1,0,0,0,14,3ZM3,10V5H13v6.11L11.52,10H3ZM5,7h6V8H5V7Z" class="small-icon" style="fill-opacity: 1"></path></svg></li-icon></span>
 <span aria-hidden="true"  page="1" onclick="getMoreReplies(this)" commentId="{{ comment.id }}">Répondre</span>
 </button></div>
               <div class="feed-shared-comment-social-bar__social-counts"><button data-control-name="comment_like_count" class="feed-shared-comment-social-bar__likes-count Sans-13px-black-55% hoverable-link-text" data-ember-action="" data-ember-action-5017="5017">
@@ -271,8 +270,7 @@
 
     {% if comment.reply_set.all.count > 0 and not replies %}
         <div style="display: inline-block;" id="first_load_more_div_replies{{ comment.id }}" class="feed-shared-comments-list__show-previous-container" >
-      <button id="show_prev" data-control-name="more_replies" class="hoverable-link-text button feed-shared-comments-list__show-previous-button Sans-13px-black-55%" data-ember-action="" data-ember-action-3134="3134">
-        <span aria-hidden="true" page="1" onclick="getMoreReplies(this)" commentId="{{ comment.id }}">Afficher plus de commentaires</span>
+      <button id="show_prev" data-control-name="more_replies" class="hoverable-link-text button feed-shared-comments-list__show-previous-button Sans-13px-black-55%"  page="1" onclick="getMoreReplies(this)" commentId="{{ comment.id }}">Afficher plus de commentaires
 <!---->      </button>
     </div>
 
@@ -294,8 +292,7 @@
 
 {% if comments.has_next %}
         <div style="display: inline-block;" id="load_more_div{{ statutid }}" class="feed-shared-comments-list__show-previous-container">
-      <button id="show_prev" data-control-name="more_comments" class="hoverable-link-text button feed-shared-comments-list__show-previous-button Sans-13px-black-55%" data-ember-action="" data-ember-action-3134="3134">
-        <span aria-hidden="true" page="{{ comments.next_page_number }}" onclick="getMoreComments(this)" statutid="{{ statutid }}">Afficher plus de commentaires</span>
+      <button id="show_prev" data-control-name="more_comments" class="hoverable-link-text button feed-shared-comments-list__show-previous-button Sans-13px-black-55%" page="{{ comments.next_page_number }}" onclick="getMoreComments(this)" statutid="{{ statutid }}">Afficher plus de commentaires
 <!---->      </button>
     </div>
 

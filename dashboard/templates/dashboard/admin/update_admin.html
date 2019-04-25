@@ -1,0 +1,481 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}
+    Modification d'un Administrateur | Espace Administrateur | {{ block.super }}
+{% endblock title %}
+
+{% block stylesheets %}
+
+    {{ block.super }}
+
+    <!-- Multi Select -->
+    <link href="{% static 'dashboard/multi-select/jquery.dropdown.min.css' %}" rel="stylesheet">
+
+{% endblock stylesheets %}
+
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="tabs-container">
+
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li><a class="nav-link active show" data-toggle="tab" href="#tab-1"> Informations</a></li>
+                        <li><a class="nav-link" data-toggle="tab" href="#tab-2">Mot de passe</a></li>
+                    </ul>
+
+
+                    <div class="tab-content">
+
+
+                        <div role="tabpanel" id="tab-1" class="tab-pane active show">
+                            <div class="panel-body">
+
+
+                                <div class="">
+
+                                    <h2>
+                                        Modification de l'admin {{ admin_update.prenom | title }} {{ admin_update.nom | title }}
+                                    </h2>
+                                    <div class="mail-tools tooltip-demo m-t-md error_color"
+                                         style="padding:5px 50px 0px 50px;">
+
+                                        {% for field in form_add_admin %}
+                                            {{ field.errors }}
+                                        {% endfor %}
+
+                                        {% for field in form_update_password %}
+                                            {{ field.errors }}
+                                        {% endfor %}
+
+                                        {% if form_add_admin_droits_error %}
+                                            <ul class="errorlist">
+                                                <li>{{ form_add_admin_droits_error }}</li>
+                                            </ul>
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+                                <div class="" style="padding:5px 50px 25px 50px;">
+
+                                    <h3>Informations <span class="error_color">*</span></h3>
+
+
+                                    <form action="{% url 'dashboard:update_admin_informations' id_admin=admin_update.id %}"
+                                          method="POST" enctype="multipart/form-data">
+
+                                        {% csrf_token %}
+
+                                        <div class="form-group row"><label class="col-sm-2 col-form-label"></label>
+
+                                            <div class="col-sm-10">
+                                                <div class="row">
+
+                                                    <div class="col-md-4">
+                                                        {% render_field form_add_admin.nom placeholder="Nom" class="form-control" %}
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        {% render_field form_add_admin.prenom placeholder="Prénom" class="form-control" %}
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        {% render_field form_add_admin.email placeholder="Email" class="form-control" %}
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row"><label class="col-sm-2 col-form-label"></label>
+
+                                            <div class="col-sm-10">
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        {% render_field form_add_admin.role placeholder="Rôle" class="form-control" %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <h3>Photo de profil</h3>
+
+                                        <div class="form-group row"><label class="col-sm-2 col-form-label"></label>
+
+                                            <div class="col-sm-10">
+                                                <div class="row" style="padding-left: 15px;width: 811px;">
+
+                                                    <div class=" col-lg-7">
+                                                        {% render_field form_add_admin.image class="" %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <h3>Droits <span class="error_color">*</span></h3>
+
+                                        <div class="form-group row"><label class="col-sm-2 col-form-label"></label>
+
+                                            <div class="col-sm-10">
+                                                <div class="row">
+
+                                                    <div class="col-lg-4">
+                                                        <div class="row">
+
+                                                            <div class="col-lg-12">
+                                                                <h4>Administration</h4>
+                                                            </div>
+
+                                                            <div class="col-lg-12">
+
+                                                            <div class="multi_select_demo">
+                                                                <select class="form-control droit_options" multiple=""
+                                                                        name="droits_administration"
+                                                                        id="droits_administration">
+                                                                    {% for droit in droits_administration %}
+                                                                        <option
+                                                                                {% if droit in admin_update.droits.all %}
+                                                                                    selected {% endif %}
+                                                                                    value="{{ droit.id }}">{{ droit.nom }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+                                                            </div>
+
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-4">
+                                                        <div class="row">
+
+                                                            <div class="col-lg-12">
+                                                                <h4>Page de garde</h4>
+                                                            </div>
+
+                                                            <div class="col-lg-12">
+                                                            <div class="multi_select_demo">
+                                                                <select class="form-control droit_options" multiple=""
+                                                                        name="droits_page_de_garde"
+                                                                        id="droits_page_de_garde">
+                                                                    {% for droit in droits_page_de_garde %}
+                                                                        <option
+                                                                                {% if droit in admin_update.droits.all %}
+                                                                                    selected {% endif %}
+                                                                                    value="{{ droit.id }}">{{ droit.nom }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+
+                                                            </div>
+
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-4">
+                                                        <div class="row">
+
+                                                            <div class="col-lg-12">
+                                                                <h4>Newsletter</h4>
+                                                            </div>
+
+                                                            <div class="col-lg-12">
+                                                            <div class="multi_select_demo">
+                                                                <select class="form-control droit_options" multiple=""
+                                                                        name="droits_newsletter" id="droits_newsletter">
+                                                                    {% for droit in droits_newsletter %}
+                                                                        <option
+                                                                                {% if droit in admin_update.droits.all %}
+                                                                                    selected {% endif %}
+                                                                                    value="{{ droit.id }}">{{ droit.nom }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+
+                                                            </div>
+
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-4">
+                                                        <div class="row margin_top_15">
+
+                                                            <div class="col-lg-12">
+                                                                <h4>Réseau social</h4>
+                                                            </div>
+
+                                                            <div class="col-lg-12">
+                                                            <div class="multi_select_demo">
+                                                                <select class="form-control droit_options" multiple=""
+                                                                        name="droits_newsletter" id="droits_newsletter">
+                                                                    {% for droit in droits_reseau_social %}
+                                                                        <option
+                                                                                {% if droit in admin_update.droits.all %}
+                                                                                    selected {% endif %}
+                                                                                    value="{{ droit.id }}">{{ droit.nom }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+
+                                                            </div>
+
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-4">
+                                                        <div class="row margin_top_15">
+
+                                                            <div class="col-lg-12">
+                                                                <h4>Journal</h4>
+                                                            </div>
+
+                                                            <div class="col-lg-12">
+                                                            <div class="multi_select_demo">
+                                                                <select class="form-control droit_options" multiple=""
+                                                                        name="droits_journal" id="droits_journal">
+                                                                    {% for droit in droits_journal %}
+                                                                        <option
+                                                                                {% if droit in admin_update.droits.all %}
+                                                                                    selected {% endif %}
+                                                                                    value="{{ droit.id }}">{{ droit.nom }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+
+                                                            </div>
+
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-4">
+                                                        <div class="row margin_top_15">
+
+                                                            <div class="col-lg-12">
+                                                                <h4>E-commerce</h4>
+                                                            </div>
+
+                                                            <div class="col-lg-12">
+                                                            <div class="multi_select_demo">
+                                                                <select class="form-control droit_options" multiple=""
+                                                                        name="droits_ecommerce" id="droits_ecommerce">
+                                                                    {% for droit in droits_ecommerce %}
+                                                                        <option
+                                                                                {% if droit in admin_update.droits.all %}
+                                                                                    selected {% endif %}
+                                                                                    value="{{ droit.id }}">{{ droit.nom }}</option>
+                                                                    {% endfor %}
+
+                                                                </select>
+                                                            </div>
+
+                                                            </div>
+
+
+                                                        </div>
+                                                    </div>
+
+
+                                    <div class="col-lg-4">
+                                        <div class="row margin_top_15">
+
+                                            <div class="col-lg-12">
+                                                <h4>Q&A</h4>
+                                            </div>
+
+                                            <div class="col-lg-12">
+                                                <div class="multi_select_demo">
+                                                    <select name="droits_qa" id="droits_qa" class="form-control profile_droit_select" multiple=""
+                                                            disabled>
+                                                        {% for droit in droits_qa %}
+                                                            <option {% if droit in admin_update.droits.all %}
+                                                                selected {% endif %}
+                                                                value="{{ droit.id }}">{{ droit.nom }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <div class="row margin_top_15">
+
+                                            <div class="col-lg-12">
+                                                <h4>Appels d'offres</h4>
+                                            </div>
+
+                                            <div class="col-lg-12">
+                                                <div class="multi_select_demo">
+                                                    <select name="droits_ao" id="droits_ao" class="form-control profile_droit_select" multiple=""
+                                                            disabled>
+                                                        {% for droit in droits_ao %}
+                                                            <option {% if droit in admin_update.droits.all %}
+                                                                selected {% endif %}
+                                                                value="{{ droit.id }}">{{ droit.nom }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <div class="row margin_top_15">
+
+                                            <div class="col-lg-12">
+                                                <h4>E-learning</h4>
+                                            </div>
+
+                                            <div class="col-lg-12">
+                                                <div class="multi_select_demo">
+                                                    <select name="droits_elearning" id="droits_elearning" class="form-control profile_droit_select" multiple=""
+                                                            disabled>
+                                                        {% for droit in droits_elearning %}
+                                                            <option {% if droit in admin_update.droits.all %}
+                                                                selected {% endif %}
+                                                                value="{{ droit.id }}">{{ droit.nom }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class=" row">
+
+                                            <div class="col-lg-12">
+                                                <div class="float-right">
+
+                                                    <input value="Modifier" type="submit" class="btn btn-success"
+                                                           style="width:100px;">
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </form>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+
+
+                        <div role="tabpanel" id="tab-2" class="tab-pane">
+                            <div class="panel-body">
+                                <div class="form-group row"><label class="col-sm-2 col-form-label"></label>
+
+
+                                    <div class="col-sm-12">
+
+                                        <h3>Modifier le mot de passe de {{ admin_update.prenom | title }} {{ admin_update.nom }}</h3>
+
+                                        <form action="{% url 'dashboard:update_admin_password' id_admin=admin_update.id %}" method="POST">
+                                            {% csrf_token %}
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    {% render_field form_update_password.password placeholder="Nouveau mot de passe" class="form-control" %}
+                                                </div>
+                                                <div class="col-md-4">
+                                                    {% render_field form_update_password.confirm_password placeholder="Répéter le nouveau mot de passe" class="form-control" %}
+                                                </div>
+                                                <div class="col-lg-12">
+                                                    <div class="float-right">
+
+                                                        <input value="Modifier" type="submit" class="btn btn-success"
+                                                               style="width:100px;">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+            </div>
+
+
+            <div id="window_liste_emails" class="col-lg-12 animated fadeInRight"></div>
+
+
+        </div>
+
+
+    </div>
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+    {{ block.super }}
+
+    <!-- Multi Select -->
+    <script src="{% static 'dashboard/multi-select/jquery.dropdown.min.js' %}"></script>
+    <script>
+    $('.multi_select_demo').dropdown({
+
+            searchNoData: '<li style="color:#333">Aucun résultat</li>',
+            input: '<input type="text" maxLength="20" placeholder="Recherche...">',
+
+
+        });
+    </script>
+
+    <script>
+        $('#dashboard_admin').addClass("active");
+
+        $('option').mousedown(function (e) {
+            e.preventDefault();
+            var originalScrollTop = $(this).parent().scrollTop();
+            console.log(originalScrollTop);
+            $(this).prop('selected', $(this).prop('selected') ? false : true);
+            var self = this;
+            $(this).parent().focus();
+            setTimeout(function () {
+                $(self).parent().scrollTop(originalScrollTop);
+            }, 0);
+
+            return false;
+        });
+
+    </script>
+
+
+
+
+
+{% endblock scripts %}
+

@@ -1,0 +1,195 @@
+{% extends 'dashboard-teacher/base.html' %}
+{% load static %}
+{% block content %}
+
+    <style>
+        .django-ckeditor-widget{
+            width: 100%;
+        }
+    </style>
+
+<div class="content-wrapper">
+    <div class="container-fluid">
+      <!-- Breadcrumbs-->
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'eLearning:teacher_dashboard' %}">Tableau de bord</a>
+            </li>
+            <li class="breadcrumb-item active">Modifier profil</li>
+        </ol>
+        {% if form.errors %}
+            <div class="box_general padding_bottom">
+                <div class="header_box version_2">
+                    <h2><i class="fa fa-exclamation-circle"></i>Veuillez corriger les erreurs ci-dessous:</h2>
+                </div>
+                <div>
+                    <div class="alert alert-danger" id="form-error">
+                        <ul>
+                            {% for field in form %}
+                                {% if field.errors %}
+                                    <li>{{ field.name }} - {{ field.errors|striptags }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% elif message_error %}
+            <div class="box_general padding_bottom">
+                <div class="header_box version_2">
+                    <h2><i class="fa fa-exclamation-circle"></i>Veuillez corriger les erreurs ci-dessous:</h2>
+                </div>
+                <div>
+                    <div class="alert alert-danger" id="form-error">
+                        <ul>
+                            <li>{{ message_error }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}{{ form.media }}
+            <div class="box_general padding_bottom">
+                <div class="header_box version_2">
+                    <h2><i class="fa fa-file"></i>Informations de base</h2>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <img style="border-radius: 5px" alt="profil" width="200" height="200" id="photo_profil"
+                             {% if request.user.profil.photo_profil %}
+                                 {% if request.user.profil.photo_profil.image %}
+                                    src="{{ request.user.profil.photo_profil.image.url }}"
+                                 {% else %}
+                                    src="{% static 'eLearning/img/default-profil.jpg' %}"
+                                 {% endif %}
+                             {% else %}
+                                src="{% static 'eLearning/img/default-profil.jpg' %}"
+                             {% endif %}/>
+                        <div class="form-group" style="margin-top: 10px">
+                            {{ form.photo_profil }}
+                        </div>
+                    </div>
+                    <div class="col-md-10" style="padding-top: 20px">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Nom</label>
+                                    {{ form.last_name }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Prénom</label>
+                                    {{ form.first_name }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Téléphone</label>
+                                    {{ form.tel }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    {{ form.email }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /box_general-->
+
+            <div class="box_general padding_bottom">
+                <div class="header_box version_2">
+                    <h2><i class="fa fa-share-alt"></i>Profils sociaux</h2>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Facebook</label>
+                            {{ form.facebook }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Linkedin</label>
+                            {{ form.linkedin }}
+                        </div>
+                    </div>
+                </div>
+                <!-- /row-->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>YouTube</label>
+                            {{ form.youtube }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Twitter</label>
+                            {{ form.twitter }}
+                        </div>
+                    </div>
+                </div>
+                <!-- /row-->
+            </div>
+            <!-- /box_general-->
+
+            <div class="box_general padding_bottom">
+                <div class="header_box version_2">
+                    <h2><i class="fa fa-file-text"></i>Curriculum</h2>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Titre <a href="#" data-toggle="tooltip" data-placement="top" title="..."><i class="fa fa-fw fa-question-circle"></i></a></label>
+                            {{ form.title }}
+                        </div>
+                    </div>
+                </div>
+                <!-- /row-->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label style="margin-bottom: 0">Biographie</label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            {{ form.biography }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label style="margin-bottom: 0">CV</label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            {% if request.user.profil.cv %}
+                                {% if request.user.profil.cv.url %}
+                                    <a style="border: 1px solid #333; padding: 4.5px 40px; font-weight: 600;" href="{{ request.user.profil.cv.url }}">Télécharger votre CV <i class="fa fa-fw fa-download"></i></a>
+                                {% endif %}
+                            {% endif %}
+                            {{ form.cv }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /box_general-->
+            <p style="text-align: right"><button type="submit" class="btn_1 medium">Sauvegarder</button></p>
+        </form>
+      </div>
+</div>
+{% endblock %}
+{% block script %}
+<script src="{% static 'eLearning/js/readUrlScript.js' %}"></script>
+{% endblock %}

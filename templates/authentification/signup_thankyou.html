@@ -1,0 +1,29 @@
+{% extends 'base_ESPR.html' %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block stylesheet %}{{ block.super }}{% endblock %}
+
+{% block title %}{{ block.super }} | Connexion{% endblock %}
+{% block header %}
+{% include 'top_nav.html' %}
+{% endblock %}
+{% block content %}
+
+
+     <div class="container">
+            <div class="row">
+                <div class="col-md-12 " style="text-align: center; padding-top: 33px;"> <h1>Merci d'être inscrit à la plus grande plateforme BTP Mondiale !</h1></div>
+
+                <div class="col-lg-6  ml-auto mr-auto">
+
+                         {% include "messages.html" %}
+                </div>
+            </div>
+        </div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+{% endblock %}

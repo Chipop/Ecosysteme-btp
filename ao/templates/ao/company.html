@@ -1,0 +1,293 @@
+{% extends 'ao/base.html' %}
+
+{% load static %}
+
+{% block style %}
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+        {% if status %}
+            Snackbar.show({
+                text: 'Avis ajouté avec succés',
+            });
+        {% endif %}
+        // Snackbar for copy to clipboard button
+        $('.copy-url-button').click(function() {
+            Snackbar.show({
+                text: 'Copié à presse-papiers!',
+            });
+        });
+    </script>
+
+{% endblock %}
+
+{% block content %}
+
+    <!-- Titlebar
+================================================== -->
+<div class="single-page-header" data-background-image="{% static 'ao/images/single-company.jpg' %}">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="single-page-header-inner">
+					<div class="left-side">
+						<div class="header-image">
+                            {% if company.logo.url is not None %}
+                                <img src="{{ company.logo.url }}" alt="">
+                            {% else %}
+                                <img src="{% static 'ao/images/company-logo-05.png' %}">
+                            {% endif %}
+                        </div>
+						<div class="header-details">
+							<h3>{{ company }} <span>{{ company.activity }}</span></h3>
+							<ul>
+                                <li><i class="icon-material-outline-email"></i> {{ company.mail }}</li>
+								<li><i class="icon-feather-phone"></i> {{ company.telephone }}</li>
+								<li><i class="icon-line-awesome-fax"></i> {{ company.fax }}</li>
+							</ul>
+						</div>
+					</div>
+					<div class="right-side">
+						<!-- Breadcrumbs -->
+						<nav id="breadcrumbs" class="white">
+							<ul>
+								<li><a href="{% url 'ao:home' %}">Accueil</a></li>
+								<li><a href="javascript:void(0);">Entreprises</a></li>
+								<li>{{ company }}</li>
+							</ul>
+						</nav>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- Page Content
+================================================== -->
+<div class="container">
+	<div class="row">
+
+		<!-- Content -->
+		<div class="col-xl-8 col-lg-8 content-right-offset">
+
+			<div class="single-page-section">
+				<h3 class="margin-bottom-25">À propos de l'Entreprise</h3>
+				{{ company.description|safe }}
+			</div>
+
+			<!-- Boxed List -->
+			<div class="boxed-list margin-bottom-60">
+				<div class="boxed-list-headline">
+					<h3><i class="icon-material-outline-business-center"></i> Meilleurs Appels d'Offre en ligne</h3>
+				</div>
+
+				<div class="listings-container compact-list-layout">
+
+                    {% for ao in company.aos %}
+                        <!-- Job Listing -->
+                        <a href="{% url 'ao:ao' ao.id %}" class="job-listing">
+
+                            <!-- Job Listing Details -->
+                            <div class="job-listing-details">
+                                <!-- Details -->
+                                <div class="job-listing-description">
+                                    <h3 class="job-listing-title">{{ ao.title }}</h3>
+                                    <!-- Job Listing Footer -->
+                                    <div class="job-listing-footer">
+                                        <ul>
+                                            <li><i class="icon-material-outline-location-on"></i> {{ ao.cities }}</li>
+                                            <li><i class="icon-material-outline-money"></i> {{ ao.budget }}</li>
+                                            <li><i class="icon-material-outline-access-time"></i> {{ ao.creation_date }}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+
+				</div>
+
+			</div>
+			<!-- Boxed List / End -->
+
+			<!-- Boxed List -->
+			<div class="boxed-list margin-bottom-60">
+				<div class="boxed-list-headline">
+					<h3><i class="icon-material-outline-thumb-up"></i> Avis</h3>
+				</div>
+				<ul class="boxed-list-ul">
+
+                    {% for review in company.reviews %}
+                        <li>
+                            <div class="boxed-list-item">
+                                <!-- Content -->
+                                <div class="item-content">
+                                    <h4>{{ review.title }}
+                                        <span>
+                                            {{ review.full_name }} &nbsp;&nbsp;
+                                            <i class="icon-material-outline-date-range"></i> {{ review.creation_date }}
+                                        </span>
+                                    </h4>
+                                    <div class="item-description">
+                                        <p>{{ review.content }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+
+				</ul>
+
+                {% if connected %}
+                    <div class="centered-button margin-top-35">
+                        <a href="#small-dialog" class="popup-with-zoom-anim button button-sliding-icon">Ajouter une avis
+                            <i class="icon-material-outline-arrow-right-alt"></i></a>
+                    </div>
+                {% endif %}
+
+			</div>
+			<!-- Boxed List / End -->
+
+		</div>
+
+
+		<!-- Sidebar -->
+		<div class="col-xl-4 col-lg-4">
+			<div class="sidebar-container">
+
+				<!-- Location -->
+				<div class="sidebar-widget">
+					<h3>Adresse</h3>
+                    <ul style="list-style: none; background-color: #f2f2f2; border-radius: 4px; padding: 15px 25px;">
+                        <li style="font-size: 17px;">
+                            <i class="icon-material-outline-outlined-flag" style="padding-right: 10px;"></i> {{ company.country }}</li>
+                        <li style="font-size: 17px;">
+                            <i class="icon-material-outline-location-city" style="padding-right: 10px;"></i> {{ company.city }}</li>
+                        <li style="font-size: 17px;">
+                            <i class="icon-material-outline-location-on" style="padding-right: 10px;"></i> {{ company.address }}</li>
+                    </ul>
+				</div>
+
+				<!-- Widget -->
+				<div class="sidebar-widget">
+					<h3>Social Profiles</h3>
+					<div class="freelancer-socials margin-top-25">
+						<ul>
+							<li><a href="{{ company.facebook }}" title="Facebook" target="_blank" data-tippy-placement="top">
+                                <i class="icon-brand-facebook"></i></a>
+                            </li>
+							<li><a href="{{ company.twitter }}" title="Twitter" target="_blank" data-tippy-placement="top">
+                                <i class="icon-brand-twitter"></i></a>
+                            </li>
+							<li><a href="{{ company.linkedIn }}" title="LinkedIn" target="_blank" data-tippy-placement="top">
+                                <i class="icon-brand-linkedin"></i></a>
+                            </li>
+							<li><a href="{{ company.github }}" title="Github" target="_blank" data-tippy-placement="top">
+                                <i class="icon-brand-github"></i></a>
+                            </li>
+							<li><a href="{{ company.youtube }}" title="Youtube" target="_blank" data-tippy-placement="top">
+                                <i class="icon-brand-youtube"></i></a>
+                            </li>
+						</ul>
+					</div>
+				</div>
+
+				<!-- Sidebar Widget -->
+				<div class="sidebar-widget">
+					<h3>Partager</h3>
+
+					<!-- Copy URL -->
+					<div class="copy-url">
+						<input id="copy-url" type="text" value="" class="with-border">
+						<button class="copy-url-button ripple-effect" data-clipboard-target="#copy-url" title="Copier dans le presse-papier" data-tippy-placement="top"><i class="icon-material-outline-file-copy"></i></button>
+					</div>
+
+					<!-- Share Buttons -->
+					<div class="share-buttons margin-top-25">
+						<div class="share-buttons-trigger"><i class="icon-feather-share-2"></i></div>
+						<div class="share-buttons-content">
+							<span>Intéressant? <strong>Partagez-le!</strong></span>
+							<ul class="share-buttons-icons">
+								<li><a href="#" data-button-color="#3b5998" title="Partager sur Facebook" data-tippy-placement="top"><i class="icon-brand-facebook-f"></i></a></li>
+								<li><a href="#" data-button-color="#1da1f2" title="Partager sur Twitter" data-tippy-placement="top"><i class="icon-brand-twitter"></i></a></li>
+								<li><a href="#" data-button-color="#dd4b39" title="Partager sur Google Plus" data-tippy-placement="top"><i class="icon-brand-google-plus-g"></i></a></li>
+								<li><a href="#" data-button-color="#0077b5" title="Partager sur LinkedIn" data-tippy-placement="top"><i class="icon-brand-linkedin-in"></i></a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+</div>
+
+    <!-- Leave a Review Popup
+================================================== -->
+<div id="small-dialog" class="zoom-anim-dialog mfp-hide dialog-with-tabs">
+
+	<!--Tabs -->
+	<div class="sign-in-form">
+
+		<ul class="popup-tabs-nav">
+			<li><a href="#tab">Laisser une avis</a></li>
+		</ul>
+
+		<div class="popup-tabs-container">
+
+			<!-- Tab -->
+			<div class="popup-tab-content" id="tab">
+
+				<!-- Welcome Text -->
+				<div class="welcome-text">
+					<h3>À quoi ressemble le travail avec {{ company }}?</h3>
+                </div>
+
+				<!-- Form -->
+				<form method="post" id="leave-company-review-form">
+                    {% csrf_token %}
+					<div class="row">
+						<div class="col-xl-12">
+							<div class="input-with-icon-left" title="Laissez vide pour ajouter une avis anonyme" data-tippy-placement="bottom">
+								<i class="icon-material-outline-account-circle"></i>
+								<input type="text" class="input-text with-border" name="name" id="name" placeholder="Nom complet"/>
+							</div>
+						</div>
+
+						<div class="col-xl-12">
+							<div class="input-with-icon-left">
+								<i class="icon-material-outline-rate-review"></i>
+								<input type="text" class="input-text with-border" name="title" id="reviewtitle" placeholder="Titre de l'avis"  required/>
+							</div>
+						</div>
+					</div>
+
+					<textarea class="with-border" placeholder="Avis" name="message" id="message" cols="7"  required></textarea>
+
+                    <div style="text-align: center; margin-top: 15px">
+                        <script src='https://www.google.com/recaptcha/api.js'></script>
+                        <div class="g-recaptcha" style="display: inline-block;" data-sitekey="6LcIOV8UAAAAAO0kQRvjLmlOt7Q08VEubXgfvG6l"></div>
+                    </div>
+
+				</form>
+
+				<!-- Button -->
+				<button class="button margin-top-5 full-width button-sliding-icon ripple-effect" type="submit"
+                        form="leave-company-review-form">Ajouter une avis
+                    <i class="icon-material-outline-arrow-right-alt"></i>
+                </button>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+<!-- Leave a Review Popup / End -->
+
+{% endblock %}

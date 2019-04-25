@@ -1,0 +1,154 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/footer-css.css' %}">
+
+<!-- FOOTER -->
+    <footer id="footer" style="padding-top: 20px">
+        <!-- Top Footer -->
+        <div id="top-footer" class="section">
+            <!-- CONTAINER -->
+            <div class="container">
+                <!-- ROW -->
+                <div class="row">
+                    <!-- Column 1 -->
+                    <div class="col-md-4">
+                        <!-- footer about -->
+                        <div class="footer-widget about-widget">
+                            <div class="footer-logo">
+                                <a href="#" class="logo" style="width: 250px">
+                                    <img src="{% static 'images/logo_qa.png' %}" alt="logo">
+                                </a>
+                                <p>Populo tritani laboramus ex mei, no eum iuvaret ceteros euripidis, ne alia sadipscing mei. Te inciderint cotidieque pro, ei iisque docendi qui.</p>
+                            </div>
+                        </div>
+                        <!-- /footer about -->
+
+                        <!-- footer social -->
+                        <div class="footer-widget social-widget">
+                            <div class="widget-title">
+                                <h3 class="title">Suivez nous</h3>
+                            </div>
+                            <ul style="padding: 0">
+                                <li><a href="#" class="facebook"><i class="fa fa-facebook"></i></a></li>
+                                <li><a href="#" class="twitter"><i class="fa fa-twitter"></i></a></li>
+                                <li><a href="#" class="google"><i class="fa fa-google"></i></a></li>
+                                <li><a href="#" class="instagram"><i class="fa fa-instagram"></i></a></li>
+                                <li><a href="#" class="youtube"><i class="fa fa-youtube"></i></a></li>
+                                <li><a href="#" class="rss"><i class="fa fa-rss"></i></a></li>
+                            </ul>
+                        </div>
+                        <!-- /footer social -->
+
+                        <!-- footer subscribe -->
+                        <div class="footer-widget subscribe-widget">
+                            <div class="widget-title">
+                                <h2 class="title">S'abonner à la Newsletter</h2>
+                            </div>
+                            <form action="" method="POST" role="form" class="formSubscribe" data-validate-username-url="/journal/subscribe/">
+                                <input type="email" name="email" class="input" placeholder="Email:*" maxlength="40" required="" id="id_email">
+                                <button class="input-btn" type="submit">S'inscrire</button>
+                                <p class="messageNewslatter"></p>
+                            </form>
+
+                        </div>
+                        <!-- /footer subscribe -->
+                    </div>
+                    <!-- /Column 1 -->
+
+                    <!-- Column 2 Les plus lus -->
+                    <div class="col-md-4">
+                        <!-- widget populaires qst -->
+                        <div class="widget">
+                            <div class="widget-title">
+                                <h2 class="title">Questions populaires</h2>
+                            </div>
+                            {% for question in top_questions_qa %}
+                                <article class="article widget-article">
+                                    <div class="article-img">
+                                        <a href="#">
+                                            {% if question.user.photo_profil is None %}
+                                                <img style="max-width: 80px; max-height: 51px;" alt="avatar" src="{% static 'images/default-profil.jpg' %}">
+                                            {% else %}
+                                                <img style="max-width: 80px; max-height: 51px;" alt="avatar" src="{{ question.user.photo_profil.image.url }}">
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                    <div class="article-body">
+                                        <h4 class="article-title">
+                                            <a href="{% url 'qa:question' question.id %}">{{ question.title|truncatechars:60 }}</a></h4>
+                                        <ul class="article-meta">
+                                            <li><i class="fa fa-clock-o"></i> {{ question.creation_date|date }}</li>
+                                            <li><i class="fa fa-comments"></i> {{ question.answers_count }}</li>
+                                        </ul>
+                                    </div>
+                                </article>
+                            {% endfor %}
+                        </div>
+                        <!-- /widget dernières vidéos -->
+                    </div>
+                    <!-- /Column 2 Les plus lus -->
+
+                    <!-- Column 4 Meilleurs Tags -->
+                    <div class="col-md-4">
+                        <div class="widget tags-widget">
+                            <div class="widget-title">
+                                <h2 class="title" style="margin-bottom: 22px;">Meilleurs Tags</h2>
+                            </div>
+                            <ul>
+                                {% for tag in top_tag_qa %}
+                                    <li>
+                                        <a href="{% url 'qa:all_questions' %}?tag={{ tag }}">{{ tag }}</a>
+                                        <span class="pull-right">{{ tag.count_q }}</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- /Column 4 Meilleurs Tags -->
+                </div>
+                <!-- /ROW -->
+            </div>
+            <!-- /CONTAINER -->
+        </div>
+        <!-- /Top Footer -->
+
+        <!-- Bottom Footer -->
+        <div id="bottom-footer" class="section">
+            <!-- CONTAINER -->
+            <div class="container">
+                <!-- ROW -->
+                <div class="row">
+                    <!-- footer links -->
+                    <div class="col-md-6 col-md-push-6">
+                       <div class="footer-copyright">
+                            <span>
+                                Copyright &copy;
+                                <script>
+                                    document.write(new Date().getFullYear());
+
+                                </script>
+                                All rights reserved | Made by
+                                <a href="https://www.linkedin.com/in/anass-oujri/" target="_blank">OUJRI & ELKHAOUA</a>
+                            </span>
+                        </div>
+
+
+                    </div>
+                    <!-- /footer links -->
+
+                    <!-- footer copyright -->
+                    <div class="col-md-6 col-md-pull-6">
+                        <!--<ul class="footer-links">
+                            <li><a href="#">à propos</a></li>
+                            <li><a href="#">Contact</a></li>
+                            <li><a href="#">Privacy</a></li>
+                        </ul>-->
+                    </div>
+                    <!-- /footer copyright -->
+                </div>
+                <!-- /ROW -->
+            </div>
+            <!-- /CONTAINER -->
+        </div>
+        <!-- /Bottom Footer -->
+    </footer>
+    <!-- /FOOTER -->

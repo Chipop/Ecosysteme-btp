@@ -4,7 +4,7 @@
 {% block title %}{{ groupe.nom }} - Demandes{% endblock %}
 {% block contentGroupe %}
                         <!-- Filter Nav Start -->
-                            <div class="filter--nav pb--60 clearfix">
+                            <div class="filter--nav clearfix">
                             </div>
                             <!-- Filter Nav End -->
 
@@ -72,23 +72,19 @@
                             <!-- Page Count Start -->
                             <div class="page--count pt--30">
                                 <label class="ff--primary fs--14 fw--500 text-darker">
-                                    <span>Viewing</span>
+                                    <span>Voir</span>
                                     {% if demandesGroupe.has_previous %}
                                         <button id="btfirst" href="?page=1" class="btn-link"><i class="fa fa-caret-left"></i><i class="fa fa-caret-left"></i></button>
                                         <button id="btprevious" page="{{ demandesGroupe.previous_page_number }}" class="btn-link"><i class="fa fa-caret-left"></i></button>
-                                    {% else %}
-                                        <button id="btfirst" href="1" class="btn-link"><i class="fa fa-caret-left"></i><i class="fa fa-caret-left"></i></button>
-                                        <button id="btprevious" page="1" class="btn-link"><i class="fa fa-caret-left"></i></button>
                                     {% endif %}
-                                        <input id="RequestsPageNum" type="number" name="page-count" value="{{ demandesGroupe.number }}" class="form-control form-sm">
+                                    <span style="background-color: #eeeeee;padding-right: 16px;">
+                                        <input id="RequestsPageNum" style="border: none;" type="number" name="page-count" readonly value="{{ demandesGroupe.number }}" class="form-control form-sm"> /
+                                        <span id="numPages" style=" margin-left: 14px;">{{ demandesGroupe.paginator.num_pages }}</span>
+                                    </soan>
                                     {% if demandesGroupe.has_next %}
                                         <button id="btnext" page="{{ demandesGroupe.next_page_number }}" class="btn-link"><i class="fa fa-caret-right"></i></button>
                                         <button id="btlast" page="{{ demandesGroupe.paginator.num_pages }}" class="btn-link"><i class="fa fa-caret-right"></i><i class="fa fa-caret-right"></i></button>
-                                    {% else %}
-                                        <button id="btnext" page="{{ demandesGroupe.paginator.num_pages }}" class="btn-link"><i class="fa fa-caret-right"></i></button>
-                                        <button id="btlast" page="{{ demandesGroupe.paginator.num_pages }}" class="btn-link"><i class="fa fa-caret-right"></i><i class="fa fa-caret-right"></i></button>
                                     {% endif %}
-                                        <span id="numPages">{{ demandesGroupe.paginator.num_pages }}</span>
 
                                 </label>
                             </div>
@@ -239,6 +235,7 @@
                                 getGroupeRequests($("#RequestsPageNum").val());
                                 $("#nbdemandeBadge").text(data.nbdemandes);
                             });
+                            fixForms();
                         }
                 }else
                     {

@@ -146,7 +146,7 @@
 
 
 
-                                Bonjour {{ user.first_name }},
+                                Bonjour {{ question.user_data.user.first_name }},
 
 
 
@@ -160,6 +160,8 @@
 
                                 Vous avez obtenu des réponses à votre questions : <strong>{{ question.question_title }}</strong> 
 
+                                <br>
+                                Par : <b>{{ user.first_name }}</b>
                                 <br>
                                 Si vous voulez plus de détails :
                             </div>

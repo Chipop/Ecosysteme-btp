@@ -4,6 +4,7 @@ import uuid
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.urls import reverse
 from django.utils.deconstruct import deconstructible
 
 from ckeditor.fields import RichTextField
@@ -77,6 +78,19 @@ class Journalist(models.Model):
     def email_list():
         return Journalist.objects.filter(active=True).values_list('email', flat=True)
 
+    class Meta:
+        verbose_name_plural = 'Journalistes'
+        verbose_name = "Journaliste"
+
+    def tracking_get_admin_url(self):
+        return reverse('dashboard:news_infos_journaliste', kwargs={'id_journaliste': self.id})
+
+    def tracking_get_absolute_url(self):
+        return reverse('author', kwargs={'selected_author_id': self.id})
+
+    def tracking_get_description(self):
+        return self.first_name.title() + " " + self.last_name.title()
+
 
 class Category(models.Model):
     name = models.CharField(max_length=20)
@@ -87,6 +101,19 @@ class Category(models.Model):
     tab_home = models.CharField(max_length=50, default='tab1')
 
     def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = 'Catégories Articles'
+        verbose_name = "Catégorie Articles"
+
+    def tracking_get_admin_url(self):
+        return ""
+
+    def tracking_get_absolute_url(self):
+        return reverse('category', kwargs={'category_name': self.name})
+
+    def tracking_get_description(self):
         return self.name
 
 
@@ -117,6 +144,9 @@ class News(models.Model):
     tag = models.ManyToManyField(Tag)
     active = models.BooleanField(default=True)
     approved = models.BooleanField(default=False)
+    shares = models.IntegerField(default=0)
+    likes = models.IntegerField(default=0)
+    signale = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -125,17 +155,54 @@ class News(models.Model):
         self.view_number += 1
         self.save()
 
+    def add_share(self):
+        self.shares += 1
+        self.save()
+
+    def add_like(self):
+        self.likes += 1
+        self.save()
+
     def sorted_comment(self):
         return self.comment_set.all().order_by('-number_like')
 
+    def is_video(self):
+        return Video.objects.filter(id=self.id).exists()
+
+    def get_absolute_url(self):
+        return reverse('post', kwargs={'category_name': self.category.name, 'post': self.id})
+
     class Meta:
         verbose_name_plural = 'Articles'
+        verbose_name = "Article"
+
+    def tracking_get_admin_url(self):
+        return reverse('dashboard:news_infos_article', kwargs={'id_article': self.id})
+
+    def tracking_get_absolute_url(self):
+        return reverse('post', kwargs={'category_name': self.category.name, 'post': self.id})
+
+    def tracking_get_description(self):
+        return self.small_title
 
 
 class Video(News):
     video_url = models.URLField()
     data_merge = models.IntegerField(default=2)
     team_selection = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name_plural = 'Articles Vidéo'
+        verbose_name = "Article Vidéo"
+
+    def tracking_get_admin_url(self):
+        return reverse('dashboard:news_infos_article_videos', kwargs={'id_article_videos': self.id})
+
+    def tracking_get_absolute_url(self):
+        return reverse('video_show', kwargs={'selected_video_id': self.id})
+
+    def tracking_get_description(self):
+        return self.small_title
 
 
 class ImageNews(Image):
@@ -170,9 +237,15 @@ class AbstractComment(models.Model):
 class Comment(AbstractComment):
     news = models.ForeignKey(News, on_delete=models.CASCADE)
 
+    def signalements(self):
+        return SignalComment.objects.filter(comment=self)
+
 
 class Answer(AbstractComment):
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
+
+    def signalements(self):
+        return SignalAnswer.objects.filter(answer=self)
 
 
 class Signal(models.Model):

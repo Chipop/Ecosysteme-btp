@@ -27,17 +27,17 @@
                     {% for offre in offres %}
                         <div class="col-md-3 col-xs-6 col-xxs-12">
                             <!-- Member Item Start -->
-                            <div class="member--item online">
+                            <div class="member--item ">
                                 <div class="img">
-                                    <a href="{% url 'SocialMedia:getProfil' offre.id %}" class="btn-link">
-                                        <img src="{{ offre.entreprise.logo.url }}" alt=""
+                                    <a href="{% url 'SocialMedia:page_offre_emploi' offre.id %}" class="btn-link">
+                                        <img src="{{ offre.page_entreprise.entreprise.logo.url }}" alt=""
                                              style="  height: 55px;  ">
                                     </a>
                                 </div>
 
                                 <div class="name">
                                     <h3 class="h6 fs--12">
-                                        <a href="{% url 'SocialMedia:getProfil' offre.id %}"
+                                        <a href="{% url 'SocialMedia:page_offre_emploi' offre.id %}"
                                            class="btn-link">{{ offre.nom_poste }}</a>
                                     </h3>
                                 </div>
@@ -54,7 +54,7 @@
                                 </div>
 
                                 <div class="actions">
-                                    <a href="ss">Voir les détails</a>
+                                    <a href="{% url 'SocialMedia:page_offre_emploi' offre.id %}">Voir les détails</a>
                                 </div>
                             </div>
                             <!-- Member Item End -->

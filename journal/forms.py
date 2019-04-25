@@ -380,8 +380,8 @@ class ContactForm(forms.Form):
     )
 
     captcha = ReCaptchaField(
-        public_key='6Le6VFoUAAAAAAavNsXOmqwQGhrzP9fBORD70McJ',
-        private_key='6Le6VFoUAAAAAEToKNwZCgaz_56ITAj1sDWec1Ij'
+        public_key='6LdWAl0UAAAAACFjyfxGhuEL3hlhnBoyM3JISK7h',
+        private_key='6LdWAl0UAAAAAHD3J0JDgh1BpvEiUPx-quSPKA4Z'
     )
 
 
@@ -435,6 +435,6 @@ class JoinForm(forms.Form):
     )
 
     captcha = ReCaptchaField(
-        public_key='6Le6VFoUAAAAAAavNsXOmqwQGhrzP9fBORD70McJ',
-        private_key='6Le6VFoUAAAAAEToKNwZCgaz_56ITAj1sDWec1Ij'
+        public_key='6LdWAl0UAAAAACFjyfxGhuEL3hlhnBoyM3JISK7h',
+        private_key='6LdWAl0UAAAAAHD3J0JDgh1BpvEiUPx-quSPKA4Z'
     )

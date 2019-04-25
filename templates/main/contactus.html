@@ -11,6 +11,10 @@
 {% block form %}
 
 <form class="login100-form validate-form" method="POST"  style="margin:auto;">
+    {% if not is_home  %}
+        {% include 'messages.html' %}
+    {% endif %}
+
     {% csrf_token %}
 
     <span class="login100-form-title"> Nous contacter 	</span>

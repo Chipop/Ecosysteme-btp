@@ -1,0 +1,183 @@
+{% extends 'eLearning/base.html' %}
+{% load static %}
+{% block content %}
+<section id="hero_in" class="cart_section">
+    <div class="wrapper">
+        <div class="container">
+            <div class="bs-wizard clearfix">
+                <div class="bs-wizard-step active">
+                    <div class="text-center bs-wizard-stepnum">Votre panier</div>
+                    <div class="progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                    <a href="" class="bs-wizard-dot"></a>
+                </div>
+
+                <div class="bs-wizard-step disabled">
+                    <div class="text-center bs-wizard-stepnum">Paiement</div>
+                    <div class="progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                    <a href="" class="bs-wizard-dot"></a>
+                </div>
+
+                <div class="bs-wizard-step disabled">
+                    <div class="text-center bs-wizard-stepnum">Terminé!</div>
+                    <div class="progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                    <a href="" class="bs-wizard-dot"></a>
+                </div>
+            </div>
+            <!-- End bs-wizard -->
+        </div>
+    </div>
+</section>
+<!--/hero_in-->
+
+<div class="bg_color_1">
+    <div class="container margin_60_35">
+        <div class="row">
+            <div class="col-lg-8">
+                {% if message_error %}
+                    <div class="alert alert-danger">
+                        {{ message_error }}
+                    </div>
+                {% endif %}
+                <div class="box_cart">
+                    <table class="table table-striped cart-list">
+                        <thead>
+                            <tr>
+                                <th>Cours</th>
+                                <th>Solde</th>
+                                <th>Prix</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for course in courses %}
+                            <tr>
+                                <td>
+                                    <div class="thumb_cart">
+                                        {% if course.c.image %}
+                                            <img src="{{ course.c.image.url }}" alt="Image {{ course.c.name }}">
+                                        {% else %}
+                                            <img src="" alt="Image {{ course.c.name }}">
+                                        {% endif %}
+                                    </div>
+                                    <span class="item_cart">{{ course.c.name }}</span>
+                                </td>
+                                <td id="percentage{{ course.c.pk }}">
+                                    {% if course.sale %}
+                                        {{ course.sale.percentage }}%
+                                    {% else %}
+                                        0%
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <b id="price{{ course.c.pk }}">
+                                        {% if course.sale %}
+                                            {{ course.sale.new_price }}
+                                        {% else %}
+                                            {{ course.c.price }}
+                                        {% endif %}
+                                    Dh</b>
+                                </td>
+                                <td class="options" style="width:5%; text-align:center;">
+                                    <a href="{% url 'eLearning:remove_from_cart' course.id %}"><i class="icon-trash"></i></a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="cart-options clearfix">
+                        <div class="float-left fix_mobile" style="font-size: 18px; text-transform: capitalize; font-weight: 500; padding-left: 10px; margin-top: 4px;">
+                            nombre des cours : <b>{{ courses|length }}</b>
+                        </div>
+                        <div class="float-right" id="coupon_div">
+                            <div class="apply-coupon">
+                                <form action="{% url 'eLearning:apply_coupon_cart' %}" data-validate-url="{% url 'eLearning:apply_coupon_cart' %}" id="formApplyCouponCart">
+                                    <div class="form-group div_coupons">
+                                        <input type="text" id="coupon_code" required name="coupon" placeholder="Code Coupon" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn_1 outline">Appliquer Coupon</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div id="listCoupon">
+
+                            </div>
+                        </div>
+
+                    </div>
+                <!-- /cart-options -->
+                </div>
+            </div>
+            <!-- /col -->
+
+            <aside class="col-lg-4" id="sidebar">
+                <div class="box_detail">
+                    <div id="total_cart">
+                        Total <span class="float-right" id="total">{{ total }} Dh</span>
+                    </div>
+                    <div class="add_bottom_30">Lorem ipsum dolor sit amet, sed vide <strong>moderatius</strong> ad. Ex eius soleat sanctus pro, enim conceptam in quo, <a href="#">brute convenire</a> appellantur an mei.</div>
+                    <form method="post" action="{% url 'eLearning:checkout' %}" id="formCheckout">
+                        {% csrf_token %}
+                        <div class="div_coupons">
+
+                        </div>
+                    </form>
+                    <a href="javascript:" onclick="document.getElementById('formCheckout').submit();" class="btn_1 full-width">Checkout</a>
+                    <a href="{% url 'eLearning:courses_list' %}" class="btn_1 full-width outline"><i class="icon-right"></i> Continuer l'achat</a>
+                </div>
+            </aside>
+        </div>
+        <!-- /row -->
+    </div>
+    <!-- /container -->
+</div>
+<!-- /bg_color_1 -->
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+$('#formApplyCouponCart').submit(function(event) {
+    var form = $(this);
+    event.preventDefault();
+    $.ajax({
+        url: form.attr("data-validate-url"),
+        data: form.serialize(),
+        dataType: 'json',
+        success: function (data) {
+            if(data.message_error === "") {
+                var coupon_code = $("#coupon_code").val();
+                if(data.works === true) {
+                    for (var i = 0; i < data.courses.length; i++) {
+                        var id = data.courses[i]["id"];
+                        var price = $("#price"+id);
+                        price.html(data.courses[i]["price"]+ " Dh");
+                        var percentage = $("#percentage"+id);
+                        percentage.html(data.courses[i]["percentage"]+ "%");
+                    }
+                    var span = document.createElement("span");
+                    span.innerHTML = "Votre coupon <b>" + coupon_code + "</b> a été appliqué avec succès";
+                    swal({ title: "Coupon appliqué!", content: span, icon: "success" });
+                    $("#total").html(data.total + " Dh");
+                    $(".div_coupons").append("<input type='hidden' name='coupon_values' value='" + coupon_code + "'/>");
+                }
+                else{
+                    var span = document.createElement("span");
+                    span.innerHTML = "Votre coupon <b>" + coupon_code + "</b> n'as pas été appliqué";
+                    swal({ title: "Oops", content: span, icon: "error"});
+                    Swal.fire()
+                }
+            }
+            else {
+                swal({title: "Erreur", content: data.message_error, icon: "error"});
+                alert("2");
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

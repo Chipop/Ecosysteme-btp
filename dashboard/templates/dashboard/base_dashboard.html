@@ -1,0 +1,751 @@
+{% load static %}
+{% load widget_tweaks %}
+
+<!DOCTYPE html>
+<html>
+
+
+<!-- Mirrored from webapplayers.com/inspinia_admin-v2.8/ by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 06 Aug 2018 22:34:40 GMT -->
+<head>
+
+    {#  Google Analytics #}
+    {# {% include 'google_analytics_header_script.html' %}  #}
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <link rel="icon" type="image/png" href="{% static 'dashboard/favicon_dashboard.png' %}">
+
+    <title>
+        {% block title %}
+            Dashboard
+        {% endblock title %}
+        - {{ website_title }}
+    </title>
+
+    <link href="{% static 'dashboard/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'dashboard/font-awesome/css/font-awesome.css' %}" rel="stylesheet">
+    <!-- Toastr style -->
+    <link href="{% static 'dashboard/css/plugins/toastr/toastr.min.css' %}" rel="stylesheet">
+    <!-- Gritter -->
+    <link href="{% static 'dashboard/js/plugins/gritter/jquery.gritter.css' %}" rel="stylesheet">
+    <!-- Morris -->
+    <link href="{% static 'dashboard/css/plugins/morris/morris-0.4.3.min.css' %}" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="{% static 'dashboard/css/plugins/iCheck/custom.css' %}" rel="stylesheet">
+    <!-- Galleries for images -->
+    <link href="{% static 'dashboard/css/plugins/blueimp/css/blueimp-gallery.min.css' %}" rel="stylesheet">
+    <!-- Date Range Picker -->
+    <link href="{% static 'dashboard/css/plugins/daterangepicker/daterangepicker-bs3.css' %}" rel="stylesheet">
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <!-- Custom , alwayys last -->
+    <link href="{% static 'dashboard/css/animate.css' %}" rel="stylesheet">
+    <link href="{% static 'dashboard/css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'dashboard/custom_dashboard.css' %}" rel="stylesheet">
+
+
+    {% block stylesheets %}
+
+    {% endblock stylesheets %}
+
+</head>
+
+<body > {# class="fixed-sidebar" #}
+
+
+<div id="wrapper">
+    <nav class="navbar-default navbar-static-side" role="navigation">
+        <div class="sidebar-collapse" id="dashboard_navsidebar">
+            <ul class="nav metismenu" id="side-menu">
+                <li class="nav-header">
+                    <div class="dropdown profile-element">
+                        <img alt="image" class="rounded-circle" height="66" width="66"
+                             src="{% if admin.image %} {{ admin.image.url }} {% else %} {% static 'dashboard/img/default_profil_m.png' %} {% endif %}"/>
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            <span class="block m-t-xs font-bold">{{ admin.nom  |title }} {{ admin.prenom | title }}</span>
+                            <span class="text-muted text-xs block">{{ admin.role }} <b class="caret"></b></span>
+                        </a>
+                        <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                            <li><a class="dropdown-item" href="{% url 'dashboard:admin_profile' id_admin=admin.id %}">Profile</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="logo-element">
+                        ESPR
+                    </div>
+                </li>
+
+                <li id="dashboard_vue_principale">
+                    <a href="{% url 'dashboard:index' %}"><i class="fa fa-pie-chart"></i> <span class="nav-label">Vue d'ensemble</span>
+                    </a>
+                </li>
+
+                <li id="dashboard_parametres">
+                    <a href="{% url 'dashboard:parametres' %}"><i class="fa fa-gears"></i> <span
+                            class="nav-label">Paramètres</span>
+                    </a>
+                </li>
+
+                <li id="dashboard_tracking_visites">
+                    <a href="{% url 'dashboard:tracking_visites' %}"><i class="fa fa-map-marker"></i> <span
+                            class="nav-label">Tracking</span>
+                    </a>
+                </li>
+
+                {% if admin.has_espace_admin %}
+                    <li id="dashboard_admin">
+                        <a href="{% url 'dashboard:news_general_view' %}"><i class="fa fa-unlock-alt"></i> <span
+                                class="nav-label">Administrateurs</span>
+                            <span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+
+                            {% if admin.has_gerer_admins %}
+
+                                <li id="admin_admins" style="display:none;">
+                                    <a href="{% url 'dashboard:admin_admins_list' %}">
+                                        Liste des admins
+                                    </a>
+                                </li>
+
+                                <li id="admin_add_admin" style="display:none;">
+                                    <a href="{% url 'dashboard:admin_add_admin' %}">
+                                        Ajouter un admin
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                        </ul>
+                    </li>
+                {% endif %}
+
+                {% if admin.has_pagegarde %}
+                    <li id="dashboard_page_garde">
+                        <a href="index-2.html"><i class="fa fa-th-large"></i> <span
+                                class="nav-label">Utilisateurs</span>
+                            <span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+
+                            {% if admin.has_pagegarde_vue_ensemble %}
+                                <li id="dashboard_page_garde_vue_generale" style="display:none;"><a
+                                        href="{% url 'dashboard:page_garde_general_view' %}">Vue d'ensemble</a></li>
+
+                            {% endif %}
+
+                            {% if admin.has_pagegarde_utilisateurs %}
+                                <li id="page_de_garde_utilisateurs" style="display:none;"><a
+                                        href="{% url 'dashboard:users_list' %}">Utilisateurs</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_pagegarde_utilisateurs_blacklistes %}
+                                <li id="page_de_garde_utilisateurs_blacklistes" style="display:none;"><a
+                                        href="{% url 'dashboard:blacklisted_users_list' %}">Utilisateurs blacklistés</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_pagegarde_messages_contact %}
+                                <li id="dashboard_page_garde_messages_contact" style="display:none;"><a
+                                        href="{% url 'dashboard:main_messages' %}">Messages
+                                    de contact {% if nb_messages_contact_non_lu is not 0 %}
+                                        <span class="badge badge-warning">{{ nb_messages_contact_non_lu }}</span>{% endif %}
+                                </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                {% endif %}
+
+                {% if admin.has_newsletter %}
+                    <li id="dashboard_newsletter">
+                        <a href="{% url 'dashboard:newsletter' %}"><i class="fa fa-envelope"></i> <span
+                                class="nav-label">NewsLetter</span>
+                            <span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+
+                            {% if admin.has_newsletter_vue_ensemble %}
+                                <li id="newsletter_vue_generale" style="display:none;"><a
+                                        href="{% url 'dashboard:newsletter' %}">Vue
+                                    d'ensemble</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_newsletter_gerer_emails %}
+                                <li id="newsletter_liste_emails" style="display:none;"><a
+                                        href="{% url 'dashboard:emails_list' %}">Liste des
+                                    emails</a></li>
+
+                            {% endif %}
+
+                            {% if admin.has_newsletter_gerer_compagnes %}
+                                <li id="newsletter_compagnes" style="display:none;"><a
+                                        href="{% url 'dashboard:compagnes' %}">Compagnes</a>
+                                </li>
+
+                            {% endif %}
+
+                            {% if admin.has_newsletter_gerer_compagnes %}
+                                <li id="newsletter_lancer_compagne" style="display:none;"><a
+                                        href="{% url 'dashboard:lancer_compagne_new' %}">Lancer
+                                    une compagne</a></li>
+
+                            {% endif %}
+                        </ul>
+                    </li>
+                {% endif %}
+
+                {% if admin.has_reseau_social %}
+                    <li id="dashboard_socialmedia">
+                        <a href="{% url 'dashboard:socialmedia_general_view' %}"><i class="fa fa-users"></i> <span
+                                class="nav-label">Réseau social</span>
+                            <span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                            {% if admin.has_reseau_vue_ensemble %}
+                                <li id="socialmedia_vue_generale" style="display:none;"><a
+                                        href="{% url 'dashboard:socialmedia_general_view' %}">Vue
+                                    d'ensemble</a></li>
+                            {% endif %}
+
+                            {% if admin.has_reseau_groupes %}
+                                <li id="socialmedia_liste_groupes" style="display:none;"><a
+                                        href="{% url 'dashboard:socialmedia_groups_list' %}">Groupes</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_reseau_profils %}
+                                <li id="socialmedia_liste_profils" style="display:none;"><a
+                                        href="{% url 'dashboard:socialmedia_profils_list' %}">Profils</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_reseau_pages %}
+                                <li id="socialmedia_liste_page_entreprise" style="display:none;"><a
+                                        href="{% url 'dashboard:socialmedia_page_entreprise_list' %}">Pages
+                                    Entreprises</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_reseau_offres %}
+                                <li id="socialmedia_liste_offres_emploi" style="display:none;"><a
+                                        href="{% url 'dashboard:socialmedia_offre_emploi_list' %}">Offres d'emploi</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_reseau_publications %}
+                                <li id="socialmedia_liste_publication" style="display:none;"><a
+                                        href="{% url 'dashboard:socialmedia_publications' %}">Publications</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                {% endif %}
+
+                {% if admin.has_journal %}
+                    <li id="dashboard_news">
+                        <a href="{% url 'dashboard:news_general_view' %}"><i class="fa fa-newspaper-o   "></i> <span
+                                class="nav-label">Journal</span>
+                            <span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+
+                            {% if admin.has_journal_vue_ensemble %}
+                                <li id="news_vue_generale" style="display:none;"><a
+                                        href="{% url 'dashboard:news_general_view' %}">Vue
+                                    d'ensemble</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_journal_articles %}
+                                <li id="news_liste_articles" style="display:none;"><a
+                                        href="{% url 'dashboard:news_articles' %}">Articles</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_journal_articles_videos %}
+                                <li id="news_liste_articles_videos" style="display:none;"><a
+                                        href="{% url 'dashboard:news_articles_videos' %}">Articles
+                                    video</a></li>
+                            {% endif %}
+
+                            {% if admin.has_journal_journalistes %}
+                                <li id="news_liste_journalistes" style="display:none;"><a
+                                        href="{% url 'dashboard:news_journalistes' %}">Journalistes</a></li>
+                            {% endif %}
+
+                            {% if admin.has_journal_signalements %}
+                                <li id="news_signalements" style="display:none;"><a
+                                        href="{% url 'dashboard:news_signalements' %}">Signalements</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_journal_bannieres %}
+                                <li id="news_reseaux_sociaux_banniere" style="display:none;"><a
+                                        href="{% url 'dashboard:news_reseaux_bannieres' %}">Réseaux
+                                    sociaux et bannières publicitaires</a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                {% endif %}
+
+                {% if admin.has_ecommerce %}
+                    <li id="dashboard_marketplace">
+                        <a href="{% url 'dashboard:news_general_view' %}"><i class="fa fa-shopping-cart"></i> <span
+                                class="nav-label">E-commerce</span>
+                            <span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+
+                            {% if admin.has_ecommerce_vue_ensemble %}
+                                <li id="marketplace_general_view" style="display:none;"><a
+                                        href="{% url 'dashboard:marketplace_general_view' %}">Vue
+                                    d'ensemble</a></li>
+                            {% endif %}
+
+                            {% if admin.has_ecommerce_gerer_demandes_exposants %}
+                                <li id="marketplace_exposants_requests" style="display:none;">
+                                    <a
+                                            href="{% url 'dashboard:marketplace_exposants_requests' %}">Exposant
+                                        {% if nb_demandes_exposants is not 0 %}
+                                            <span class="badge badge-warning"
+                                                  id="nb_demandes_exposants">{{ nb_demandes_exposants }}</span> {% endif %}
+                                    </a>
+                                </li>
+                            {% endif %}
+
+
+                            {% if admin.has_gerer_commandes %}
+                                <li id="marketplace_orders" style="display:none;"><a
+                                        href="{% url 'dashboard:marketplace_orders' %}">Commandes</a>
+                                </li>
+                            {% endif %}
+
+
+                            {% if admin.has_gerer_produits %}
+                                <li id="marketplace_products" style="display:none;"><a
+                                        href="{% url 'dashboard:marketplace_products' %}">Produits</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_gerer_produits %}
+                                <li id="marketplace_products_to_approve" style="display:none;"><a
+                                        href="{% url 'dashboard:marketplace_products_to_approve' %}">Produits à
+                                    approuver</a>
+                                </li>
+                            {% endif %}
+
+
+                            {% if admin.has_gerer_boutiques %}
+                                <li id="marketplace_shops" style="display:none;"><a
+                                        href="{% url 'dashboard:marketplace_shops' %}">Boutiques</a>
+                                </li>
+                            {% endif %}
+
+
+
+                            {% if admin.has_ecommerce_gerer_bannieres %}
+                                <li id="marketplace_reseaux_bannieres" style="display:none;"><a
+                                        href="{% url 'dashboard:marketplace_reseaux_bannieres' %}">Réseaux et
+                                    bannières</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_gerer_categories %}
+                                <li id="marketplace_manage_categories" style="display:none;"><a
+                                        href="{% url 'dashboard:marketplace_manage_categories' %}">Gestion des
+                                    catégories</a>
+                                </li>
+                            {% endif %}
+
+                        </ul>
+                    </li>
+                {% endif %}
+
+                {% if admin.has_qa %}
+
+                    <li id="dashboard_qa">
+                        <a href="{% url 'dashboard:news_general_view' %}"><i class="fa fa-comments   "></i> <span
+                                class="nav-label">Q&A</span>
+                            <span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+
+                            {% if admin.has_qa_vue_ensemble %}
+                                <li id="qa_vue_generale" style="display:none;">
+                                    <a href="{% url 'dashboard:qa_general_view' %}">Vue d'ensemble</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_qa_questions %}
+                                <li id="qa_questions" style="display:none;">
+                                    <a href="{% url 'dashboard:qa_questions' %}">Questions</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_qa_reponses %}
+                                <li id="qa_reponses" style="display:none;">
+                                    <a href="{% url 'dashboard:qa_reponses' %}">Réponses</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_qa_categories %}
+                                <li id="qa_categories" style="display:none;">
+                                    <a href="{% url 'dashboard:qa_categories' %}">Catégories</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_qa_experts %}
+                                <li id="qa_experts" style="display:none;">
+                                    <a href="{% url 'dashboard:qa_experts' %}">Experts</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_qa_articles %}
+                                <li id="qa_articles" style="display:none;">
+                                    <a href="{% url 'dashboard:qa_articles' %}">Articles</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_qa_articles %}
+                                <li id="qa_signalements" style="display:none;">
+                                    <a href="{% url 'dashboard:qa_signalements' %}">Signalements</a>
+                                </li>
+                            {% endif %}
+
+                        </ul>
+                    </li>
+
+                {% endif %}
+
+
+
+
+
+                {% if admin.has_ao %}
+                    <li id="dashboard_ao">
+                        <a href="{% url 'dashboard:ao_general_view' %}"><i class="fa fa-bullhorn"></i> <span
+                                class="nav-label">Appels d'offre</span>
+                            <span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+
+                            {% if admin.has_ao_vue_ensemble %}
+                                <li id="ao_vue_generale" style="display:none;">
+                                    <a href="{% url 'dashboard:ao_general_view' %}">Vue d'ensemble</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_ao_parametres %}
+                                <li id="ao_parametres" style="display:none;">
+                                    <a href="{% url 'dashboard:ao_parametres' %}">Paramètres</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_ao_profils_entreprises %}
+                                <li id="ao_profils_entreprise" style="display:none;">
+                                    <a href="{% url 'dashboard:ao_profils_entreprises' %}">Profils d'entreprises</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_ao_utilisateurs %}
+                                <li id="ao_profils_particuliers" style="display:none;">
+                                    <a href="{% url 'dashboard:ao_profils_particuliers' %}">Profils de particuliers</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_ao_appels_offres %}
+                                <li id="ao_appels_offres" style="display:none;">
+                                    <a href="{% url 'dashboard:ao_appels_offres' %}">Appels d'offres</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_ao_lots %}
+                                <li id="ao_lots" style="display:none;">
+                                    <a href="{% url 'dashboard:ao_lots' %}">Lots</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_ao_devis %}
+                                <li id="ao_devis" style="display:none;">
+                                    <a href="{% url 'dashboard:ao_devis' %}">Devis</a>
+                                </li>
+                            {% endif %}
+
+                        </ul>
+                    </li>
+                {% endif %}
+
+                {% if admin.has_elearning %}
+
+                    <li id="dashboard_elearning">
+                        <a href="{% url 'dashboard:news_general_view' %}"><i class="fa fa-graduation-cap   "></i> <span
+                                class="nav-label">E-learning</span>
+                            <span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+
+                            {% if admin.has_elearning_vue_ensemble %}
+                                <li id="elearning_general_view" style="display:none;">
+                                    <a href="{% url 'dashboard:elearning_general_view' %}">Vue d'ensemble</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_elearning_professeurs %}
+                                <li id="elearning_demandes_professeurs" style="display:none;">
+                                    <a href="{% url 'dashboard:elearning_demandes_professeurs' %}">Demandes Professeurs</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_elearning_professeurs %}
+                                <li id="elearning_professeurs" style="display:none;">
+                                    <a href="{% url 'dashboard:elearning_professeurs' %}">Professeurs</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_elearning_categories %}
+                                <li id="elearning_categories" style="display:none;">
+                                    <a href="{% url 'dashboard:elearning_categories' %}">Catégories</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_elearning_subcategories %}
+                                <li id="elearning_sub_categories" style="display:none;">
+                                    <a href="{% url 'dashboard:elearning_sub_categories' %}">Sous-catégories</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_elearning_course %}
+                                <li id="elearning_cours" style="display:none;">
+                                    <a href="{% url 'dashboard:elearning_cours' %}">Cours</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_elearning_coupons %}
+                                <li id="elearning_coupons" style="display:none;">
+                                    <a href="{% url 'dashboard:elearning_coupons' %}">Coupons</a>
+                                </li>
+                            {% endif %}
+
+                            {% if admin.has_elearning_promotions %}
+                                <li id="elearning_sales" style="display:none;">
+                                    <a href="{% url 'dashboard:elearning_sales' %}">Promotions</a>
+                                </li>
+                            {% endif %}
+
+
+                            {% if admin.has_elearning_commandes %}
+                                <li id="elearning_commandes" style="display:none;">
+                                    <a href="{% url 'dashboard:elearning_orders' %}">Commandes</a>
+                                </li>
+                            {% endif %}
+
+
+                        </ul>
+                    </li>
+
+                {% endif %}
+
+            </ul>
+
+        </div>
+    </nav>
+
+    <div id="page-wrapper" class="gray-bg dashbard-1">
+        <div class="row border-bottom">
+            <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+                <div class="navbar-header">
+                    <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i>
+                    </a>
+                    <form role="search" class="navbar-form-custom"
+                          action="http://webapplayers.com/inspinia_admin-v2.8/search_results.html">
+                        <div class="form-group">
+                            <input type="text" placeholder="Rechercher..." class="form-control"
+                                   name="top-search" id="top-search">
+                        </div>
+                    </form>
+                </div>
+
+                <ul class="nav navbar-top-links navbar-right">
+                    <li style="padding: 20px">
+                        <span class="m-r-sm text-muted welcome-message">Administration </span>
+                    </li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+                            <i class="fa fa-envelope"></i> <span
+                                class="label label-warning">{{ nb_messages_contact_non_lu }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-messages dropdown-menu-right">
+                            {% for message in messages_contact_non_lu %}
+                                <li>
+                                    <div class="dropdown-messages-box">
+                                        <div class="media-body">
+                                            <small class="float-right">{{ message.date|timesince }}</small>
+                                            <div class="clearfix"></div>
+
+                                            <a href="{% url 'dashboard:vue_message' id_message=message.id %}"
+                                               style="padding:0px;color:inherit;">
+                                                <strong>{{ message.full_name }}</strong> vous a envoyé un message de
+                                                <strong>Contact</strong>.
+                                                <br>
+                                            </a>
+                                            <small class="text-muted">{{ message.date }}</small>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                {% if forloop.last %}
+
+                                    <li class="dropdown-divider"></li>
+
+                                    <li>
+                                        <div class="text-center link-block">
+                                            <a href="{% url 'dashboard:main_messages' %}" class="dropdown-item">
+                                                <i class="fa fa-envelope"></i> <strong>Voir tous les messages</strong>
+                                            </a>
+                                        </div>
+                                    </li>
+                                {% else %}
+                                    <li class="dropdown-divider"></li>
+                                {% endif %}
+                            {% empty %}
+                                <li>Aucun message</li>
+                            {% endfor %}
+
+
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'dashboard:logout' %}">
+                            <i class="fa fa-sign-out"></i> Se déconnecter
+                        </a>
+                    </li>
+                </ul>
+
+            </nav>
+
+
+
+            {% block content %}
+
+
+
+            {% endblock content %}
+
+
+
+
+            <div class="footer">
+
+                <div>
+                    <strong>Copyright</strong> <a target="_blank" href="http://www.espr.ma">ESPR</a>
+                    &copy; {% now "Y" %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Back to top  -->
+
+<a href="#" class="back-to-top" style="display:none;">
+    <i class="fa fa-chevron-up"></i>
+</a>
+
+
+<!-- Mainly scripts -->
+
+
+<script src="{% static 'dashboard/js/jquery-3.1.1.min.js' %}"></script>
+<script src="{% static 'dashboard/js/popper.min.js' %}"></script>
+<script src="{% static 'dashboard/js/bootstrap.js' %}"></script>
+<script src="{% static 'dashboard/js/plugins/metisMenu/jquery.metisMenu.js' %}"></script>
+<script src="{% static 'dashboard/js/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+
+<!-- jQuery UI -->
+<script src="{% static 'dashboard/js/plugins/jquery-ui/jquery-ui.min.js' %}"></script>
+
+<!-- Custom and plugin javascript -->
+<script src="{% static 'dashboard/js/inspinia.js' %}"></script>
+<script src="{% static 'dashboard/js/plugins/pace/pace.min.js' %}"></script>
+
+<!-- iCheck -->
+<script src="{% static 'dashboard/js/plugins/iCheck/icheck.min.js' %}"></script>
+
+
+<script>
+
+    //Bullshit
+
+
+    $(document).ready(function () {
+
+        $('.nav-second-level li, .nav-third-level li').css("display", "block");
+
+    });
+</script>
+
+
+<script>
+    /*
+    $('#dashboard_vue_principale').addClass("active");
+    */
+
+
+</script>
+
+
+<!-- Morris Charts-->
+<script src="{% static 'dashboard/js/plugins/morris/raphael-2.1.0.min.js' %}"></script>
+<script src="{% static 'dashboard/js/plugins/morris/morris.js' %}"></script>
+
+
+<!-- ChartJS-->
+<script src="{% static 'dashboard/js/plugins/chartJs/Chart.min.js' %}"></script>
+
+
+
+
+{% block scripts %}
+
+{% endblock scripts %}
+
+<script>
+
+    $(document).ready(function () {
+
+        var offset = 250;
+
+        var duration = 300;
+
+        $(window).scroll(function () {
+
+            if ($(this).scrollTop() > offset) {
+
+                $('.back-to-top').fadeIn(duration);
+
+            } else {
+
+                $('.back-to-top').fadeOut(duration);
+
+            }
+
+        });
+
+
+        $('.back-to-top').click(function (event) {
+
+            event.preventDefault();
+
+            $('html, body').animate({scrollTop: 0}, duration);
+
+            return false;
+
+        })
+
+    });
+
+</script>
+
+
+</body>
+
+<!-- Mirrored from webapplayers.com/inspinia_admin-v2.8/ by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 06 Aug 2018 22:35:47 GMT -->
+</html>

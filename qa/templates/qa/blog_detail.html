@@ -1,0 +1,394 @@
+{% extends 'qa/base.html' %}
+
+{% load static social_share %}
+
+{% block content %}
+
+    <!-- =-=-=-=-=-=-= Page Breadcrumb =-=-=-=-=-=-= -->
+        <section class="page-title">
+          <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h1>
+                        <a href="{% url 'qa:blog_category' article.category.id %}" style="text-transform: uppercase;color: #333;font-weight: 600;">
+                            {{ article.category.title }}</a>
+                        <span style="font-size: 15px; margin-left: 10px;">
+                            {{ article.category.article_set.count }} articles</span>
+                    </h1>
+                </div>
+              <div class="col-md-6">
+                <div class="bread" style="padding-top: 12px;text-align: right;">
+                  <ol class="breadcrumb" style="margin-top: 0">
+                      <li><a href="{% url 'qa:home' %}">Acceuil</a></li>
+                      <li><a href="{% url 'qa:blog' %}">Blog</a></li>
+                      <li class="active">{{ article.title }}</li>
+                  </ol>
+                </div>
+                <!-- end bread -->
+              </div>
+              <!-- end col -->
+            </div>
+            <!-- end row -->
+          </div>
+          <!-- end container -->
+        </section>
+        <!-- =-=-=-=-=-=-= Page Breadcrumb End =-=-=-=-=-=-= -->
+
+    <!-- =-=-=-=-=-=-= Blog & News =-=-=-=-=-=-= -->
+    <section id="blog" class="custom-padding white" style="padding-top: 40px">
+      <div class="container">
+        <!-- Row -->
+        <div class="row">
+
+          <!-- Left Side Content -->
+          <div class="col-sm-12 col-xs-12 col-md-8">
+
+            <!-- Blog Grid -->
+
+            <div class="blog-detial">
+                {% if message != 'get' %}
+                    <div class="alert alert-warning alert-dismissable">
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                        <p style="margin: 0; font-size: 15px;">{{ message|safe }}</p>
+                    </div>
+                {% endif %}
+                {% if article.image %}
+                    <div class="blog-image">
+                        <img alt="blog-image1" class="img-responsive" style="width:100%" src="{{ article.image.url }}">
+                    </div>
+                {% endif %}
+              <div class="blog-content">
+                <h5><a href="{% url 'qa:blog_post' article.id %}">{{ article.title }}</a></h5>
+                <ul class="post-meta">
+                    <li>Crée par
+                        <a href="{% url 'qa:profile' article.author.id %}">
+                            {{ article.author.user.first_name|capfirst }} {{ article.author.user.last_name|upper }}
+                        </a></li>
+                    <li><a href="{% url 'qa:blog_category' article.category.id %}"></a>{{ article.category.title }}</li>
+                    <li>{{ article.creation_date }}</li>
+                    <li>{{ article.views }} vues</li>
+                    <li id="post_likes">{{ article.likes }} J'aime</li>
+                    <li id="post_likes_form">
+                        <form action="" method="POST" role="form" class="formLike form-inline-f"
+                              data-validate-url="{% url 'qa:like_post' article.id %}">
+                            <input type="hidden" name="method" value="like">
+                            <button class="btn btn-sm btn-default btn-hover-success" data-toggle="tooltip" data-placement="bottom"
+                                    data-original-title="J'aime" style="border: 0; padding: 2px 5px 6px; color: green">
+                                <i class="fa fa-thumbs-up"></i></button>
+                        </form>
+                        <form action="" method="POST" role="form" class="formLike form-inline-f"
+                              data-validate-url="{% url 'qa:like_post' article.id %}">
+                            <input type="hidden" name="method" value="dislike">
+                            <button class="btn btn-sm btn-default btn-hover-danger" data-toggle="tooltip" data-placement="bottom"
+                                    data-original-title="J'aime pas" style="border: 0; padding: 2px 5px 6px; color: red">
+                                <i class="fa fa-thumbs-down"></i></button>
+                        </form>
+                    </li>
+                    <li>
+                        <a href="{% url 'qa:signal_article' article.id %}" onclick="return confirm('Voulez vous vraiment signaler cette article')">Signaler</a>
+                    </li>
+                </ul>
+
+                  {% if user_a_id == article.author.id %}
+                  <ul class="post-meta" style="margin-top: -42px;">
+                        <li><a href="{% url 'qa:delete_post' article.id %}"
+                               style="color: #fff; text-transform: uppercase; background-color: #d9534f; font-size: 12px; padding: 5px 8px 2px;"
+                                      onclick="return confirm('Voulez-vous vraiment supprimer votre article ?');">
+                            Supprimer</a></li>
+                        <li><a href="{% url 'qa:update_post' article.id %}"
+                               style="color: #fff; text-transform: uppercase; background-color: #d9534f; font-size: 12px; padding: 5px 8px 2px;">
+                            Modifier
+                        </a></li>
+                  </ul>
+                  {% endif %}
+                  <table class="social-links" style="margin-top: -32px; margin-bottom: 20px ;">
+                      <tr>
+                          <td id="facebook_share">
+                                  <td onclick="share_article({{ article.id }});" id="facebook_share">
+                                                {% post_to_facebook question "Partager" %}
+                                            </td>
+                          </td>
+                          <td>&nbsp;</td>
+                          <td onclick="share_article({{ article.id }});" id="twitter_share" style="">
+                                {% post_to_twitter "" question "Tweet" %}
+                            </td>
+                      </tr>
+                  </table>
+              </div>
+                {{ article.content|safe }}
+              <div class="clearfix"></div>
+
+              <div class="entry-footer">
+                <div class="post-admin">
+                    <i class="icon-profile-male"></i>
+                    Crée par
+                    <a href="{% url 'qa:profile' article.author.id %}">
+                        {{ article.author.user.first_name|capfirst }} {{ article.author.user.last_name|upper }}
+                    </a>
+                </div>
+                <div class="tags">
+                  <i class="fa fa-tags"></i>
+                  {% for tag in article.tags.all %}
+                      <a href="{% url 'qa:blog_tag' tag.id %}">{{ tag.title }}</a> &nbsp;
+                  {% endfor %}
+
+                </div>
+              </div>
+
+              <div class="clearfix"></div>
+
+              <div class="blog-section">
+                <div class="blog-heading">
+                  <h2>{{ article.comment_set.count }} Commentaires</h2><hr>
+                </div>
+
+                <ol class="comment-list">
+                    {% for comment in article.comment_set.all %}
+                      <!-- comment    -->
+                      <li class="comment">
+                        <div class="comment-info">
+                            {% if comment.user is not None %}
+                                <img class="pull-left hidden-xs img-circle" src="{{ comment.user.photo_profil.image.url }}"
+                                     alt="author">
+                            {% else %}
+                                <img class="pull-left hidden-xs img-circle" src="{% static 'images/default-profil.jpg' %}"
+                                     alt="author">
+                            {% endif %}
+                          <div class="author-desc">
+                            <div class="author-title">
+                                {% if comment.user is not None %}
+                                    <strong>{{ comment.user.user.first_name|capfirst }} {{ comment.user.user.last_name|upper }}</strong>
+                                {% else %}
+                                    <strong>{{ comment.full_name }}</strong>
+                                {% endif %}
+                              <ul class="list-inline pull-right">
+                                  <li><a href="javascript:void(0);">{{ comment.creation_date }}</a></li>
+                                  <li><a href="javascript:void(0);" id="likes{{ comment.id }}">{{ comment.likes }} j'aime</a></li>
+                                  <li id="comment_form_likes{{ comment.id }}">
+                                      <form action="" method="" role="form" class="formLike form-inline-f"
+                                                data-validate-url="{% url 'qa:like_comment' comment.id %}">
+                                          <input type="hidden" name="method" value="like">
+                                          <button class="btn btn-sm btn-default btn-hover-success" data-toggle="tooltip" data-placement="bottom"
+                                                  data-original-title="Ça marche" style="border: 0; padding: 2px 5px 6px;">
+                                              <i class="fa fa-thumbs-up"></i></button>
+                                      </form>
+                                      <form action="" method="" role="form" class="formLike form-inline-f"
+                                                        data-validate-url="{% url 'qa:like_comment' comment.id %}">
+                                          <input type="hidden" name="method" value="dislike">
+                                          <button class="btn btn-sm btn-default btn-hover-danger" data-toggle="tooltip" data-placement="bottom"
+                                                  data-original-title="ça n'aide pas" style="border: 0; padding: 2px 5px 6px;">
+                                              <i class="fa fa-thumbs-down"></i></button>
+                                      </form>
+                                  </li>
+                                  {% if user_a_id is not None and user_a_id == comment.user.id %}
+                                      <li><a href="{% url 'qa:delete_comment' article.id comment.id %}" style="color: #fff; text-transform: uppercase; background-color:
+                                                      #d9534f; font-size: 12px; padding: 5px 8px 2px;"
+                                              onclick="return confirm('Voulez-vous vraiment supprimer votre commentaire ?');">
+                                          Supprimer</a></li>
+                                  {% else %}
+                                      <li><a href="{% url 'qa:signal_comment' article.id comment.id %}" onclick="return confirm('Voulez-vous vraiment signaler votre commentaire ?');">
+                                          Signaler</a></li>
+                                  {% endif %}
+                              </ul>
+                            </div>
+                            <p>{{ comment.content }}</p>
+                          </div>
+                        </div>
+                      </li>
+                    {% endfor %}
+                </ol>
+
+              </div>
+
+              <div class="clearfix"></div>
+
+              <div class="blog-section">
+                <div class="blog-heading">
+                  <h2>Laisser votre commentaire </h2>
+                  <hr>
+                </div>
+                <div class="commentform">
+                  <form method="post" action="">
+                    {% csrf_token %}
+                    <div class="row">
+                        {% if not user.is_authenticated %}
+                            <div class="col-md-6 col-sm-12">
+                              <div class="form-group">
+                                <label>Nom Complet <span class="required">*</span>
+                                </label>
+                                <input type="text" name="full_name" class="form-control" placeholder="" required>
+                              </div>
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                              <div class="form-group">
+                                <label>Email <span class="required">*</span>
+                                </label>
+                                <input type="email" name="email" class="form-control" placeholder="" required>
+                              </div>
+                            </div>
+                        {% endif %}
+                    <div class="col-md-12 col-sm-12">
+                      <div class="form-group">
+                        <label>Commentaire <span class="required">*</span>
+                        </label>
+                        <textarea class="form-control" placeholder="" name="content" rows="8" cols="6" required></textarea>
+                      </div>
+                    </div>
+                        <div class="col-md-5 clearfix" style="padding: 0">
+                          <div style="margin-bottom: 10px; padding-left: 15px;">
+                              <script src='https://www.google.com/recaptcha/api.js'></script>
+                              <div class="g-recaptcha" data-sitekey="6LcIOV8UAAAAAO0kQRvjLmlOt7Q08VEubXgfvG6l"></div>
+                          </div>
+                      </div>
+                    <div class="col-md-7 col-sm-12">
+                      <button type="submit"  class="btn btn-primary" style="width: 100%">Publiez votre commentaire</button>
+                    </div>
+                    </div>
+                  </form>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- Blog Grid -->
+
+
+
+            <div class="clearfix"></div>
+            <!-- Pagination End -->
+          </div>
+          <!-- Left Content End -->
+
+          <!-- Blog Right Sidebar -->
+          <div class="col-sm-12 col-xs-12 col-md-4">
+
+            <!-- sidebar -->
+            <div class="side-bar">
+
+                {% if pro %}
+                  <!-- widget -->
+                  <div class="widget">
+                    <h2 style="border: 2px solid #ea4c0f;"><a href="{% url 'qa:add_post' %}">AJOUTER UN ARTICLE</a></h2>
+                  </div>
+                  <!-- widget end -->
+                {% endif %}
+
+                <!-- widget -->
+              <div class="widget">
+                <div class="category">
+                  <h2>Categories</h2>
+                  <hr class="widget-separator no-margin">
+                  <ul>
+                      {% for category in categories %}
+                          <li><a href="{% url 'qa:blog_category' category.id %}">{{ category.title }} </a> <span>{{ category.article_count }}</span></li>
+                      {% endfor %}
+                  </ul>
+                </div>
+              </div>
+              <!-- widget end -->
+
+              <!-- widget -->
+              <div class="widget">
+                <div class="latest-news">
+                  <h2>Derniers Article</h2>
+                  <hr class="widget-separator no-margin">
+                    <div class="news-post">
+
+                    {% for article in latest_articles %}
+
+                        <div class="post">
+                            {% if not article.image %}
+                                <figure class="post-thumb"><img alt="" src="{% static 'images/noimage.png' %}"></figure>
+                            {% else %}
+                                <figure class="post-thumb">
+                                    <img alt="{{ article.image.description }}" src="{{ article.image.url }}">
+                                </figure>
+                            {% endif %}
+                          <h4><a href="{% url 'qa:blog_post' article.id %}">{{ article.title }} </a></h4>
+                          <div class="post-info">{{ article.creation_date }}</div>
+                        </div>
+
+                    {% endfor %}
+
+                  </div>
+
+                </div>
+              </div>
+              <!-- widget end -->
+
+              <!-- widget -->
+              <div class="widget">
+                <div class="recent-comments">
+                  <h2>Commentaires récent</h2>
+                  <hr class="widget-separator no-margin">
+                  <ul id="recentcomments">
+                      {% for comment in latest_comment %}
+                          <li class="recentcomments">
+                              <span class="comment-author-link">
+                                  {% if comment.user is not None %}
+                                        {{ comment.user.user.first_name|capfirst }} {{ comment.user.user.last_name|upper }}
+                                  {% else %}
+                                        {{ comment.full_name }}
+                                  {% endif %}
+                              </span> sur
+                              <a href="{% url 'qa:blog_post' comment.article.id %}">{{ comment.article.title }}</a>
+                          </li>
+                      {% endfor %}
+                  </ul>
+                </div>
+              </div>
+              <!-- widget end -->
+
+              <!-- widget -->
+              <div class="widget">
+                <div class="widget_tag_cloud">
+                  <h2>Meilleures Tags</h2>
+                  <hr class="widget-separator no-margin">
+                  <div class="tag_cloud">
+
+                    {% for tag in top_tags %}
+                        <a href="{% url 'qa:blog_tag' tag.id %}">{{ tag }}</a>
+                    {% endfor %}
+
+                  </div>
+                </div>
+              </div>
+              <!-- widget end -->
+
+            </div>
+            <!-- sidebar end -->
+
+          </div>
+          <!-- Blog Right Sidebar End -->
+
+        </div>
+
+        <!-- Row End -->
+      </div>
+      <!-- end container -->
+    </section>
+    <!-- =-=-=-=-=-=-= Blog & News end =-=-=-=-=-=-= -->
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'scripts/ajaxForm.js' %}"></script>
+
+
+    <script>
+        function share_article(id) {
+            var url = "{% url 'qa:share_article' id=0 %}".replace('0',id);
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function (response) {
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    swal("Une erreur s'est produite!", "Veuillez réessayer.", "error");
+                }
+            });
+        }
+    </script>
+
+{% endblock %}

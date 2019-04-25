@@ -1,0 +1,38 @@
+{% extends 'qa/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+    <!-- =-=-=-=-=-=-= Error  =-=-=-=-=-=-= -->
+    <section class="error-page white section-padding" id="error-page">
+      <div class="container">
+        <div class="row">
+
+          <div class="col-md-8 col-sm-7 col-xs-12 text-left">
+            <div class="error-grid left-align-text">
+              <h2 class="uppercase">Oops... Page Introuvable!</h2>
+              <p>Désolé, la page n'a pas pu être trouvée ici. Essayez d'utiliser la bare ci-dessous pour rechercher ce que vous avez besoin</p>
+              <div class="error-search">
+                <form action="{% url 'qa:all_questions' %}" method="get">
+                  <input type="text" class="error-input" name="search" id="search">
+                  <input type="submit" class="btn  btn-primary" value="Rechercher">
+                </form>
+              </div>
+            </div>
+          </div>
+          <!--end item-->
+
+          <div class="col-md-4 col-sm-5 col-xs-12 bottom-margin">
+            <br>
+            <h1 class="uppercase error-title-big text-blue">404</h1>
+          </div>
+          <!--end item-->
+
+        </div>
+      </div>
+      <!-- end container -->
+    </section>
+    <!-- =-=-=-=-=-=-= Error  End =-=-=-=-=-=-= -->
+
+{% endblock %}

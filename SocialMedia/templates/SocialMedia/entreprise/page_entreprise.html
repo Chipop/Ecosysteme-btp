@@ -1,11 +1,292 @@
 {% extends "SocialMedia/entreprise/base_entreprise.html" %}
+{% load static widget_tweaks %}
+
+{% block scripts %}
+    {{ block.super }}
+
+
+    {% include 'SocialMedia/statuts/modals/likers_modal.html' %}
+    {% include 'SocialMedia/statuts/modals/modifier_statut_modal.html' %}
+    {% include 'SocialMedia/statuts/modals/signaler_statut_modal.html' %}
+    {% include 'SocialMedia/statuts/modals/modifier_commentaire_modal.html' %}
+    {% include 'SocialMedia/statuts/modals/signaler_commentaire_modal.html' %}
+    {% include 'SocialMedia/statuts/modals/share_statut_modal.html' %}
+
+    <script>
+        let addStatutURL = "{% url 'SocialMedia:add_statut' id=page_entreprise.id type_statut='entreprise' %}";
+        let add_comment_url = "{% url 'SocialMedia:st_add_comment' %}";
+        let spinner = '<img src="{% static "SocialMedia/img/YX5xG_s-200x150.gif" %}" width=30 height=30 />';
+        let url_like = "{% url 'SocialMedia:statut_like' %}";
+        let url_like_comment = '{% url 'SocialMedia:comment_like' %}';
+        let add_comment_reply_url = '{% url 'SocialMedia:st_add_comment_reply' %}';
+        let st_get_likers_url = '{% url 'SocialMedia:statut_get_likers' %}';
+        let comment_get_likers_url = '{% url 'SocialMedia:comment_get_likers' %}';
+        let st_get_more_comments_url = '{% url 'SocialMedia:st_get_more_comments' %}';
+        let st_update_content_url = '{% url 'SocialMedia:st_update_content' %}';
+        let st_delete_url = '{% url 'SocialMedia:st_delete' %}';
+        let st_signal_url = '{% url 'SocialMedia:st_signal' %}';
+        let comment_update_content_url = '{% url 'SocialMedia:comment_update_content' %}';
+        let comment_delete_url = '{% url 'SocialMedia:comment_delete' %}';
+        let comment_signal_url = '{% url 'SocialMedia:comment_signal' %}';
+        let st_share_url = '{% url 'SocialMedia:st_share' %}';
+        let st_check_link_url = '{% url 'SocialMedia:st_link_preview' %}';
+
+        let loaded = [];
+
+    </script>
+
+    <script src="{% static 'SocialMedia/js/statuts/statuts.js' %}"></script>
+
+    <script>
+        initialize_infinite_scrol();
+
+        {% for st in statuts %}
+            loaded.push({{ st.id }});
+        {% endfor %}
+
+    </script>
+
+
+{% endblock %}
 
 {% block content_page %}
 
+    <div class="row">
+        <div class="main--content-inner drop--shadow" style="margin-top:20px;    background: white;">
+            <!-- Content Nav Start -->
+            <div class="content--nav pb--30">
+                <ul class="nav ff--primary fs--14 fw--500 bg-lighter profil_links_menu ">
+                    <li class="active"><a data-toggle="tab" href="#activite_entreprise">Activité</a></li>
+                    <li><a data-toggle="tab" href="#a_propos_entreprise">A propos de l'entreprise</a></li>
+                </ul>
+            </div>
+            <!-- Content Nav End -->
 
-                        <!-- Main Content Start -->
-                        <div class="row main--content mt--60" data-trigger="stickyScroll"
-                             style="box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);transform: none;background-color:  white;     margin-top: 20px;">
+            <!-- Profile Details Start -->
+            <div class="profile--details fs--14">
+
+                <div class="tab-content clearfix">
+                    <div class="tab-pane active" id="activite_entreprise">
+                        {% if request.user.is_authenticated %}
+                            {% if  request.user.profil in page_entreprise.administrateurs.all or request.user.profil in page_entreprise.moderateurs.all %}
+                                <div class="row"
+                                     style="    max-width:  100%;    margin-left: auto;    margin-right: auto;">
+                                    <div class="well well-sm well-social-post">
+
+                                        <form onsubmit="add_statut(event, this)" novalidate=""
+                                              enctype="multipart/form-data">
+
+                                            <p style="width: 100%;">
+                                                <button onclick="displayStatut(this)" class="btstatutHIDESHOW"
+                                                        type="button"
+                                                        style="font-size: 16px; text-align: -webkit-left; font-weight: 400; width: 100%; padding: 10px; border: none; background-color: transparent; box-sizing: border-box; font-family: -apple-system, system-ui, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, &quot;Fira Sans&quot;, Ubuntu, Oxygen, &quot;Oxygen Sans&quot;, Cantarell, &quot;Droid Sans&quot;, &quot;Lucida Grande&quot;, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;;">
+                                                    Partagez une photo, un article, une vidéo ou une idée
+                                                </button>
+                                            </p>
+
+                                            {% render_field form.contenu_statut onblur="hideStatut(this)" class="form-control" placeholder="Écrivez ici vos statuts." id="statut" style="display:none;" %}
+
+                                            <input type="hidden" name="st_input_link_link" id="st_input_link_link">
+                                            <input type="hidden" name="st_input_link_description"
+                                                   id="st_input_link_description">
+                                            <input type="hidden" name="st_input_link_title" id="st_input_link_title">
+                                            <input type="hidden" name="st_input_link_icon" id="st_input_link_icon">
+
+                                            <div id="st_link_preview_loading" class="st_link_preview">
+                                                <div class="display-flex">
+                                                    <div class="flex-2">
+                                                        <img src="{% static 'SocialMedia/img/infinite_preloading.gif' %}"
+                                                             alt="">
+                                                    </div>
+                                                    <div class="flex-8 st_link_preview_content">
+                                                        <p>Chargement de l'aperçu du lien en cours...</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div id="st_link_preview_error" class="st_link_preview">
+                                                <div class="display-flex">
+                                                    <div class="text-center flex-2">
+                                                        <i class="st_link_preview_info_icon fa fa-info-circle"></i>
+                                                    </div>
+                                                    <div class="flex-8 st_link_preview_content">
+                                                        <p>Chargement de laperçu du lien impossible</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div id="st_link_preview_details" class="st_link_preview"
+                                                 data-displayed="false"
+                                                 data-enabled="true">
+                                                <div style="display:flex;">
+                                                    <a class="st_link_preview_href" href="#">
+                                                        <div class="flex-2">
+                                                            <img id="st_link_preview_image"
+                                                                 src="{% static 'SocialMedia/img/businessman.jpg' %}"
+                                                                 alt="">
+                                                        </div>
+                                                    </a>
+
+                                                    <a class="st_link_preview_href st_link_preview_href_content"
+                                                       href="#">
+                                                        <div class="flex-2 st_link_preview_content_result">
+
+                                                            <h3 id="st_preview_link_title">Google.com</h3>
+                                                            <p id="st_preview_link_description">description</p>
+                                                        </div>
+                                                    </a>
+                                                    <div onclick="remove_link_preview_displayed();"
+                                                         id="st_link_preview_close_link"
+                                                         class="st_link_preview_close_div">
+                                                        <i class="st_link_preview_close_icon fa fa-times-rectangle"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="st_publier_media">
+
+                                                <div data-enabled="false"
+                                                     class="col-lg-12 st_videos  st_publier_videos clear-both"
+                                                     style="display:none;">
+
+                                                    <div onclick="st_publier_fichiers_close(this,$('#st_input_upload_video'));"
+                                                         id="st_publier_fichiers_remove"
+                                                         class="st_link_preview_close_div">
+                                                        <i class="st_link_preview_close_icon fa fa-times-rectangle"></i>
+                                                    </div>
+
+                                                    <div id="st_publier_video" class="st_uploading_file_container"
+                                                         style="    margin-top: 34px;">
+
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="col-lg-12 " data-enabled="false" style="display:none;">
+
+                                                    <div onclick="st_publier_fichiers_close(this,$('#st_input_upload_images'));"
+                                                         id="st_publier_fichiers_remove"
+                                                         class="st_link_preview_close_div">
+                                                        <i class="st_link_preview_close_icon fa fa-times-rectangle"></i>
+                                                    </div>
+
+                                                    <div id="st_publier_images" style="    margin-top: 34px;">
+
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="col-lg-12 " style="display:none;" data-enabled="false">
+                                                    <div onclick="st_publier_fichiers_close(this,$('#st_input_upload_files'));"
+                                                         id="st_publier_fichiers_remove"
+                                                         class="st_link_preview_close_div">
+                                                        <i class="st_link_preview_close_icon fa fa-times-rectangle"></i>
+                                                    </div>
+                                                    <div id="st_publier_fichiers" style="    margin-top: 34px;">
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div style="clear:both;">
+
+                                            </div>
+
+
+                                            <ul class="list-inline post-actions"
+                                                style="    font-size: 18px;          padding: 13px 22px;">
+
+                                                <li>
+                                                    <label>
+                                                        <i id="st_upload_image_icon" class="fa fa-camera"></i>
+                                                        {% render_field form.image id="st_input_upload_images" id="IMGST" style="display: none;max-height: 400px;" %}
+                                                        </i>
+                                                    </label>
+                                                </li>
+
+                                                <li>
+                                                    <label>
+                                                        <i id="st_upload_video_icon" class=" fa fa-video-camera"
+                                                           aria-hidden="true">
+                                                            {% render_field form.video id="st_input_upload_video" style="display: none;" %}
+                                                        </i>
+                                                    </label>
+                                                </li>
+
+                                                <li>
+                                                    <label>
+                                                        <i id="st_upload_file_icon" class=" fa fa-paperclip "
+                                                           aria-hidden="true">
+
+                                                            {% render_field form.document id="st_input_upload_files" style="display: none;" %}
+                                                        </i>
+                                                    </label>
+                                                </li>
+
+                                                <li class="pull-right">
+                                                    <button id="st_btn_add_statut" class=" btn btn-primary btn_status "
+                                                            type="submit"
+                                                            style="margin-top:0px;display: inline-block;">Publier
+                                                    </button>
+
+                                                </li>
+                                            </ul>
+                                        </form>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+
+
+                        <div class="row">
+                            <div id="filActualite" class="main--sidebar col-md-6 pb--60" style="    width: 100%;">
+
+                                <div class="activity--list">
+
+                                    <!-- Activity Items Start -->
+
+                                    <div id="likers">
+                                    </div>
+
+                                    <ul class="activity--items nav  infinite-container">
+
+
+                                        {% for statut in statuts %}
+
+                                            {% include "SocialMedia/statuts/statut.html" %}
+
+                                        {% endfor %}
+
+                                    </ul>
+
+                                    <div id="loadingImageMoreComments" class="row text-center" style="display:none;">
+                                        <img height="64" width="64" class="img-rounded"
+                                             src="{% static 'SocialMedia/Spinner.gif' %}"/>
+                                    </div>
+
+                                </div>
+                                <!-- Activity List End -->
+
+
+                                <!-- Load More Button Start -->
+                                {% if statuts.has_next %}
+                                    <div class="load-more--btn pt--30 text-center hidden">
+                                        <a href="?page={{ statuts.next_page_number }}"
+                                           class="btn btn-animate infinite-more-link">
+                                            <span><i class="fa ml--10 fa-caret-right"></i></span>
+                                        </a>
+                                    </div>
+                                {% endif %}
+                                <!-- Load More Button End -->
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="tab-pane" id="a_propos_entreprise">
+                        <div class="row main--content ">
                             <div class="main--content-inner drop--shadow profile--info" style="box-shadow: unset;">
                                 <!-- Content Nav Start -->
                                 <!-- Content Nav End -->
@@ -88,5 +369,20 @@
                                 {% endblock %}
                             </div>
                         </div>
-                        <!-- Main Content End -->
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- Profile Details End -->
+
+
+        </div>
+    </div>
+
+
+
+
+
 {% endblock content_page %}

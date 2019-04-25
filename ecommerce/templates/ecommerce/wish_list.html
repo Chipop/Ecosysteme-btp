@@ -37,7 +37,7 @@
                                 <a href="{% url 'e_commerce:product' el.el.product.id %}"><img width="70px" src="{{ el.el.product.image.url }}" alt="{{ el.el.product.name }}" title="{{ el.el.product.name }}">
                                 </a>
                             </td>
-                            <td class="text-center" style="padding-top: 15px"><a href="product.html">{{ el.el.product.name }}</a>
+                            <td class="text-center" style="padding-top: 15px"><a href="{% url 'e_commerce:product' el.el.product.id %}">{{ el.el.product.name }}</a>
                             </td>
                             <td class="text-center" style="padding-top: 15px">{{ el.el.product.brand.name }}</td>
                             <td class="text-center" style="padding-top: 15px">{{ el.stock }}</td>
@@ -84,7 +84,7 @@
                             {% else %}
                                 <form id="formAddCart{{ el.el.product.pk }}" method="get" action="{% url 'e_commerce:add_to_cart' %}" data-validate-url="{% url 'e_commerce:add_to_cart' %}" style="display: inline-block"><input type="hidden" name="product" value="{{ el.el.product.pk }}">
                                 </form>
-                                <button type="button" class="btn btn-primary" title="Ajouter au Chariot" style="display: inline-block; margin-top: 0" data-toggle="tooltip" data-original-title="Add to Cart" onclick="cart.add('{{ el.el.product.pk }}', '{{ user.is_authenticated }}', '{{ el.el.product.name }}', '{{ el.el.product.image.url }}', '{% url 'e_commerce:product' el.el.product.pk %}');">
+                                <button type="button" class="btn btn-primary" title="Ajouter au Panier" style="display: inline-block; margin-top: 0" data-toggle="tooltip" data-original-title="Add to Cart" onclick="cart.add('{{ el.el.product.pk }}', '{{ user.is_authenticated }}', '{{ el.el.product.name }}', '{{ el.el.product.image.url }}', '{% url 'e_commerce:product' el.el.product.pk %}');">
                                     <i class="fa fa-shopping-cart"></i>
                                 </button>
                             {% endif %}

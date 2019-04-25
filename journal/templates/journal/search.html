@@ -1,5 +1,19 @@
 {% extends 'base.html' %}
 
+{% block seo_title %}Recherche - {{ search }}  {% endblock seo_title %}
+{% block seo_og_title %}Recherche - {{ search }} {% endblock seo_og_title %}
+
+{% block seo_description %}
+    Recherche - {{ search }}
+{% endblock seo_description %}
+
+{% block seo_og_description %}
+Recherche - {{ search }}
+{% endblock seo_og_description %}
+
+{% block seo_image %}
+{% endblock seo_image %}
+
 {% load static %}
 
 {% block style %}

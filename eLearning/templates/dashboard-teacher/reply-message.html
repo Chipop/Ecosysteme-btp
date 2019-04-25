@@ -1,0 +1,80 @@
+{% extends 'dashboard-teacher/base.html' %}
+{% load static %}
+{% block content %}
+    <style>
+        .django-ckeditor-widget{
+            width: 100% !important;
+        }
+    </style>
+<div class="content-wrapper">
+    <div class="container-fluid">
+      <!-- Breadcrumbs-->
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'eLearning:teacher_dashboard' %}">Tableau de bord</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'eLearning:dashboard_messages' %}">Messages</a>
+            </li>
+            <li class="breadcrumb-item active">
+                <a href="{% url 'eLearning:dashboard_messages' %}">{{ message.object }}</a>
+            </li>
+        </ol>
+        <div class="box_general" style="padding-bottom: 20px">
+            <div class="list_general">
+                <ul>
+                    <li>
+                        <span style="font-style: normal; color: #333;">{{ message.date_add }}</span>
+                        <figure>
+                            {% if message.student.photo_profil %}
+                                {% if message.student.photo_profil.image %}
+                                    <img src="{{ message.student.photo_profil.image.url }}" alt="Image">
+                                {% else %}
+                                    <img src="{% static 'eLearning/img/default-profil.jpg' %}" alt="Image">
+                                {% endif %}
+                            {% else %}
+                                <img src="{% static 'eLearning/img/default-profil.jpg' %}" alt="Image">
+                            {% endif %}
+                        </figure>
+                        <h4>{{ message.student.user.last_name }} {{ message.student.user.first_name }}</h4>
+                        <h6>{{ message.object }}</h6>
+                        <p>{% autoescape off %}{{ message.message }}{% endautoescape %}</p>
+                    </li>
+                </ul>
+            </div>
+            {% if form.errors %}
+                <div class="alert alert-danger" id="form-error">
+                    <p>Veuillez corriger les erreurs ci-dessous:</p>
+                    <ul>
+                        {% for field in form %}
+                            {% if field.errors %}
+                                <li>{{ field.name }} - {{ field.errors|striptags }}</li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            <div class="box_general padding_bottom">
+                <form method="post">{% csrf_token %}{{ form.media }}
+                    <div class="header_box version_2">
+                        <h2><i class="fa fa-reply"></i>Répondre</h2>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                {{ form.message }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /row-->
+                    <div style="text-align: right">
+                        <button type="submit" class="btn_1 medium">Envoyer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- /box_general-->
+    </div>
+  <!-- /container-fluid-->
+</div>
+{% endblock %}

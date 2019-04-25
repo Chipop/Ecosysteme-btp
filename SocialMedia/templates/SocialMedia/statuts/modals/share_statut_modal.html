@@ -1,0 +1,26 @@
+<div id="share_statut_modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Partager le statut sur votre profil</h4>
+            </div>
+
+            <div class="modal-body">
+                <textarea style="border:none;" name="share_statut_content" id="share_statut_content_input" cols="30" rows="4" class="form-control" data-id="" placeholder="Rédiger un message."></textarea>
+
+                <div id="modal_share_statut_preview">
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-primary" id="st_share_button" data-id="" onclick="st_share(this);" >Partager</button>
+            </div>
+
+        </div>
+    </div>
+</div>

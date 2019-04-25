@@ -1,0 +1,110 @@
+{% load static %}
+{% load i18n %}
+								<div id="tab3" class="tab-pane">
+						
+					            
+											<!-- Question Listing -->
+											{% if no_active %}
+											{% for question in no_active %}
+											<div class="listing-grid" style="margin-bottom: 0px; padding-bottom: 0px;">
+												<div class="row">
+													<div class="col-md-9 col-sm-9  col-xs-12">
+														<div class="row" style="padding: 10px;">
+															<h3><a  href="/qa/q/{{ question.id }}/"> {{ question.question_title|truncatechars_html:50 }}</a></h3>
+															<!-- <div class="listing-meta"> <span><i class="fa fa-clock-o" aria-hidden="true"></i>{{ question.pub_date}}</span>  <span><i class="fa fa fa-eye" aria-hidden="true"></i> {{ question.views }} Views</span> 
+															</div> -->
+															<p class="q_text">{{ question.question_text|truncatechars_html:100| safe }}</p>
+														</div>
+														<div class="row"  style="margin-left: 10px;">
+															<!-- <p class="q_text">{{ question.question_text|truncatechars_html:100| safe }}</p> -->
+															<div >
+																<!-- {% for tag in question.tags.all %}
+															 	<a href="/qa/tag/{{ tag.slug|slugify }}/" class="label label-default">{{ tag.slug }}</a>
+															 	{% endfor %} -->
+															 	<ul>
+															 		{% for tag in question.tags.all %}
+																 	<li class="q-tag"><a href="/qa/tag/{{ tag.slug|slugify }}/" style="color: #6f7d95; font-size: 13px; font-family:Lato;">{{ tag.slug }}</a></li>
+																 	{% endfor %} 
+															 	</ul>
+															 	<br>
+															</div>
+														</div>
+														<div class="row">
+															<div class="col-md-1 col-sm-1 col-xs-1">
+																<!-- <img style="margin-top: 10px;" class="profile_photo_img img-circle resize" src="https://qsf.ec.quoracdn.net/-3-images.new_grid.profile_pic_default_small.png-26-902da2b339fedf49.png" alt="Sante Sport" height="50" width="50"> -->
+																{% if profil.photo_profil.image.url %}
+																				<img style="margin-top: 10px;" class="profile_photo_img img-circle resize"  src="{{ profil.photo_profil.image.url }}" alt="Sante Sport" height="100" width="100">
+																			{% else %}
+														                      <img height="70" width="70" style="margin-top: 10px;" class="profile_photo_img img-circle resize"  class="img-sm"  src='{% static "images/p1.png" %}'>
+														                    {% endif %}
+														                    
+															</div>
+															<div class="col-md-10 col-sm-10 col-xs-10" style="margin-top: 10px; margin-left: -15px;">
+																<a style="color: black; ">{{ profil.user.username }}</a> | <span class="label label-info">{{ profil.mylevel.libelle }}</span>&nbsp;&nbsp; {% trans "Demandé en " %}<!-- Asked on --> {{ question.pub_date}} , <a style="color: blue;" >{{ question.categorie.title_categorie}}</a>
+															</div>
+
+															<div class="col-md-1 col-sm-10 col-xs-10">
+															{% if profil.user.id == question.user_data.user.id  or profil.mylevel.id == 2 %}
+											                    <form action="/qa/updateq/{{ question.id }}" >
+											                    	<div class="pull-right">
+											                      <button  onclick="myFunction({{ question.id }} )" type="button" class="btncomt" data-toggle="modal" data-target="#exampleModal" class="btncomt" > <li class="glyphicon glyphicon-trash" ></li> </button>
+
+											                      <button  type="submit" class="btncomt" > <li class=" glyphicon glyphicon-edit" ></li></button>
+
+											                      </div>
+											                    </form>
+											                  {% endif %} 
+											                </div>  
+															
+														</div>
+													</div>
+													<div class="col-md-3 col-sm-12 col-xs-12">
+														<ul class="question-statistic">
+															<li class="col-md-4"> <a data-toggle="tooltip" data-placement="bottom" title='{% trans "Réponses" %}'><span>{{ question.answer_set.count }}</span></a> {% trans "Rép..." %}
+															</li>
+															<li class="col-md-4"> <a data-toggle="tooltip" data-placement="bottom" title="Votes"><span>{{ question.qvote.count }}</span> </a> Vote
+															</li>
+															<li class="col-md-4"> <a data-toggle="tooltip" data-placement="bottom" title="Votes"><span>{{ question.views }}</span></a> {% trans "Vues" %}
+															</li>
+														</ul>
+
+
+													</div>
+
+
+
+												</div>
+
+
+											</div>
+											{% endfor %}
+											{% endif %}
+											<!-- Question Listing End -->
+
+
+											<!-- Pagination View More -->
+										<div class="text-center clearfix">
+											<!-- <button class="btn btn-primary btn-lg">View All Question</button> -->
+											<div class="pagination center-block">
+											          <span class="step-links">
+											           <div class="clearfix"></div>
+											            <nav aria-label="">
+											              <ul class="pager">
+											                {% if no_active.has_previous %}
+											                    <li><a href="?page={{ no_active.previous_page_number }}">Précédent</a></li>
+											                {% endif %}
+
+											                 <span class="current">
+											                   {{ no_active.number }} / {{ no_active.paginator.num_pages }}
+											                </span>
+
+											                {% if no_active.has_next %}
+											                    <li><a href="?page={{ no_active.next_page_number }}">Suivant</a></li>
+											                {% endif %}
+											              </ul>
+											            </nav>
+											          </span>
+											</div>
+										</div>
+										<!-- Pagination View More End -->
+									</div>

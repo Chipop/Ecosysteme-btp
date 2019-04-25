@@ -1,0 +1,186 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Udema a modern educational site template">
+    <meta name="author" content="Ansonika">
+    <title>UDEMA</title>
+
+    <!-- Favicons-->
+    <link rel="shortcut icon" href="{% static 'eLearning/img/favicon.ico' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" type="image/x-icon" href="{% static 'eLearning/img/apple-touch-icon-57x57-precomposed.png' %}">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="72x72" href="{% static 'eLearning/img/apple-touch-icon-72x72-precomposed.png' %}">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="114x114" href="{% static 'eLearning/img/apple-touch-icon-114x114-precomposed.png' %}">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="144x144" href="{% static 'eLearning/img/apple-touch-icon-144x144-precomposed.png' %}">
+
+    <!-- BASE CSS -->
+    <link href="{% static 'eLearning/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'eLearning/css/style.css' %}" rel="stylesheet">
+	<link href="{% static 'eLearning/css/vendors.css' %}" rel="stylesheet">
+	<link href="{% static 'eLearning/css/icon_fonts/css/all_icons.min.css' %}" rel="stylesheet">
+	
+	<!-- SPECIFIC CSS -->
+	<link href="{% static 'eLearning/css/skins/square/grey.css' %}" rel="stylesheet">
+	<link href="{% static 'eLearning/css/wizard.css' %}" rel="stylesheet">
+
+    <!-- YOUR CUSTOM CSS -->
+    <link href="{% static 'eLearning/css/custom.css' %}" rel="stylesheet">
+
+</head>
+
+<body id="admission_bg">
+	
+	<div id="preloader">
+		<div data-loader="circle-side"></div>
+	</div>
+	<!-- End Preload -->
+	
+	<div id="form_container" class="clearfix">
+		<figure>
+			<a href="{% url 'eLearning:index' %}"><img src="{% static 'eLearning/img/logo_elearning.png' %}" width="149" height="42" data-retina="true" alt=""></a>
+		</figure>
+		<div id="wizard_container">
+			<div id="top-wizard">
+				<div id="progressbar"></div>
+			</div>
+			<!-- /top-wizard -->
+			<form method="POST" action="{% url 'eLearning:upgrade' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+				<input title="" id="website" name="website" type="text" value="">
+				<!-- Leave for security protection, read docs for details -->
+				<div id="middle-wizard">
+					<div class="step">
+						<div id="intro">
+							<figure><img src="{% static 'eLearning/img/wizard_intro_icon.svg' %}" alt=""></figure>
+							<h1>Devenir Formateur</h1>
+							<p>Transformez vos connaissances en véritable opportunité et touchez des millions de personnes du monde entier.</p>
+							<p><strong>Rejoignez notre communauté de formateurs et profitez de toutes nos ressources pour vous guider lors de la création de votre cours.</strong></p>
+						</div>
+					</div>
+
+					<div class="step">
+                        <h3 class="main_question"><strong>Étape <b>1</b> sur <b>3</b></strong>Coordonnées personnelles</h3>
+						<div class="form-group">
+							<input type="text" name="first_name" class="form-control required" placeholder="Prénom" value="{% if request.user.first_name %}{{ request.user.first_name }}{% endif %}">
+						</div>
+						<div class="form-group">
+							<input type="text" name="last_name" class="form-control required" placeholder="Nom" value="{% if request.user.last_name %}{{ request.user.last_name }}{% endif %}">
+						</div>
+						<div class="form-group">
+							<input type="email" name="email" class="form-control required" placeholder="Email" value="{% if request.user.email %}{{ request.user.email }}{% endif %}">
+						</div>
+						<div class="form-group">
+							<input type="text" name="telephone" class="form-control" placeholder="Téléphone" value="{% if request.user.profil.tel %}{{ request.user.profil.tel }}{% endif %}">
+						</div>
+					</div>
+					<!-- /step-->
+
+					<div class="step">
+						<h3 class="main_question"><strong>Étape <b>2</b> sur <b>3</b></strong>Coordonnées web</h3>
+						<div class="form-group">
+							<input type="url" name="facebook" class="form-control" placeholder="Facebook" value="{% if request.user.profil.facebook %}{{ request.user.profil.facebook }}{% endif %}">
+						</div>
+						<div class="form-group">
+							<input type="url" name="youtube" class="form-control" placeholder="Youtube" value="{% if request.user.profil.youtube %}{{ request.user.profil.youtube }}{% endif %}">
+						</div>
+						<div class="form-group">
+							<input type="url" name="instagram" class="form-control" placeholder="Instagram" value="{% if request.user.profil.instagram %}{{ request.user.profil.instagram }}{% endif %}">
+						</div>
+						<div class="form-group">
+							<input type="url" name="linkedin" class="form-control" placeholder="Linkedin" value="{% if request.user.profil.linkedin %}{{ request.user.profil.linkedin }}{% endif %}">
+						</div>
+						<div class="form-group">
+							<input type="url" name="twitter" class="form-control" placeholder="Twitter" value="{% if request.user.profil.twitter %}{{ request.user.profil.twitter }}{% endif %}">
+						</div>
+					</div>
+					<!-- /step-->
+
+					<div class="submit step">
+						<h3 class="main_question"><strong>Étape <b>3</b> sur <b>3</b></strong>Données supplémentaires</h3>
+						<div class="form-group" style="text-align: center">
+							<img style="border-radius: 50%"
+                                 {% if request.user.profil.photo_profil %}
+                                     {% if request.user.profil.photo_profil.image %}
+                                        src="{{ request.user.profil.photo_profil.image.url }}"
+                                     {% else %}
+                                        src="{% static 'eLearning/img/default-profil.jpg' %}"
+                                     {% endif %}
+                                 {% else %}
+                                    src="{% static 'eLearning/img/default-profil.jpg' %}"
+                                 {% endif %}
+                                 alt="profil" width="200" height="200" id="photo_profil"/>
+						</div>
+						<div class="form-group">
+							<input type="file" name="photo_profil" class="form-control {% if not request.user.profil.photo_profil %}required{% endif %}" accept="image/jpeg, image/png" onchange="readURL(this);">
+						</div>
+						<div class="form-group">
+                            CV : <input type="file" name="cv" class="form-control required" accept="Document/doc, DocumentX/docx PDF/pdf">
+						</div>
+                        <div class="form-group">
+							<input type="text" name="teacher_title" class="form-control required" placeholder="Titre formateur">
+						</div>
+                        <div class="form-group add_top_30">
+							<textarea name="biography" class="form-control required" style="height:120px;" placeholder="Bibliographie...."></textarea>
+						</div>
+						<div class="form-group terms">
+							<input title="" name="terms" type="checkbox" class="icheck required" value="yes">
+							<label style="display: inline">J'accepte <a href="#" data-toggle="modal" data-target="#terms-txt">les termes et conditions d'utilisation</a></label>
+						</div>
+					</div>
+					<!-- /step-->
+				</div>
+				<!-- /middle-wizard -->
+				<div id="bottom-wizard">
+					<button type="button" name="backward" class="backward">Précedent </button>
+					<button type="button" name="forward" class="forward">Suivant</button>
+					<button type="submit" name="process" class="submit">Valider</button>
+				</div>
+				<!-- /bottom-wizard -->
+			</form>
+		</div>
+		<!-- /Wizard container -->
+	</div>
+	<!-- /Form_container -->
+
+	<!-- Modal terms -->
+	<div class="modal fade" id="terms-txt" tabindex="-1" role="dialog" aria-labelledby="termsLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="termsLabel">Termes and conditions</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="modal-body">
+					<p>Lorem ipsum dolor sit amet, in porro albucius qui, in <strong>nec quod novum accumsan</strong>, mei ludus tamquam dolores id. No sit debitis meliore postulant, per ex prompta alterum sanctus, pro ne quod dicunt sensibus.</p>
+					<p>Lorem ipsum dolor sit amet, in porro albucius qui, in nec quod novum accumsan, mei ludus tamquam dolores id. No sit debitis meliore postulant, per ex prompta alterum sanctus, pro ne quod dicunt sensibus. Lorem ipsum dolor sit amet, <strong>in porro albucius qui</strong>, in nec quod novum accumsan, mei ludus tamquam dolores id. No sit debitis meliore postulant, per ex prompta alterum sanctus, pro ne quod dicunt sensibus.</p>
+					<p>Lorem ipsum dolor sit amet, in porro albucius qui, in nec quod novum accumsan, mei ludus tamquam dolores id. No sit debitis meliore postulant, per ex prompta alterum sanctus, pro ne quod dicunt sensibus.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn_1" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+	
+	<!-- COMMON SCRIPTS -->
+    <script src="{% static 'eLearning/js/jquery-2.2.4.min.js' %}"></script>
+    <script src="{% static 'eLearning/js/common_scripts.js' %}"></script>
+    <script src="{% static 'eLearning/js/main_admission.js' %}"></script>
+	<script src="{% static 'eLearning/assets/validate.js' %}"></script>
+	
+	<!-- SPECIFIC SCRIPTS -->
+	<script src="{% static 'eLearning/js/jquery-ui-1.8.22.min.js' %}"></script>
+	<script src="{% static 'eLearning/js/jquery.wizard.js' %}"></script>
+	<script src="{% static 'eLearning/js/jquery.validate.js' %}"></script>
+	<script src="{% static 'eLearning/js/admission_func.js' %}"></script>
+    <script src="{% static 'eLearning/js/readUrlScript.js' %}"></script>
+  
+</body>
+</html>

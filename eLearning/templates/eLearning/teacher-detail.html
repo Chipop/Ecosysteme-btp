@@ -1,0 +1,200 @@
+{% extends 'eLearning/base.html' %}
+{% load static %}
+{% block content %}
+    <style>
+        a {
+            color: #000;
+        }
+
+        .page-item.active .page-link {
+            background-color: #ea4c0f;
+            border-color: #ea4c0f;
+        }
+
+        a.page-link {
+            color: #ea4c0f;
+        }
+
+        .page-link:focus, .page-link:hover {
+            color: #333;
+        }
+    </style>
+<section id="hero_in" class="general">
+    <div class="wrapper">
+        <div class="container">
+            <h1 class="fadeInUp"><span></span>Details du Professeur</h1>
+        </div>
+    </div>
+</section>
+<!--/hero_in-->
+<div class="container margin_60_35">
+    <div class="row">
+        <aside class="col-lg-3" id="sidebar">
+            <div class="profile">
+                <figure>
+                    {% if teacher.photo_profil %}
+                        <img src="{{ teacher.photo_profil.image.url }}" width="150px" alt="Teacher {{ teacher.user.last_name }} {{ teacher.user.first_name }}" class="rounded-circle">
+                    {% else %}
+                        <img src="" width="150px" height="150px" alt="Teacher {{ teacher.user.last_name }} {{ teacher.user.first_name }}" class="rounded-circle">
+                    {% endif %}
+                </figure>
+                <ul class="social_teacher">
+                    <li><a href="{% if teacher.facebook %}{{ teacher.facebook }}{% else %}#{% endif %}" target="_blank"><i class="icon-facebook"></i></a></li>
+                    <li><a href="{% if teacher.twitter %}{{  teacher.twitter }}{% else %}#{% endif %}" target="_blank"><i class="icon-twitter"></i></a></li>
+                    <li><a href="{% if teacher.linkedin %}{{  teacher.linkedin }}{% else %}#{% endif %}" target="_blank"><i class="icon-linkedin"></i></a></li>
+                    <li><a href="{% if teacher.instagram %}{{  teacher.instagram }}{% else %}#{% endif %}" target="_blank"><i class="icon-instagram"></i></a></li>
+                </ul>
+                <ul>
+                    <li>Nom <span class="float-right">{{ teacher.user.last_name }} {{ teacher.user.first_name }}</span></li>
+                    <li>Etudiants <span class="float-right">{{ teacher.elearning_formation_set.count }}</span></li>
+                    <li>Cours <span class="float-right">{{ teacher.elearning_course_set.count }}</span></li>
+                </ul>
+                <a href="" class="btn_1 gray approve" data-toggle="modal" data-target="#modalMail" data-pk="" data-name="" style="margin: 23px -25px 0 -25px; width: 124%; overflow: hidden; border-radius: 0;">
+                    <i class="fa fa-envelope"></i> Envoyer Message
+                </a>
+            </div>
+        </aside>
+        <!--/aside -->
+
+        <div class="col-lg-9">
+            <div class="box_teacher">
+                <div class="indent_title_in">
+                    <i class="pe-7s-user"></i>
+                    <h3>Profil</h3>
+                    <p>{{ teacher.teacher_title }}</p>
+                </div>
+                <div class="wrapper_indent">
+                    {% autoescape off %}{{ teacher.biography }}{% endautoescape %}
+                    <!-- End row-->
+                </div>
+                <!--wrapper_indent -->
+                <hr class="styled_2">
+                <div class="indent_title_in">
+                    <i class="pe-7s-display1"></i>
+                    <h3>Mes cours</h3>
+                </div>
+                <div class="wrapper_indent">
+                    <table class="table table-responsive table-striped add_bottom_30">
+                        <thead>
+                            <tr>
+                                <th>Catégorie</th>
+                                <th>Nom</th>
+                                <th>Evaluation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for course in courses %}
+                            <tr>
+                                <td>{{ course.c.category.category.name }}</td>
+                                <td><a href="{% url 'eLearning:course' course.c.pk %}">{{ course.c.name }}</a></td>
+                                <td class="rating">
+                                    {% for i in "*****" %}
+                                        {% if forloop.counter <= course.ratting %}
+                                           <i class="icon_star voted"></i>
+                                        {% elif forloop.counter == course.ratting|add:"1" and course.rattingInt < course.ratting %}
+                                                <i class="icon_star-half_alt voted"></i>
+                                        {% else %}
+                                            <i class="icon_star_alt"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if courses.has_other_pages %}
+                        <div style="height: 47px;">
+                            <nav aria-label="Pagination" style="float: right">
+                                <ul class="pagination pagination-sm add_bottom_30">
+                                    {% if courses.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ courses.previous_page_number }}">Précédent</a>
+                                        </li>
+                                    {% endif %}
+                                    {% for i in courses.paginator.page_range %}
+                                        {% if courses.number == i %}
+                                            <li class="page-item active"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                                        {% else %}
+                                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if courses.has_next %}
+                                        <li class="page-item"><a class="page-link" href="?page={{ courses.next_page_number }}">Suivant</a></li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        </div>
+                    {% endif %}
+                </div>
+                <!--wrapper_indent -->
+            </div>
+        </div>
+        <!-- /col -->
+    </div>
+    <!-- /row -->
+</div>
+<!-- /container -->
+{% endblock %}
+{% block modal %}
+<div style="margin-top: 10px;" class="modal fade" id="modalMail" tabindex="-1" role="dialog" aria-labelledby="modalMail" aria-hidden="true" data-backdrop="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-envelope"></i> Envoyer Mail</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="send_mail" method="get" action="{% url 'eLearning:message_to_teacher' %}" data-validate-url="{% url 'eLearning:message_to_teacher' %}">
+                <div class="modal-body">
+                    <h6 id="courseName"></h6>
+                    <input type="hidden" name="teacher" value="{{ teacher.pk }}">
+                    <div class="form-group">
+                        <label for="object" class="col-form-label">Objet :</label>
+                        {{ form.object }}
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">Message :</label>
+                        {{ form.message }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-secondary clear_modal">Vider</button>
+                    <button type="submit" class="btn btn-primary">Envoyer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+    $('#send_mail').submit(function(event) {
+        var form = $(this);
+        event.preventDefault();
+        CKEDITOR.instances['id_message'].updateElement();
+        $.ajax({
+            url: form.attr("data-validate-url"),
+            data: form.serialize(),
+            dataType: 'json',
+            success: function (data) {
+                if(data.message_error === "")
+                {
+                    swal({title: "Succès!", text: "Votre message a été envoyé!", icon: "success"});
+                    $('#send_mail .form-control').val('');
+                    CKEDITOR.instances['id_message'].setData('');
+                }
+                else
+                    swal({title: "Erreur!", text: data.message_error, icon: "error"});
+            }
+        });
+        $('#modalMail').modal('toggle');
+    });
+    $(document).on("click", ".clear_modal", function (e) {
+        $('#send_mail .form-control').val('');
+        CKEDITOR.instances['id_message'].setData('');
+    });
+</script>
+{{ form.media }}
+{% endblock %}

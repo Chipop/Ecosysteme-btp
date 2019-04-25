@@ -4,7 +4,7 @@
 
     <div class="row" style="padding-top:15px;">
         <div class=" col-sm-2 col-xs-2 ">
-            <img src=" {% if benevolat.organisme %}{{ benevolat.organisme.logo.url }}{% else %}{% static "Socialmedia/img/organisme-default.png" %}{% endif %}" alt="" width="100px;">
+            <img src=" {% if benevolat.organisme %}{{ benevolat.organisme.logo.url }}{% else %}{% static "SocialMedia/img/organisme-default.png" %}{% endif %}" alt="" width="100px;">
         </div>
 
         <div class="col-xs-6">
@@ -34,8 +34,6 @@
 
 
     {% if not forloop.last %}
-                        <hr width="75%"
-                            style="box-shadow: 0 0 3px rgba(0, 0, 0, 0.7);height:1px;border:none;color:#1ea1f2;background-color:#1ea1f2"
-                            ;/>
-                    {% endif %}
+        <hr width="75%" style="box-shadow: 0 0 3px rgba(0, 0, 0, 0.7);height:1px;border:none;color:#1ea1f2;background-color:#1ea1f2" />
+    {% endif %}
 {% endfor %}

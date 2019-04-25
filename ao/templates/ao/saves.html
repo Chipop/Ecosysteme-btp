@@ -1,0 +1,259 @@
+{% extends 'ao/base.html' %}
+
+{% load static %}
+
+{% block style %}
+
+    <style>
+        #wrapper{
+            background: #fafafa;
+        }
+    </style>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+        // Snackbar for copy to clipboard button
+        $('.copy-url-button').click(function() {
+            Snackbar.show({
+                text: 'Copié à presse-papiers!',
+            });
+        });
+    </script>
+
+{% endblock %}
+
+{% block content %}
+
+    <!-- Titlebar
+================================================== -->
+<div class="single-page-header" data-background-image="{% static 'ao/images/single-company.jpg' %}">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="single-page-header-inner">
+                    {% if company == None %}
+                        <div class="left-side">
+                            <div class="header-image">
+                                {% if profile.photo_profil.image.url is not None %}
+                                    <img src="{{ profile.photo_profil.image.url }}" alt="">
+                                {% else %}
+                                    <img src="{% static 'ao/images/user-avatar-placeholder.png' %}">
+                                {% endif %}
+                            </div>
+                            <div class="header-details">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <ul>
+                                            <li style="display: block;"><i class="icon-material-outline-email"></i> {{ company.mail }}</li>
+                                            <li style="display: block;"><i class="icon-feather-phone"></i> {{ company.telephone }}</li>
+                                            <li style="display: block;"><i class="icon-line-awesome-fax"></i> {{ company.fax }}</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <ul style="margin-top: 10px">
+                                            <li>
+                                                <a href="{% url 'ao:profile' profile.id %}" style="font-weight: bold; padding: 9px 12px 6px 14px; border: 1px solid; border-radius: 3px;">
+                                                    <i class="icon-feather-user" style="font-size: 20px;"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <p style="padding-top: 6px; font-size: 20px">{{ profile.resume }}</p>
+                            </div>
+                        </div>
+                        <div class="right-side">
+                            <!-- Breadcrumbs -->
+                            <nav id="breadcrumbs" class="white">
+                                <ul>
+                                    <li><a href="{% url 'ao:home' %}">Accueil</a></li>
+                                    <li><a href="javascript:void(0);">Profil</a></li>
+                                    <li>Appels d'offres</li>
+                                </ul>
+                            </nav>
+                        </div>
+                    {% else %}
+                        <div class="left-side">
+                            <div class="header-image">
+                                {% if company.logo.url is not None %}
+                                    <img src="{{ company.logo.url }}" alt="">
+                                {% else %}
+                                    <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                {% endif %}
+                            </div>
+                            <div class="header-details">
+                                <h3>{{ company }} <span>{{ company.activity }}</span></h3>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <ul>
+                                            <li style="display: block;"><i class="icon-material-outline-email"></i> {{ company.mail }}</li>
+                                            <li style="display: block;"><i class="icon-feather-phone"></i> {{ company.telephone }}</li>
+                                            <li style="display: block;"><i class="icon-line-awesome-fax"></i> {{ company.fax }}</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <ul style="margin-top: 10px">
+                                            <li>
+                                                <a href="{% url 'ao:profile' profile.id %}" style="font-weight: bold; padding: 9px 12px 6px 14px; border: 1px solid; border-radius: 3px;">
+                                                    <i class="icon-feather-user" style="font-size: 20px;"></i>
+                                                </a>
+                                            </li>
+                                            <li style="margin-top: 8px">
+                                                <a href="{% url 'ao:contacted' profile.id %}" style="font-weight: bold; padding: 9px 12px 6px 14px; border: 1px solid; border-radius: 3px;">
+                                                    <i class="icon-feather-send" style="font-size: 20px;"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="right-side">
+                            <!-- Breadcrumbs -->
+                            <nav id="breadcrumbs" class="white">
+                                <ul>
+                                    <li><a href="{% url 'ao:home' %}">Accueil</a></li>
+                                    {% if company == None %}
+                                        <li><a href="{% url 'ao:profile' profile.id %}">Profil</a></li>
+                                    {% else %}
+                                        <li><a href="{% url 'ao:profile' profile.id %}">Entreprise</a></li>
+                                    {% endif %}
+                                    <li>Enregistrements</li>
+                                </ul>
+                            </nav>
+                        </div>
+                    {% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- Page Content
+================================================== -->
+<div class="container">
+
+    <!-- Row -->
+    <div class="row">
+
+        <!-- Dashboard Box -->
+        <div class="col-xl-12">
+            <div class="dashboard-box margin-top-0">
+
+                <!-- Headline -->
+                <div class="headline">
+                    <h3><i class="icon-material-outline-business-center"></i> Appels d'offres enregistrés</h3>
+                </div>
+
+                <div class="content">
+                    <ul class="dashboard-box-list">
+                        {% for ao in aos %}
+                            <li>
+                                <!-- Job Listing -->
+                                <div class="job-listing">
+                                    <!-- Job Listing Details -->
+                                    <div class="job-listing-details">
+                                        <!-- Logo -->
+                                        <a href="{% url 'ao:ao' ao.ao.id %}" class="job-listing-company-logo">
+                                            {% if ao.ao.image is not None %}
+                                                <img src="{{ ao.ao.image }}" alt="">
+                                            {% else %}
+                                                <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                            {% endif %}
+                                        </a>
+                                        <!-- Details -->
+                                        <div class="job-listing-description">
+                                            <h3 class="job-listing-title">
+                                                <a href="{% url 'ao:ao' ao.ao.id %}">{{ ao.ao }}</a>
+                                            </h3>
+                                            <!-- Job Listing Footer -->
+                                            <div class="job-listing-footer">
+                                                <ul>
+                                                    <li><i class="icon-material-outline-business"></i> {{ ao.ao.company }}</li>
+                                                    <li><i class="icon-material-outline-location-on"></i> {{ ao.ao.cities }}</li>
+                                                    <li><i class="{{ ao.ao.category.icon }}"></i> {{ ao.ao.category }}</li>
+                                                    <li><i class="icon-material-outline-access-time"></i> {{ ao.ao.date_limit }}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Buttons -->
+                                <div class="buttons-to-right">
+                                    <a href="{% url 'ao:save_delete' profile.id ao.id %}?type=ao" class="button red ripple-effect ico" title="Supprimer" data-tippy-placement="left">
+                                        <i class="icon-feather-trash-2"></i></a>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Box -->
+        <div class="col-xl-12">
+            <div class="dashboard-box" style="margin-bottom: 50px;">
+
+                <!-- Headline -->
+                <div class="headline">
+                    <h3><i class="icon-material-outline-face"></i> Lots entegistrés</h3>
+                </div>
+
+                <div class="content">
+                    <ul class="dashboard-box-list">
+                        {% for project in projects %}
+                            <li>
+                                <!-- Job Listing -->
+                                <div class="job-listing">
+                                    <!-- Job Listing Details -->
+                                    <div class="job-listing-details">
+                                        <!-- Logo -->
+                                        <a href="{% url 'ao:project' project.project.ao.id project.project.id %}" class="job-listing-company-logo">
+                                            {% if project.project.ao.image is not None %}
+                                                <img src="{{ project.project.ao.image }}" alt="">
+                                            {% else %}
+                                                <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                            {% endif %}
+                                        </a>
+                                        <!-- Details -->
+                                        <div class="job-listing-description">
+                                            <h3 class="job-listing-title">
+                                                <a href="{% url 'ao:project' project.project.ao.id project.project.id %}">{{ project.project }}</a>
+                                            </h3>
+                                            <!-- Job Listing Footer -->
+                                            <div class="job-listing-footer">
+                                                <ul>
+                                                    <li><i class="icon-material-outline-business"></i> {{ project.project.ao.company }}</li>
+                                                    <li><i class="icon-material-outline-location-on"></i> {{ project.project.cities_s}}</li>
+                                                    <li><i class="{{ project.project.ao.category.icon }}"></i> {{ project.project.categories_s }}</li>
+                                                    <li><i class="icon-material-outline-money"></i> {{ project.project.budget }}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Buttons -->
+                                <div class="buttons-to-right">
+                                    <a href="{% url 'ao:save_delete' profile.id project.id %}?type=project" class="button red ripple-effect ico" title="Supprimer" data-tippy-placement="left">
+                                        <i class="icon-feather-trash-2"></i></a>
+                                </div>
+                            </li>
+                        {% endfor %}
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- Row / End -->
+
+
+</div>
+
+
+{% endblock %}

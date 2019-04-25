@@ -1,0 +1,278 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+
+{% block title %}
+    Question | Q&A | {{ block.super }}
+{% endblock title %}
+
+{% block stylesheets %}
+
+    {{ block.super }}
+
+    <link href="{% static 'dashboard/css/plugins/summernote/summernote-bs4.css' %}" rel="stylesheet">
+
+    <!-- Toastr style -->
+    <link href="{% static 'dashboard/css/plugins/toastr/toastr.min.css' %}" rel="stylesheet">
+
+{% endblock stylesheets %}
+
+
+{% block content %}
+
+    <div class="wrapper wrapper-content  animated fadeInRight" style="width:100%">
+
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class=" float-left">
+                    <a href="{% url 'dashboard:qa_questions' %}">
+                        <button class="btn btn-primary dim"><i class="fa fa-arrow-left"></i> Liste de questions
+
+                        </button>
+                    </a>
+
+                </div>
+
+                <div class=" float-right">
+                    <a href="{% url 'dashboard:delete_question' id_question=question.id %}">
+                        <button id="btn_lancer_compagne" class="btn btn-danger dim">
+                            <i class="fa fa-trash"></i> Supprimer
+                        </button>
+                    </a>
+
+                    <a href="{% url 'dashboard:update_question' id_question=question.id %}">
+                        <button class="btn btn-success dim"><i class="fa fa-pencil"></i> Modifier</button>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+
+        <br>
+
+        <div class="row">
+
+            <div class="col-lg-11" style="margin:auto;">
+
+
+                <div class="social-feed-box">
+
+                    <div class="social-avatar">
+                        <div class="row">
+
+                            <div class="col-md-10">
+                                <div class="media-body">
+
+                                    {% if signalements != 0 %}
+                                        <h4><span class="error_msg"> <i class="fa fa-warning "></i> {{ signalements }} Signalements  <a
+                                                style="display:inline;"
+                                                href="{% url  'dashboard:question_delete_signals' id_question=question.id %}"><button
+                                                class="btn btn-xs btn-danger"> Retirer </button></a></span>
+                                        </h4> {% endif %}
+                                    <h3>{{ question.title }} <span
+                                            class="badge badge-primary"> #{{ question.category.title }}</span></h3>
+                                    <p class="text-muted">{{ question.content | safe }}</p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2" style="text-align: center;">
+
+                                <span href="" class="">
+                                    <img style="height:100px; width:100px;" alt="image"
+                                         src="{% if question.user.photo_profil.image %} {{ question.user.photo_profil.image.url }}  {% else %} {% static 'dashboard/img/default_profil_m.png' %} {% endif %}">
+                                </span>
+                                <br>
+                                <span>
+                                    <a href=""> {{ question.user.user.first_name | title }} {{ question.user.user.last_name | title }} </a>
+                                </span>
+                                <br>
+                                <span>
+                                    <i class="fa fa-commenting-o"></i> {{ question.user.answer_set.all.count }}
+                                    &nbsp;&nbsp;&nbsp;
+                                    <i class="fa fa-trophy"></i> {{ question.user.points }}
+                                </span>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="social-body">
+                        <p>
+                            {% for tag in question.tags.all %}
+                                <span class="badge badge-dark">{{ tag.title }}</span>
+                            {% endfor %}
+                        </p>
+                        <p>
+                            {{ publication.contenu_statut }}
+                        </p>
+                        <i class="fa fa-clock-o"></i> {{ question.creation_date }} &nbsp;&nbsp;&nbsp;
+                        <i class="fa fa-eye"></i> {{ question.views_number }} &nbsp;&nbsp;&nbsp;
+                        <i class="fa fa-commenting-o"></i> {{ question.answer_set.all.count }}&nbsp;&nbsp;&nbsp;
+
+                                    <i class="fa fa-share"></i> {{ question.shares }}
+                    </div>
+
+
+                    <div class="social-footer">
+
+                        {% for reponse in question.answer_set.all %}
+
+                            <div class="row">
+
+                                <div class="col-md-2" style="text-align: center;">
+
+                                    <span href="" class="">
+                                        <img style="height:100px; width:100px;" alt="image"
+                                             src="{% if reponse.user.photo_profil.image %} {{ reponse.user.photo_profil.image.url }}  {% else %} {% static 'dashboard/img/default_profil_m.png' %} {% endif %}">
+                                    </span>
+                                    <br>
+                                    <span>
+                                        <a href=""> {{ reponse.user.user.first_name | title }} {{ reponse.user.user.last_name | title }} </a>
+                                    </span>
+                                    <br>
+                                    <span>
+                                        <i class="fa fa-commenting-o"></i> {{ reponse.user.answer_set.all.count }}
+                                        &nbsp;&nbsp;&nbsp;
+                                        <i class="fa fa-trophy"></i> {{ reponse.user.points }}
+                                    </span>
+                                </div>
+
+                                <div class="col-md-10">
+                                    <div class="media-body">
+
+                                    <h4><a href="{% url 'dashboard:qa_reponse'  id_reponse=reponse.id   %}">Accéder <i class="fa   fa-share"></i></a></h4>
+
+                                        {% if reponse.id in signalements_answer_ids %}
+                                            <h4>
+                                                <span class="error_msg"> <i class="fa fa-warning "></i> Signalé
+                                                <a style="display:inline;" href="{% url  'dashboard:reponse_delete_signals' id_reponse=reponse.id  %}"><button class="btn btn-xs btn-danger"> Retirer </button></a></span>
+                                            </h4>
+                                        {% endif %}
+
+                                        <h5><i class="fa fa-clock-o"></i> <a href=""> {{ reponse.creation_date }}</a>
+                                            &nbsp;&nbsp;&nbsp; <i
+                                                    class="fa fa-thumbs-o-{% if reponse.likes >= 0 %}up{% else %}down{% endif %}"></i> {{ reponse.likes }}
+                                        </h5>
+                                        <p class="text-muted">{{ reponse.content | safe }}</p>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                            {% if not forloop.last %}
+                                <hr>
+                            {% endif %}
+
+                        {% endfor %}
+
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+            <div class="col-md-11 mar-b-30" style="margin:auto;">
+                <div class="list-group">
+
+                    <a href="{% url 'dashboard:tracking_visites' %}?url={{ question.tracking_get_absolute_url }}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Derniers visites <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                        <th>Utilisateur</th>
+                        <th>Date</th>
+                        </thead>
+
+                        <tbody>
+                        {% for tracking in tracking_dernieres_visites %}
+                            <tr>
+                                <td>{% if not tracking.user %} Visiteur non connecté {% else %}
+                                    <a href="{% url 'dashboard:user_infos' id_user=tracking.user.profil.id %}">{{ tracking.user.first_name|title }} {{ tracking.user.last_name|title }}</a>{% endif %}
+                                </td>
+                                <td>{{ tracking.timestamp }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td valign="top" colspan="2" class="dataTables_empty text-center">Aucun élément à
+                                    afficher
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script>
+        $('#dashboard_qa').addClass("active");
+        $('#qa_questions').addClass("active");
+    </script>
+
+
+    <!-- Toastr script -->
+    <script src="{% static 'dashboard/js/plugins/toastr/toastr.min.js' %}"></script>
+
+
+    <script>
+        {% if messages %}
+            {% for msg in messages %}
+                {% if msg.tags == "success" %}
+                    toastr.options = {
+                        "closeButton": true,
+                        "debug": false,
+                        "progressBar": true,
+                        "preventDuplicates": false,
+                        "positionClass": "toast-top-right",
+                        "onclick": null,
+                        "showDuration": "400",
+                        "hideDuration": "1000",
+                        "timeOut": "7000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+
+                    Command: toastr["success"]("{{ msg | safe }}")
+
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+
+
+
+
+
+
+
+
+
+{% endblock scripts %}
+

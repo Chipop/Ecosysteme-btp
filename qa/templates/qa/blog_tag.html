@@ -1,0 +1,145 @@
+{% extends 'qa/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<!-- =-=-=-=-=-=-= Page Breadcrumb =-=-=-=-=-=-= -->
+    <section class="page-title">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-9 col-sm-8 co-xs-12 text-left">
+            <h1>QA Blog: Résultat pour Tag <strong>{{ tag.title }}</strong></h1>
+              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, atque consequuntur ea explicabo
+                  ipsa porro provident quas sed vel velit? Animi dignissimos dolore facere iure odit officiis provident!
+                  Reprehenderit, sint?</p>
+          </div>
+          <!-- end col -->
+          <div class="col-md-3 col-sm-4 co-xs-12 text-right">
+            <div class="bread">
+                <form action="" method="get">
+                    <label for="filter"
+                           style="margin-top: 22px; margin-bottom: 0; text-align: left; display: inherit;
+                           font-weight: 500; text-transform: uppercase; padding-left: 5px;">
+                        Trier par :</label>
+                    <select class="js-example-basic-single" name="filter" style="width: 100%; padding: 5px 10px;"
+                            onchange="this.form.submit()" id="filter">
+                        <option value="date">Date d'ajout</option>
+                        <option value="views">Nombre de vues</option>
+                        <option value="likes">Nombre de j'aime</option>
+                        <option value="comment">Nombre de commentaires</option>
+                    </select>
+                </form>
+            </div>
+            <!-- end bread -->
+          </div>
+          <!-- end col -->
+        </div>
+        <!-- end row -->
+      </div>
+      <!-- end container -->
+    </section>
+    <!-- =-=-=-=-=-=-= Page Breadcrumb End =-=-=-=-=-=-= -->
+
+    <!-- =-=-=-=-=-=-= Blog & News =-=-=-=-=-=-= -->
+    <section id="blog" class="custom-padding white" style="padding: 40px 0">
+      <div class="container">
+        <!-- Row -->
+        <div class="row">
+
+          <!-- Blog Masonry Grid -->
+          <div id="posts-masonry" class="posts-masonry">
+
+              {% for article in articles %}
+
+                    <!-- Blog Grid -->
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                      <div class="blog-grid">
+                          {% if article.image %}
+                              <div class="blog-image">
+                                  <img alt="blog-image" class="img-responsive" src="{{ article.image.url }}">
+                              </div>
+                          {% else %}
+                              <div class="blog-image">
+                                  <img alt="blog-image" style="height: 240px" class="img-responsive" src="{% static 'images/noimage.png' %}">
+                              </div>
+                          {% endif %}
+                        <div class="blog-content">
+                          <h5><a href="{% url 'qa:blog_post' article.id %}">{{ article.title }}</a></h5>
+                          <ul class="post-meta">
+                            <li>
+                                Créer par <a href="{% url 'qa:profile' article.author.id %}"></a>
+                                {{ article.author.user.first_name|capfirst }}  {{ article.author.user.last_name|upper }}
+                            </li>
+                            <li>{{ article.category.title }}</li>
+                            <li>{{ article.creation_date }}</li>
+                          </ul>
+                        </div>
+                        <div class="blog-footer">
+                          <ul class="like-comment">
+                            <li><a href="javascript:void(0)"><i class="icon-heart"></i>{{ article.likes }}</a></li>
+                            <li><a href="javascript:void(0)"><i class="icon-chat"></i>{{ article.comment_set.count }}</a></li>
+                          </ul>
+                          <a href="{% url 'qa:blog_post' article.id %}" class="more-btn pull-right"><i class="fa fa-long-arrow-right"></i> PLUS</a> </div>
+                      </div>
+                    </div>
+                    <!-- Blog Grid -->
+
+                  {% if forloop.counter == 3 or forloop.counter == 6 or forloop.counter == 9 %}
+                      <div class="clearfix"></div>
+                  {% endif %}
+
+              {% endfor %}
+
+          </div>
+          <!-- Blog Masonry Grid -->
+          <!-- Pagination -->
+            <div>
+                {% if articles.has_other_pages %}
+                    <div class="col-md-3">
+                        <p class="paginatorIndex" style="color: #000; text-transform: uppercase; font-size: 18px;">
+                            page <b style="font-size: 22px;">{{ articles.number }}</b>
+                            sur <b style="font-size: 22px;">{{ articles.paginator.num_pages }}</b></p>
+                    </div>
+                    <div class="col-md-9">
+                        <ul class="pagination">
+                            {% if articles.has_previous %}
+                                <li><a href="?page={{ articles.previous_page_number }}">&laquo;</a></li>
+                            {% else %}
+                                <li class="disabled"><span>&laquo;</span></li>
+                            {% endif %}
+                            {% for i in articles.paginator.page_range %}
+                                {% if articles.number == i %}
+                                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                                {% else %}
+                                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if articles.has_next %}
+                                <li><a href="?page={{ articles.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                                <li class="disabled"><span>&raquo;</span></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="clearfix"></div>
+            <!-- Pagination End -->
+        </div>
+        <!-- Row End -->
+      </div>
+      <!-- end container -->
+    </section>
+    <!-- =-=-=-=-=-=-= Blog & News end =-=-=-=-=-=-= -->
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+        $("#filter").val("{{ filter }}");
+    </script>
+
+{% endblock %}

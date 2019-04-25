@@ -1,7 +1,7 @@
 {% extends "SocialMedia/entreprise/base_entreprise.html" %}
+{% load chipop_social_share %}
 
 {% block content_page %}
-
 
     <!-- Main Content Start -->
     <div class="row main--content mt--60" data-trigger="stickyScroll"
@@ -11,32 +11,62 @@
             <!-- Content Nav End -->
             {% block contentProfil %}
 
-
                 <!-- Profile Details Start -->
                 <div class="profile--details fs--14">
-                    <div class="row mb--30" >
-                        {% if request.user.profil in offre.profil_postulants.all %}
-                            <a href="/reseausocial/entreprise/offre_emploi/{{ offre.id }}/retirer_candidature/">
-                                <button class="btn btn-primary"
-                                        style="border:2px solid #333;float:right;font-weight:bold;padding: 6px 12px;   margin-right: 5px;  margin-top: -20px;background-color:#333;">
-                                    Retirer la candidature
-                                </button>
-                            </a>
-                        {% else %}
-                            <a href="/reseausocial/entreprise/offre_emploi/{{ offre.id }}/postuler/">
-                                <button class="btn btn-primary"
-                                        style="float:right;font-weight:bold;padding: 6px 12px;   margin-right: 5px;  margin-top: -20px;">
-                                    Postuler
-                                </button>
-                            </a>
-                        {% endif %}
-                        {% if user.profil in page_entreprise.administrateurs.all or user.profil in page_entreprise.moderateurs.all %}
-                            <a href="{% url 'SocialMedia:page_offre_emploi_modifier' offre.id %}">
-                                <button class="btn btn-apple" style="float:right;font-weight:bold;padding: 6px 12px;   margin-right: 5px;  margin-top: -20px;">
-                                    Modifier l'offre d'emploi
-                                </button>
-                            </a>
-                        {% endif %}
+
+                    <div class="row mb--30">
+                        <div class="col-lg-12">
+                            <div class="socialmedia_share_buttons">
+
+                                <span>Partager</span>
+                                <button class="btn  btn-sm" onclick="share_offre_emploi({{ offre.id }})"
+                                        ;>{% post_to_facebook article "" %}</button>
+                                <button class="btn btn-sm" onclick="share_offre_emploi({{ offre.id }})"
+                                        ;>{% post_to_messenger article "" %}</button>
+                                <button class="btn  btn-sm" onclick="share_offre_emploi({{ offre.id }})"
+                                        ;>{% post_to_whatsapp article "" %}</button>
+                                <button class="btn  btn-sm" onclick="share_offre_emploi({{ offre.id }})"
+                                        ;>{% post_to_twitter "" article "" %}</button>
+                                <button class="btn btn-sm" onclick="share_offre_emploi({{ offre.id }})"
+                                        ;>{% post_to_linkedin "" article "" %}</button>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-lg-12 " style="margin-top: 20px;">
+                            {% if request.user.profil in offre.profil_postulants.all %}
+                                <a href="/reseausocial/entreprise/offre_emploi/{{ offre.id }}/retirer_candidature/">
+                                    <button class="btn btn-primary"
+                                            style="border:2px solid #333;font-weight:bold;padding: 6px 12px;   margin-right: 5px;  margin-top: -20px;background-color:#333;">
+                                        Retirer la candidature
+                                    </button>
+                                </a>
+                            {% else %}
+                                <a href="/reseausocial/entreprise/offre_emploi/{{ offre.id }}/postuler/">
+                                    <button class="btn btn-primary"
+                                            style="font-weight:bold;padding: 6px 12px;   margin-right: 5px;  margin-top: -20px;">
+                                        Postuler
+                                    </button>
+                                </a>
+                            {% endif %}
+
+                            {% if user.profil in page_entreprise.administrateurs.all or user.profil in page_entreprise.moderateurs.all %}
+                                <a href="{% url 'SocialMedia:page_offre_emploi_modifier' offre.id %}">
+                                    <button class="btn btn-apple"
+                                            style="font-weight:bold;padding: 6px 12px;   margin-right: 5px;  margin-top: -20px;">
+                                        Modifier l'offre d'emploi
+                                    </button>
+                                </a>
+                            {% endif %}
+
+                            {% if user.profil in page_entreprise.administrateurs.all or user.profil in page_entreprise.moderateurs.all %}
+                                <a href="{% url 'SocialMedia:page_offre_emploi_postulants' offre.id %}"
+                                   style="font-weight:bold;padding: 6px 12px;   margin-right: 5px;  margin-top: -20px;">
+                                    {{ offre.profil_postulants.all.count }} postulants
+                                </a>
+                            {% endif %}
+                        </div>
                     </div>
 
                     <div class="row">
@@ -170,6 +200,8 @@
 {% block scripts %}
     {{ block.super }}
     <script>
+    let offre_emploi_s_url = "{% url 'SocialMedia:offre_emploi_share' %}";
+
         {% if messages %}
             msg_js = "";
 
@@ -186,10 +218,10 @@
                 {% endif %}
             {% endfor %}
 
-        toast({
-            type: 'success',
-            title: msg_js,
-        });
+            toast({
+                type: 'success',
+                title: msg_js,
+            });
 
         {% endif %}
     </script>

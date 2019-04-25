@@ -1,0 +1,291 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+
+{% block title %}
+    Page d'entreprise | Réseau social | {{ block.super }}
+{% endblock title %}
+
+{% block stylesheets %}
+
+    {{ block.super }}
+
+
+{% endblock stylesheets %}
+
+
+{% block content %}
+
+    <div class="wrapper wrapper-content animated fadeInRight" style="width:100%;">
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class=" float-left">
+                    <a href="{% url 'dashboard:socialmedia_page_entreprise_list' %}">
+                        <button class="btn btn-primary dim"><i class="fa fa-arrow-left"></i> Listes des pages d'entreprises
+                        </button>
+                    </a>
+
+                </div>
+
+                <div class=" float-right">
+                    <a href="{% url 'dashboard:socialmedia_delete_page_entreprisee' id_page_entreprise=page.id %}">
+                        <button id="btn_lancer_compagne" class="btn btn-danger dim">
+                            <i class="fa fa-trash"></i> Supprimer
+                        </button>
+                    </a>
+
+                    <a href="{% url 'dashboard:socialmedia_update_page_entreprise' id_page_entreprise=page.id %}">
+                        <button class="btn btn-success dim"><i class="fa fa-pencil"></i> Modifier</button>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-6">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-eye fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Visites totales</span>
+                            <h2 class="font-bold">{{ page.views_number }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-bullhorn fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Offres d'emplois </span>
+                            <h2 class="font-bold">{{ page.offreemploi_set.all.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-users fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Abonnés</span>
+                            <h2 class="font-bold">{{ page.abonnees.all.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div style="background-image:url('{% if page.img_couverture %} {{ page.img_couverture.url }} {% else %} {% static "dashboard/img/default_cover.jpg" %} {% endif %}');height:150px;">
+
+                </div>
+
+                <div class="col-lg-12 text-center" style="margin-top:-100px;">
+                    <img height="150" width="150" src="{% if page.entreprise.logo %} {{ page.entreprise.logo.url }} {% else %} {% static "dashboard/img/group_default_image.png" %} {% endif %}" class="rounded-circle circle-border m-b-md"
+                         alt="profile">
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <div class="row m-b-lg m-t-lg">
+            <div class="col-md-12" style="text-align:center;">
+                <div style="margin-left:15px;">
+                    <div class="">
+                        <div>
+                            <h2 class="no-margins">
+                                {{ page.entreprise.nom }}
+                            </h2>
+                            <h4>{{ page.entreprise.activite }}</h4>
+                            <small>
+                                {{ page.presentation_entreprise }}
+                            </small>
+                            <br>
+                            <small>
+                                <strong>{{ page.annee_creation }}</strong>
+                            </small>
+                            <br>
+                            <small>
+                                <strong>{{ page.entreprise.ville|title }}, {{ page.entreprise.pays|title }}.</strong>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12" style="text-align:center;">
+                <table class="table small m-b-xs">
+                    <tbody>
+                    <tr>
+                        <td>
+                            <strong>{{ page.abonnees.all.count }} </strong> Abonnés
+                        </td>
+                        <td>
+                            <strong>{{ page.administrateurs.all.count }} </strong> Administrateurs
+                        </td>
+
+                        <td>
+                            <strong>{{ page.moderateurs.all.count }} </strong> Modérateurs
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+
+
+        </div>
+        <div class="row">
+
+        <div class="col-md-6 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_publications' %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Offres d'emploi publiées <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for offre in page.offreemploi_set.all %}
+                        <a href="{% url 'dashboard:socialmedia_infos_offre_emploi' id_offre_emploi=offre.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ offre.nom_poste | title }}
+                                <span class="small-text">{{ offre.ville | title }}</span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune offre d'emploi.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+
+
+        <div class="col-md-6 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_profils_list'  %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Administrateurs <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for admin in page.administrateurs.all %}
+                        <a href="{% url 'dashboard:socialmedia_infos_profile' id_user=admin.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ admin.user.first_name | title }} {{ admin.user.last_name | title }} </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun administrateur.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+
+        <div class="col-md-6 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_profils_list'  %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Modérateurs <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for admin in page.moderateurs.all %}
+                        <a href="{% url 'dashboard:socialmedia_infos_profile' id_user=admin.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ admin.user.first_name | title }} {{ admin.user.last_name | title }} </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun modérateur.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+
+        <div class="col-md-6 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_profils_list'  %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Derniers  abonnés <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for admin in page.abonnees.all %}
+                        <a href="{% url 'dashboard:socialmedia_infos_profile' id_user=admin.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ admin.user.first_name | title }} {{ admin.user.last_name | title }} </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun abonné.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+        </div>
+
+    </div>
+
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script>
+        $('#dashboard_socialmedia').addClass("active");
+        $('#socialmedia_liste_page_entreprise').addClass("active");
+    </script>
+
+
+
+{% endblock scripts %}
+

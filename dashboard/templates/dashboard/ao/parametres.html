@@ -1,0 +1,254 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+
+{% block stylesheets %}
+
+    {{ block.super }}
+
+
+    <!-- Toastr style -->
+    <link href="{% static 'dashboard/css/plugins/toastr/toastr.min.css' %}" rel="stylesheet">
+
+
+    <!-- Multi Select -->
+    <link href="{% static 'dashboard/multi-select/jquery.dropdown.min.css' %}" rel="stylesheet">
+
+    <style>
+        label{
+
+    font-weight: 600;
+    line-height: 32px;
+    font-size: 15px;
+    color: #333;
+        }
+    </style>
+
+
+
+{% endblock stylesheets %}
+
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script>
+        $('#dashboard_ao').addClass("active");
+        $('#ao_parametres').addClass("active");
+    </script>
+
+
+    <!-- Multi Select -->
+    <script src="{% static 'dashboard/multi-select/jquery.dropdown.min.js' %}"></script>
+
+    <!-- Toastr script -->
+    <script src="{% static 'dashboard/js/plugins/toastr/toastr.min.js' %}"></script>
+
+    <script>
+        {% if messages %}
+            {% for msg in messages %}
+                toastr.options = {
+                    "closeButton": true,
+                    "debug": false,
+                    "progressBar": true,
+                    "preventDuplicates": false,
+                    "positionClass": "toast-top-right",
+                    "onclick": null,
+                    "showDuration": "400",
+                    "hideDuration": "1000",
+                    "timeOut": "7000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+
+                Command: toastr["{{ msg.tags }}"]("{{ msg }}")
+
+            {% endfor %}
+        {% endif %}
+    </script>
+
+    <script>
+        $('.multi_select_demo').dropdown({
+
+            searchNoData: '<li style="color:#333">Aucun résultat</li>',
+            input: '<input type="text" maxLength="20" placeholder="Recherche...">',
+
+
+        });
+
+    </script>
+
+
+
+
+{% endblock scripts %}
+
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="tabs-container">
+
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li><a class="nav-link active show" data-toggle="tab" href="#tab-1"> Paramètres</a></li>
+                    </ul>
+
+
+                    <div class="tab-content">
+
+
+                        <div role="tabpanel" id="tab-1" class="tab-pane active show">
+                            <div class="panel-body">
+
+                                <div class="">
+
+                                    <h2>
+                                        Paramètres du module appels d'offres
+                                    </h2>
+                                    <div class="mail-tools tooltip-demo m-t-md error_color"
+                                         style="padding:5px 50px 0px 50px;">
+
+
+                                    </div>
+                                </div>
+                                <div class="" style="padding:5px 50px 25px 50px;">
+
+                                    <h3>Nombre de lignes de devis <span class="error_color">*</span></h3>
+
+
+                                    <form action="" method="POST">
+                                        {% csrf_token %}
+                                        <div class="form-group row"><label class="col-sm-2 col-form-label"></label>
+
+                                            <div class="col-sm-10">
+                                                <div class="row">
+
+                                                    <div class="col-md-3">
+                                                        <label for="id_tag">Nombre</label>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        <input name="quotation_nb_rows" type="number"
+                                                               value="{{ quotation_nb_rows }}" class="form-control">
+                                                    </div>
+
+                                                    <div class="col-lg-4">
+                                                <div class="float-left">
+
+                                                    <input value="Modifier" type="submit" class="btn btn-success"
+                                                           style="width:100px;">
+                                                </div>
+                                            </div>
+
+
+                                                    <br><br><br>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </form>
+
+                                </div>
+
+                                <div class="" style="padding:5px 50px 25px 50px;">
+
+                                    <h3>Taux de TVA <span class="error_color">*</span></h3>
+
+
+                                    <div class="form-group row"><label class="col-sm-2 col-form-label"></label>
+
+                                        <div class="col-sm-10">
+                                            {% for tva in tvas %}
+                                                <div class="row">
+                                                    <div class="col-md-3">
+                                                        <label for="id_tag"><span
+                                                                class="text-muted">Taux #{{ forloop.counter }}</span>
+                                                        </label>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        <label>{{ tva.tva }} % <a
+                                                                href="{% url 'dashboard:ao_delete_tva' id=tva.id %}">
+                                                            <button class="btn btn-sm btn-danger"><i
+                                                                    class="fa fa-trash"></i></button>
+                                                        </a></label>
+                                                    </div>
+                                                </div>
+
+                                            {% empty %}
+
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <label for="id_tag"><span class="text-muted">Aucune valeur de  TVA renseignée. Les valeurs  par defaut des TVA sont affichés.</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+
+
+                                                    <br>
+
+                                            <form action="{% url 'dashboard:ao_add_tva' %}" method="POST">
+                                                <div class="row">
+
+                                                    {% csrf_token %}
+
+                                                    <div class="col-md-3">
+                                                        <label for="id_tag">Ajouter une valeur</label>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        <input name="taux_tva" type="number" class="form-control">
+                                                    </div>
+
+                                                    <div class="col-lg-4">
+                                                        <div class="float-left">
+
+                                                            <input value="Ajouter" type="submit"
+                                                                   class="btn btn-primary"
+                                                                   style="width:100px;">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+{% endblock content %}
+
+

@@ -1,0 +1,58 @@
+{% extends 'eLearning/base.html' %}
+{% load static %}
+{% block content %}
+<section id="hero_in" class="cart_section">
+    <div class="wrapper">
+        <div class="container">
+            <div class="bs-wizard clearfix">
+                <div class="bs-wizard-step">
+                    <div class="text-center bs-wizard-stepnum">Votre panier</div>
+                    <div class="progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                    <a href="{% url 'eLearning:cart' %}" class="bs-wizard-dot"></a>
+                </div>
+
+                <div class="bs-wizard-step active">
+                    <div class="text-center bs-wizard-stepnum">Paiement</div>
+                    <div class="progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                    <a href="#0" class="bs-wizard-dot"></a>
+                </div>
+
+                <div class="bs-wizard-step disabled">
+                    <div class="text-center bs-wizard-stepnum">Terminé!</div>
+                    <div class="progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                    <a href="#0" class="bs-wizard-dot"></a>
+                </div>
+            </div>
+            <!-- End bs-wizard -->
+        </div>
+    </div>
+</section>
+<!--/hero_in-->
+
+<div class="bg_color_1">
+    <div class="container margin_60_35">
+            <div style="width: 100%; text-align: center">
+                <h3 style="margin-top: 200px">Redirection...</h3>
+                <img src="{% static 'eLearning/img/Loading.gif' %}" alt="">
+            </div>
+            <div style="visibility: hidden">
+            {{ form.render }}
+            </div>
+        <!-- /row -->
+    </div>
+    <!-- /container -->
+</div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("input[name='submit']").click();
+    });
+</script>
+{% endblock %}

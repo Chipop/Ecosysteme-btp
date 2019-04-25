@@ -37,7 +37,7 @@
 
     <hr style=" margin-top: 10px; margin-bottom: 10px;">
     <p style="margin: 0px 0px;">
-        {{ user.profil.resume }}
+        {{ user.profil.resume | default:"" }}
     </p>
 
 </div>

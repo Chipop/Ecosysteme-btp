@@ -1,0 +1,272 @@
+{% extends 'qa/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+  <!-- =-=-=-=-=-=-= Main Area =-=-=-=-=-=-= -->
+  <div class="main-content-area">
+
+    <!-- =-=-=-=-=-=-= Page Breadcrumb =-=-=-=-=-=-= -->
+    <section class="page-title">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-9 col-sm-8 co-xs-12 text-left">
+            <h1>{{ category.title }}</h1>
+              <p>{{ category.description }}</p>
+          </div>
+          <!-- end col -->
+          <div class="col-md-3 col-sm-4 co-xs-12 text-right">
+            <div class="bread">
+              <ol class="breadcrumb">
+                  <li><a href="#">Acceuil</a></li>
+                  <li><a href="#">Categories</a></li>
+                  <li class="active">{{ category.title }}</li>
+              </ol>
+                <!--<form action="">
+                    <select class="js-example-basic-single" name="filter"
+                            style="width: 100%; padding: 5px 10px; margin-top: 5px;">
+                        <option></option>
+                        <option value="date">Date d'ajout</option>
+                        <option value="views">Nombre de vues</option>
+                        <option value="answer">Nombre de réponses</option>
+                    </select>
+                </form>-->
+            </div>
+            <!-- end bread -->
+          </div>
+          <!-- end col -->
+        </div>
+        <!-- end row -->
+      </div>
+      <!-- end container -->
+    </section>
+    <!-- =-=-=-=-=-=-= Page Breadcrumb End =-=-=-=-=-=-= -->
+
+    <section class="section-padding-40 white listing-grid" style="border-bottom: 0px">
+      <div class="container">
+
+        <!-- Row -->
+        <div class="row">
+          <div class="col-md-8 col-lg-8 col-sm-12 col-xs-12">
+              <div class="row">
+                  <div class="listing">
+                  <!-- Question Area Panel -->
+                  <div class="listing-area">
+
+                      {% for q in questions %}
+
+                          <!-- Question Listing -->
+                        <div class="listing-grid" style="border-bottom: 0">
+                          <div class="row">
+                            <div class="col-md-2 col-sm-2 col-xs-12 hidden-xs">
+                              <a data-toggle="tooltip" data-placement="bottom" data-original-title="Martina Jaz" href="#">
+                                  {% if q.user.photo_profil is None %}
+                                    <img alt="" class="correct img-responsive center-block" src="{% static 'images/default-profil.jpg' %}">
+                                {% else %}
+                                    <img alt="" class="correct img-responsive center-block" src="{{ q.user.photo_profil.image.url }}">
+                                {% endif %}
+                              </a>
+                                {% if q.views_number > 1000 %}
+                                    <span class="tick"><i class="fa fa-check" aria-hidden="true"></i></span>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-7 col-sm-8  col-xs-12">
+                              <h3><a  href="{% url 'qa:question' q.id %}">{{ q.title|truncatechars:135 }}</a></h3>
+                              <div class="listing-meta">
+                                <span><i class="fa fa-clock-o" aria-hidden="true"></i>{{ q.creation_date }}</span>
+                                <span><i class="fa fa fa-eye" aria-hidden="true"></i> {{ q.views_number }} Vues</span>
+                              </div>
+                                <p>{{ q.content|safe|truncatechars:250 }}</p>
+                            </div>
+                            <div class="col-md-3 col-sm-2 col-xs-12">
+                              <ul class="question-statistic">
+                                <li class="active">
+                                    <a data-toggle="tooltip" data-placement="bottom" data-original-title="Réponses">
+                                      <span>{{ q.answers_count }}</span></a>
+                                </li>
+                                <li>
+                                    <a data-toggle="tooltip" data-placement="bottom" data-original-title="Catégorie"
+                                       href="{% url 'qa:category' q.category.id %}">
+                                      <span style="width: 115px">{{ q.category }}</span></a>
+                                </li>
+                              </ul>
+                            </div>
+
+                            <div class="col-md-10 col-sm-10  col-xs-12" style="width: 100%">
+                              <div class="pull-right tagcloud">
+                              {% if forloop.counter == 1 %}
+                                  {% for tag in tags.1 %}
+                                      {% if forloop.counter < 5 %}
+                                          <a href="{% url 'qa:all_questions' %}?tag={{ tag.title }}">{{ tag.title }}</a>
+                                      {% endif %}
+                                      {% if forloop.last and forloop.counter > 4 %}
+                                          <a href="#">...</a>
+                                      {% endif %}
+                                  {% endfor %}
+                              {% elif forloop.counter == 2 %}
+                                  {% for tag in tags.2 %}
+                                      {% if forloop.counter < 5 %}
+                                          <a href="{% url 'qa:all_questions' %}?tag={{ tag.title }}">{{ tag.title }}</a>
+                                      {% endif %}
+                                      {% if forloop.last and forloop.counter > 4 %}
+                                          <a href="#">...</a>
+                                      {% endif %}
+                                  {% endfor %}
+                              {% elif forloop.counter == 3 %}
+                                  {% for tag in tags.3 %}
+                                      {% if forloop.counter < 5 %}
+                                          <a href="{% url 'qa:all_questions' %}?tag={{ tag.title }}">{{ tag.title }}</a>
+                                      {% endif %}
+                                      {% if forloop.last and forloop.counter > 4 %}
+                                          <a href="#">...</a>
+                                      {% endif %}
+                                  {% endfor %}
+                              {% elif forloop.counter == 4 %}
+                                  {% for tag in tags.4 %}
+                                      {% if forloop.counter < 5 %}
+                                          <a href="{% url 'qa:all_questions' %}?tag={{ tag.title }}">{{ tag.title }}</a>
+                                      {% endif %}
+                                      {% if forloop.last and forloop.counter > 4 %}
+                                          <a href="#">...</a>
+                                      {% endif %}
+                                  {% endfor %}
+                              {% elif forloop.counter == 5 %}
+                                  {% for tag in tags.5 %}
+                                      {% if forloop.counter < 5 %}
+                                          <a href="{% url 'qa:all_questions' %}?tag={{ tag.title }}">{{ tag.title }}</a>
+                                      {% endif %}
+                                      {% if forloop.last and forloop.counter > 4 %}
+                                          <a href="#">...</a>
+                                      {% endif %}
+                                  {% endfor %}
+                              {% elif forloop.counter == 6 %}
+                                  {% for tag in tags.6 %}
+                                      {% if forloop.counter < 5 %}
+                                          <a href="{% url 'qa:all_questions' %}?tag={{ tag.title }}">{{ tag.title }}</a>
+                                      {% endif %}
+                                      {% if forloop.last and forloop.counter > 4 %}
+                                          <a href="#">...</a>
+                                      {% endif %}
+                                  {% endfor %}
+                                  {% elif forloop.counter == 7 %}
+                                  {% for tag in tags.7 %}
+                                      {% if forloop.counter < 5 %}
+                                          <a href="{% url 'qa:all_questions' %}?tag={{ tag.title }}">{{ tag.title }}</a>
+                                      {% endif %}
+                                      {% if forloop.last and forloop.counter > 4 %}
+                                          <a href="#">...</a>
+                                      {% endif %}
+                                  {% endfor %}
+                              {% endif %}
+                              </div>
+                            </div>
+
+                          </div>
+                        </div>
+                        <!-- Question Listing End -->
+
+                      {% endfor %}
+
+                  </div>
+
+                  <div>
+                        {% if questions.has_other_pages %}
+                            <div class="col-md-3">
+                                <p class="paginatorIndex" style="color: #000; text-transform: uppercase; font-size: 18px;">
+                                    page <b style="font-size: 22px;">{{ questions.number }}</b>
+                                    sur <b style="font-size: 22px;">{{ questions.paginator.num_pages }}</b></p>
+                            </div>
+                            <div class="col-md-9">
+                                <ul class="pagination">
+                                {% if questions.has_previous %}
+                                    <li><a href="?page={{ questions.previous_page_number }}">&laquo;</a></li>
+                                {% else %}
+                                    <li class="disabled"><span>&laquo;</span></li>
+                                {% endif %}
+                                {% for i in questions.paginator.page_range %}
+                                    {% if questions.number == i %}
+                                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                                    {% else %}
+                                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if questions.has_next %}
+                                    <li><a href="?page={{ questions.next_page_number }}">&raquo;</a></li>
+                                {% else %}
+                                    <li class="disabled"><span>&raquo;</span></li>
+                                {% endif %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                  <!-- Question Area Panel End -->
+                </div>
+              </div>
+          </div>
+
+          <!-- Right Sidebar -->
+          <div class="col-md-4 col-sm-12 col-xs-12 clearfix">
+
+            <!-- sidebar -->
+            <div class="side-bar">
+
+                <div class="widget" style="padding: 17px 30px">
+                    Nombre de question :<h3 style="display: inline"> {{ questions_number }}</h3>
+                    <br>
+                    Nombre de réponses :<h3 style="display: inline"> {{ answers_number }}</h3>
+                </div>
+
+              <!-- widget -->
+              <div class="widget">
+                <div class="recent-comments">
+                  <h2>Top Questions</h2>
+                  <hr class="widget-separator no-margin">
+                  <ul>
+                      {% for q in top_questions %}
+                        <li><a href="{% url 'qa:question' q.id %}">{{ q.title|truncatechars:80 }}</a>
+                        </li>
+                      {% endfor %}
+                  </ul>
+                </div>
+              </div>
+              <!-- widget -->
+
+              <!-- widget -->
+              <div class="widget">
+                <div class="recent-comments">
+                  <h2>Réponses Récentes</h2>
+                  <hr class="widget-separator no-margin">
+                  <ul id="recentcomments">
+                      {% for a in latest_answers %}
+                        <li class="recentcomments">
+                            <span class="comment-author-link">{{ a.user.user.first_name|capfirst }} {{ a.user.user.last_name|upper }}</span> sur
+                            <a href="{% url 'qa:question' a.question.id %}">{{ a.question.title|truncatechars:70 }}</a> </li>
+                      {% endfor %}
+                    </ul>
+                </div>
+              </div>
+              <!-- widget end -->
+
+            </div>
+            <!-- sidebar end -->
+          </div>
+          <!-- Right Sidebar End -->
+
+        </div>
+        <!-- Row End -->
+      </div>
+    </section>
+    <!-- =-=-=-=-=-=-= Question Details end =-=-=-=-=-=-= -->
+  </div>
+  <!-- =-=-=-=-=-=-= Main Area End =-=-=-=-=-=-= -->
+
+{% endblock %}
+
+
+{% block script %}
+    <script>
+
+    </script>
+{% endblock %}

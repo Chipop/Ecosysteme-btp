@@ -1,0 +1,5 @@
+{% if statut.type == "original" %}
+    {% include 'SocialMedia/statuts/statut.html' %}
+{% elif statut.type == "shared" %}
+    {% include 'SocialMedia/statuts/shared_statut.html' %}
+{% endif %}

@@ -1,0 +1,589 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+
+{% block title %}
+    Vue d'ensemble | Journal | {{ block.super }}
+{% endblock title %}
+
+{% block stylesheets %}
+    {{ block.super }}
+
+    <!-- c3 Charts -->
+    <link href="{% static 'dashboard/css/plugins/c3/c3.min.css' %}" rel="stylesheet">
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+
+        <div class="row">
+
+
+            <div class="col-lg-6">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-user-circle fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span"> Journalistes </span>
+                            <h2 class="font-bold">{{ journalistes.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="widget style1 bg-success">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-newspaper-o fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Nombre d'articles écrits</span>
+                            <h2 class="font-bold">{{ articles.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="row">
+
+
+
+            <div class="col-lg-3">
+                <div class="widget style1 bg-info">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-th-large fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Catégories</span>
+                            <h2 class="font-bold">{{ nb_categories }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="widget style1 bg-info">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-comment fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Commentaires</span>
+                            <h2 class="font-bold">{{ nb_commentaires }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-3">
+                <div class="widget style1 bg-warning">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-eye fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Vues</span>
+                            <h2 class="font-bold">{{ nb_visites }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-3">
+                <div class="widget style1 bg-success">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-video-camera fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Vidéos</span>
+                            <h2 class="font-bold">{{ nb_videos }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-md-6">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:news_articles' %}"
+                       class="list-group-item list-group-item-action active disabled bg-blue">
+                        Articles non approuvés <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for article in articles_non_approuves.reverse|slice:"9" %}
+                        <a href="{% url 'dashboard:news_infos_article' id_article=article.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ article.small_title | truncatechars:"39" }} <i class="fa fa-calendar"></i> <span
+                                    class="small-text">{{ article.date_publication }} <i
+                                    class="fa fa-eye"></i> {{ article.view_number }} </span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune commande.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Journalistes par vues</h5>
+
+                    </div>
+                    <div class="ibox-content">
+                        <div>
+                            <div id="pie"></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <div class="row">
+
+            <div class="col-lg-12">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Visites </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="visites-totales-chart-container"></div>
+                        <div id="visites-totales-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+
+            <div class="col-lg-12">
+
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <h3>Pages les plus visitées <span class="pull-right"></span>
+                        </h3>
+
+                        <div id="pages-plus-visites-chart-container"></div>
+                        <div id="pages-plus-visites-view-selector-container" style="display:none;"></div>
+
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+    <div  class="row">
+
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title ">
+                        <h5>Source des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content ibox-source-traffic">
+                        <div id="traffic-source-chart-container"></div>
+                        <div id="traffic-source-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <h3>Pages où passe l'utilisateur le plus de temps (secondes) <span class="pull-right"></span>
+                        </h3>
+
+                        <div id="pages-plus-temps-chart-container"></div>
+                        <div id="pages-plus-temps-view-selector-container" style="display:none;"></div>
+
+                    </div>
+                </div>
+            </div>
+
+    </div>
+
+
+        <div class="row">
+
+
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Appareils des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="appareils-chart-container"></div>
+                        <div id="appareils-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Origine des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="origine-chart-container"></div>
+                        <div id="origine-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    <div class="row">
+        <div class="col-md-6">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:news_articles' %}"
+                       class="list-group-item list-group-item-action active disabled bg-blue">
+                        Articles les plus vus <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for article in articles_plus_vus %}
+                        <a href="{% url 'dashboard:news_infos_article' id_article=article.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ article.small_title | truncatechars:"39" }} <i class="fa fa-calendar"></i> <span
+                                    class="small-text">{{ article.date_publication }} <i
+                                    class="fa fa-eye"></i> {{ article.view_number }} </span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune commande.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+    <div class="col-md-6">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:news_journalistes' %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Journalistes les plus suivis <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for journaliste in journalistes_views_pie %}
+                        <a href="{% url 'dashboard:news_infos_journaliste' id_journaliste=journaliste.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ journaliste.first_name }} {{ journaliste.last_name }} <span
+                                    class="small-text"> <i
+                                    class="fa fa-eye"></i> {{ journaliste.total_views }} </span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune commande.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+    </div>
+
+
+    </div>
+
+
+
+
+
+
+{% endblock content %}
+
+
+
+
+{% block scripts %}
+
+    {{ block.super }}
+
+
+    <script>
+        $('#dashboard_news').addClass("active");
+        $('#news_vue_generale').addClass("active");
+
+    </script>
+
+
+    <!-- d3 and c3 charts -->
+    <script src="{% static 'dashboard/js/plugins/d3/d3.min.js' %}"></script>
+    <script src="{% static 'dashboard/js/plugins/c3/c3.min.js' %}"></script>
+
+
+    <script>
+        // Chart Js Pie Demo
+
+        $(document).ready(function () {
+
+            c3.generate({
+                bindto: '#pie',
+                data: {
+                    columns: [
+
+                        {% for journaliste in journalistes_views_pie|slice:"5" %}
+                            ['{{ journaliste.first_name }} {{ journaliste.last_name }} ({{ journaliste.email }}) ', {{ journaliste.total_views }}],
+                        {% empty %}
+                            ['Aucun', 1],
+                        {% endfor %}
+
+
+                    ],
+                    type: 'pie'
+                },
+                pie: {
+                    label: {
+                        format: function (value, ratio, id) {
+                            return value;
+                        }
+                    }
+                }
+            });
+
+
+        });
+
+
+    </script>
+
+
+
+
+    <script>
+        (function (w, d, s, g, js, fs) {
+            g = w.gapi || (w.gapi = {});
+            g.analytics = {
+                q: [], ready: function (f) {
+                    this.q.push(f);
+                }
+            };
+            js = d.createElement(s);
+            fs = d.getElementsByTagName(s)[0];
+            js.src = 'https://apis.google.com/js/platform.js';
+            fs.parentNode.insertBefore(js, fs);
+            js.onload = function () {
+                g.load('analytics');
+            };
+        }(window, document, 'script'));
+    </script>
+
+
+    <script>
+
+        //Visites totales Line Chart Ecommerce
+
+        gapi.analytics.ready(function () {
+
+            /**
+             * Authorize the user with an access token obtained server side.
+             */
+            gapi.analytics.auth.authorize({
+                'serverAuth': {
+                    'access_token': '{{ ACCESS_TOKEN_FROM_GOOGLE_SERVICE_ACCOUNT }}'
+                }
+            });
+
+            /**
+             * Create a new DataChart instance with the given query parameters
+             * and Google chart options. It will be rendered inside an element
+             * with the id "chart-container".
+             */
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:pageviews,ga:uniquePageViews',
+                    dimensions: 'ga:date',
+                    'start-date': '30daysAgo',
+                    'end-date': 'today',
+                    filters: 'ga:pagePath=@/journal/',
+                },
+                chart: {
+                    container: 'visites-totales-chart-container',
+                    type: 'LINE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:users',
+                    dimensions: 'ga:source',
+                    filters: 'ga:pagePath=@/journal/',
+                    'max-results': 8,
+                },
+                chart: {
+                    container: 'traffic-source-chart-container',
+                    type: 'TABLE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:pageviews,ga:uniquePageviews,ga:avgTimeOnPage',
+                    dimensions: 'ga:pageTitle,ga:pagePath',
+                    'start-date': '30daysAgo',
+                    'end-date': 'today',
+                    sort: '-ga:pageviews',
+                    filters: 'ga:pagePath=@/journal/',
+                    'max-results': 10,
+                },
+                chart: {
+                    container: 'pages-plus-visites-chart-container',
+                    type: 'TABLE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:avgTimeOnPage',
+                    dimensions: 'ga:pagePath',
+                    filters: 'ga:pagePath=@/journal/',
+                    'max-results': 10,
+                    'sort': '-ga:avgTimeOnPage'
+                },
+                chart: {
+                    container: 'pages-plus-temps-chart-container',
+                    type: 'TABLE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:users',
+                    dimensions: 'ga:deviceCategory',
+                    filters: 'ga:pagePath=@/journal/',
+                },
+                chart: {
+                    container: 'appareils-chart-container',
+                    type: 'PIE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:users',
+                    dimensions: 'ga:city',
+                    filters: 'ga:pagePath=@/journal/',
+                },
+                chart: {
+                    container: 'origine-chart-container',
+                    type: 'PIE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+        });
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock scripts %}

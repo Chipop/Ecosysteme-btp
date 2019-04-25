@@ -296,7 +296,7 @@
                                     <form id="formAddCart{{ el.id.pk }}" method="get" action="{% url 'e_commerce:add_to_cart' %}" data-validate-url="{% url 'e_commerce:add_to_cart' %}"><input type="hidden" name="product" value="{{ el.id.pk }}"></form>
                                     <button type="button" class="addToCart btn-button" title="Add to cart" onclick="cart.add('{{ el.id.pk }}', '{{ user.is_authenticated }}', '{{ el.id.name }}', '{{ el.id.image.url }}', '{% url 'e_commerce:product' el.id.pk %}');">
                                         <i class="fa fa-shopping-basket"></i>
-                                        <span>Ajouter au chariot</span>
+                                        <span>Ajouter au Panier</span>
                                     </button>
                                 {% endif %}
                                     <form id="formAddWish{{ el.id.pk }}" method="get" action="{% url 'e_commerce:add_to_wish_list' %}" data-validate-url="{% url 'e_commerce:add_to_wish_list' %}"><input type="hidden" name="product" value="{{ el.id.pk }}"></form>
@@ -415,9 +415,9 @@
                                         <span>Contacter Fournisseur</span>
                                     </a>
                                 {% else %}
-                                    <button class="addToCart btn-button btn-block" type="button" title="Ajouter Chariot" onclick="cart.add('{{ el.id.pk }}', '{{ user.is_authenticated }}', '{{ el.id.name }}', '{{ el.id.image.url }}', '{% url 'e_commerce:product' el.id.pk %}');">
+                                    <button class="addToCart btn-button btn-block" type="button" title="Ajouter Panier" onclick="cart.add('{{ el.id.pk }}', '{{ user.is_authenticated }}', '{{ el.id.name }}', '{{ el.id.image.url }}', '{% url 'e_commerce:product' el.id.pk %}');">
                                     <i class="fa fa-shopping-basket"></i>
-                                    <span>Ajouter au Chariot</span>
+                                    <span>Ajouter au Panier</span>
                                     </button>
                                 {% endif %}
                                     <button class="compare btn-button  btn-block" type="button" title="Ajouter au Souhaits" onclick="wishlist.add('{{ el.id.pk }}', '{{ user.is_authenticated }}', '{{ el.id.name }}', '{{ el.id.image.url }}', '{% url 'e_commerce:product' el.id.pk %}');">

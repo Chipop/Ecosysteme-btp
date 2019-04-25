@@ -1,12 +1,17 @@
 {% extends 'base_qa.html' %}
-{% load django_markdown %}
+
 {% load static %}
 {% load crispy_forms_tags %}
 {% load i18n %}
 
 {% block style %}
+<script src='{% static "js/jquery.min.js"  %}'></script>
+<link rel="stylesheet" href='{% static "css/bootstrap-tagsinput.css" %}'>
+<script src='{% static "js/bootstrap-tagsinput.js" %}'></script>
 
-
+<style type="text/css">
+  #tags{ width:100%!important; }
+</style>
 {% endblock style %}
 
 
@@ -63,12 +68,7 @@
 
                 <input type="hidden" value="{{ user.id }}" name="user" />
 
-                <div class="form-group">
-                  <label>Tags</label>
-
-                  <input name="tags" type="text" id="tags" placeholder="Ex : tag1,tag2...." class="form-control ta" data-role="tagsinput">
-
-                </div>
+                
 
 
                 <div class="form-group " >
@@ -77,6 +77,14 @@
                   {{ form.media }}
                   {{ form.question_text }}
                 </div>
+                </div>
+
+
+                <div class="form-group">
+                  <label>Tags</label>
+
+                  <input data-role="tagsinput" name="tags" type="text" id="tags" placeholder="Ex : tag1,tag2...." class="form-control ta"  >
+
                 </div>
 
                 <button class="btn btn-primary pull-right">{% trans "Publiez votre question" %}</button>

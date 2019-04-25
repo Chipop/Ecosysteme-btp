@@ -1,0 +1,218 @@
+{% extends 'qa/base.html' %}
+
+{% load static %}
+
+{% block style %}
+    <link href="{% static 'css/select2.min.css" rel="stylesheet' %}" />
+    <link rel="stylesheet" href="{% static 'css/jquery.tagsinput.min.css'  %}">
+{% endblock %}
+
+
+{% block content %}
+
+    <!-- =-=-=-=-=-=-= Post Question  =-=-=-=-=-=-= -->
+    <section class="section-padding-40 white" id="post-question">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-12 col-md-8 ">
+
+              {% if status == 'recaptcha' %}
+
+                  <div class="alert alert-warning alert-dismissible">
+                      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                      <p>Le <strong>reCaptcha</strong> est invalide. Merci de réessayer.</p>
+                  </div>
+
+              {% elif form.errors %}
+
+                  <div class="form-group">
+                      <div class="alert alert-warning">
+                          <p style="font-size: 18px; font-weight: bold;">Veuillez corriger les erreurs ci dessous :</p>
+                          {% for field in form %}
+                              {% for error in field.errors %}
+                                  <p style="padding-left: 40px"><strong>{{ field.name }} : </strong>{{ error|escape }}</p>
+                              {% endfor %}
+                          {% endfor %}
+                      </div>
+                  </div>
+
+              {% endif %}
+
+            <div class="box-panel" style="border-top: 1px #eee solid;">
+
+              <h2>Publiez Votre Article</h2>
+              <p>Duis dapibus aliquam mi, eget euismod sem scelerisque ut. Vivamus at elit quis urna adipiscing iaculis. Curabitur vitae velit in neque dictum blandit. Proin in iaculis neque. </p>
+              <hr>
+              <!-- form login -->
+              <form class="margin-top-40" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.media }}
+
+                <div class="form-group">
+                  <label>Titre de l'article</label>
+                    {{ form.title }}
+                </div>
+
+                <div class="form-group">
+                  <label>Catégorie</label>
+                  <select class="form-control" name="category">
+                      <option value="3">Toutes les catégories</option>
+                      {% for category in categories %}
+                          <option value="{{ category.id }}">{{ category.title }}</option>
+                      {% endfor %}
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Image</label>
+                  <div class="input-group">
+                    <span class="input-group-btn">
+                        <span class="btn btn-default btn-file">
+                            Parcourir… {{ form.image }}
+                        </span>
+                    </span>
+                    <input type="text" class="form-control" readonly>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label>Tags</label>
+                    {{ form.tags }}
+                </div>
+
+                <div class="form-group">
+                  <label>Contenu de l'article</label>
+                    {{ form.content }}
+                </div>
+
+                <div style="display: inline-block;">
+                    <script src='https://www.google.com/recaptcha/api.js'></script>
+                    <div class="g-recaptcha" data-sitekey="6LcIOV8UAAAAAO0kQRvjLmlOt7Q08VEubXgfvG6l"></div>
+                </div>
+                <button style="margin-top: 26px;" class="btn btn-primary pull-right" type="submit">Publiez Votre Article</button>
+
+              </form>
+              <!-- form login -->
+
+            </div>
+          </div>
+
+          <!-- Blog Right Sidebar -->
+          <div class="col-sm-12 col-xs-12 col-md-4">
+
+            <!-- sidebar -->
+            <div class="side-bar">
+
+                <div class="widget">
+                <div class="widget-image widget-image-sm">
+
+                    {% if user.photo_couverture is None %}
+                        <img alt="image" src="{% static 'images/default-cover.jpg' %}">
+                    {% else %}
+                        <img alt="image" src="{{ user.photo_couverture.image.url }}">
+                    {% endif %}
+
+                    <div class="widget-image-content text-center">
+
+                        {% if user.photo_profil is None %}
+                            <img class="img-thumbnail" alt="avatar" src="{% static 'images/default-profil.jpg' %}">
+                        {% else %}
+                            <img class="img-thumbnail" alt="avatar" src="{{ user.photo_profil.image.url }}">
+                        {% endif %}
+
+                        <h2 class="widget-heading text-light"><strong>{{ user.user.first_name|capfirst }} {{ user.user.last_name|upper }}</strong></h2>
+                        {% if question.user.fonction is not None %}
+                            <h4 class="widget-heading text-light-op"><em>{{ user.fonction }}</em></h4>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="widget-content widget-content-full border-bottom">
+                  <div class="row text-center">
+                    <div class="col-xs-6 push-inner-top-bottom border-right">
+                      <h3 class="widget-heading"><i class=" icon-trophy push"></i> <br>
+                                            <small><strong>{{ user.points }}</strong> Points</small></h3>
+                    </div>
+                    <div class="col-xs-6 push-inner-top-bottom">
+                      <h3 class="widget-heading"><i class="icon-document themed-color-social push"></i> <br>
+                                            <small><strong>{{ count_answer }}</strong> Réponses</small></h3>
+                    </div>
+                  </div>
+                </div>
+                <div class="widget-content border-bottom">
+                  <h4>A Propos</h4>
+                  <p>{{ user.resume }}</p>
+                </div>
+                <div class="widget-content">
+
+                  <div class="btn-group">
+                      <a title="" data-toggle="tooltip" class="btn btn-default" href="{{ user.facebook }}" data-original-title="Facebook">
+                          <i class="fa fa-facebook fa-fw"></i></a>
+                      <a title="" data-toggle="tooltip" class="btn btn-default" href="{{ user.twitter }}" data-original-title="Twitter">
+                          <i class="fa fa-twitter fa-fw"></i></a>
+                      <a title="" data-toggle="tooltip" class="btn btn-default" href="{{ user.youtube }}" data-original-title="Google Plus">
+                          <i class="fa fa-youtube fa-fw"></i></a>
+                      <a title="" data-toggle="tooltip" class="btn btn-default" href="{{ user.linkedin }}" data-original-title="Pinterest">
+                          <i class="fa fa-linkedin fa-fw"></i></a>
+                      <a title="" data-toggle="tooltip" class="btn btn-default" href="{{ user.instagram }}" data-original-title="Dribbble">
+                          <i class="fa fa-instagram fa-fw"></i></a> </div>
+                </div>
+              </div>
+
+                <!-- widget -->
+              <div class="widget">
+                <div class="latest-news">
+                  <h2>Derniers Article</h2>
+                  <hr class="widget-separator no-margin">
+                    <div class="news-post">
+
+                    {% for article in latest_articles %}
+
+                        <div class="post">
+                            {% if not article.image %}
+                                <figure class="post-thumb"><img alt="" src="{% static 'images/noimage.png' %}"></figure>
+                            {% else %}
+                                <figure class="post-thumb">
+                                    <img alt="{{ article.image.description }}" src="{{ article.image.url }}">
+                                </figure>
+                            {% endif %}
+                          <h4><a href="{% url 'qa:blog_post' article.id %}">{{ article.title }} </a></h4>
+                          <div class="post-info">{{ article.creation_date }}</div>
+                        </div>
+
+                    {% endfor %}
+
+                  </div>
+
+                </div>
+              </div>
+              <!-- widget end -->
+
+            </div>
+            <!-- sidebar end -->
+
+          </div>
+          <!-- Blog Right Sidebar End -->
+          <div class="clearfix"></div>
+        </div>
+      </div>
+      <!-- end container -->
+    </section>
+    <!-- =-=-=-=-=-=-= Post QuestionEnd =-=-=-=-=-=-= -->
+
+{% endblock %}
+
+
+
+{% block script %}
+    <script src="{% static 'js/select2.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.tagsinput.min.js' %}"></script>
+    <script>
+        $('#id_tags').tagsInput({
+            width: 'auto',
+            'defaultText':'add a Tag',
+            'maxChars' : 30,
+            'minChars' : 3,
+            'removeWithBackspace' : true,
+        });
+    </script>
+{% endblock %}

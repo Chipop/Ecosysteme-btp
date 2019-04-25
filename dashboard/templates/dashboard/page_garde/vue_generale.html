@@ -1,0 +1,539 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+
+
+{% block title %}
+    Vue d'ensemble | Page de garde | {{ block.super }}
+{% endblock title %}
+
+
+{% block stylesheets %}
+    {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-address-card fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Inscrits</span>
+                            <h2 class="font-bold">{{ inscrits.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-4">
+                <div class="widget style1 bg-black">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-envelope fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Messages non lus</span>
+                            <h2 class="font-bold">{{ messages_non_lu.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-4">
+                <div class="widget style1 bg-danger">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-user-times fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Utilisateurs blacklistés </span>
+                            <h2 class="font-bold">{{ blacklisted.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Inscriptions ces derniers mois </h5>
+                    </div>
+                    <div class="ibox-content" >
+                        <div id="morris-line-chart"
+                             style="position: relative; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Inscriptions</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div >
+                            <iframe class="chartjs-hidden-iframe"
+                                    style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
+                            <canvas id="barChart" height="294" width="359"
+                                    style="display: block; width: 359px; height: 167px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Visites </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="visites-totales-chart-container"></div>
+                        <div id="visites-totales-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+
+            <div class="col-lg-9">
+
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <h3>Pages les plus visitées <span class="pull-right"></span>
+                        </h3>
+
+                        <div id="pages-plus-visites-chart-container"></div>
+                        <div id="pages-plus-visites-view-selector-container" style="display:none;"></div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <h3>Pages où passe l'utilisateur le plus de temps (secondes) <span class="pull-right"></span>
+                        </h3>
+
+                        <div id="pages-plus-temps-chart-container"></div>
+                        <div id="pages-plus-temps-view-selector-container" style="display:none;"></div>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-lg-4">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Source des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content ibox-source-traffic">
+                        <div id="traffic-source-chart-container"></div>
+                        <div id="traffic-source-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Appareils des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="appareils-chart-container"></div>
+                        <div id="appareils-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Origine des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="origine-chart-container"></div>
+                        <div id="origine-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+{% endblock content %}
+
+
+
+
+{% block scripts %}
+
+    {{ block.super }}
+
+
+
+    <!-- Data picker -->
+    <script src="{% static 'dashboard/js/plugins/datapicker/bootstrap-datepicker.js' %}"></script>
+
+
+    <!-- Date range use moment.js same as full calendar plugin -->
+    <script src="{% static 'dashboard/js/plugins/fullcalendar/moment.min.js' %}"></script>
+
+
+
+    <!-- Date range picker -->
+    <script src="{% static 'dashboard/js/plugins/daterangepicker/daterangepicker.js' %}"></script>
+
+
+
+
+
+
+
+    <script>
+        $('#dashboard_page_garde').addClass("active");
+        $('#dashboard_page_garde_vue_generale').addClass("active");
+
+
+    </script>
+
+    <script>
+        $(function () {
+
+            // Moris Data
+            Morris.Line({
+                element: 'morris-line-chart',
+                data: [
+                    {% for abonne in inscrits_per_type_per_month %}
+                        {months: '{{ abonne.month }}', a: '{{abonne.total_abonnees}}'},
+                    {% empty %}
+                        {months: '1', a: '0'},
+                        {months: '2', a: '0'},
+                        {months: '3', a: '0'},
+                        {months: '4', a: '0'},
+                        {months: '6', a: '0'},
+                        {months: '7', a: '0'},
+                        {months: '8', a: '0'},
+                        {months: '9', a: '0'},
+                        {months: '10', a: '0'},
+                        {months: '11', a: '0'},
+                        {months: '12', a: '0'},
+                    {% endfor %}
+                ],
+                xkey: 'months',
+                ykeys: ['a'],
+                labels: ['Inscriptions'],
+                hideHover: 'auto',
+                resize: true,
+                lineColors: ['#54cdb4'],
+                parseTime: false,
+                xLabelFormat: function (x) {
+                    return 'Mois ' + x.label
+                }
+            });
+
+        });
+
+        //Bar Chart Data
+        $(function () {
+
+            var barData = {
+                labels: ["Professionnels", "Journalistes", "Etudiants", "Particuliers"],
+                datasets: [
+                    {
+                        label: "Professionnels",
+                        backgroundColor: 'rgba(220, 220, 220, 0.5)',
+                        pointBorderColor: "#eee",
+                        data: [{{ professionals }}]
+                    },
+                    {
+                        label: "Journalistes",
+                        backgroundColor: 'rgba(26,179,148,0.5)',
+                        borderColor: "rgba(26,179,148,0.7)",
+                        pointBackgroundColor: "rgba(26,179,148,1)",
+                        pointBorderColor: "#fff",
+                        data: [0, {{ journalistes }}]
+                    },
+                    {
+                        label: "Etudiants",
+                        backgroundColor: '#1c84c6',
+                        data: [0, 0, {{ etudiants }}]
+                    },
+                    {
+                        label: "Particuliers",
+                        backgroundColor: '#ec4758',
+                        data: [0, 0, 0, {{ particuliers }}]
+                    }
+                ]
+            };
+
+            var barOptions = {
+                responsive: true
+            };
+
+
+            var ctx2 = document.getElementById("barChart").getContext("2d");
+            new Chart(ctx2, {type: 'bar', data: barData, options: barOptions});
+
+
+        });
+    </script>
+
+
+
+    <script>
+        (function (w, d, s, g, js, fs) {
+            g = w.gapi || (w.gapi = {});
+            g.analytics = {
+                q: [], ready: function (f) {
+                    this.q.push(f);
+                }
+            };
+            js = d.createElement(s);
+            fs = d.getElementsByTagName(s)[0];
+            js.src = 'https://apis.google.com/js/platform.js';
+            fs.parentNode.insertBefore(js, fs);
+            js.onload = function () {
+                g.load('analytics');
+            };
+        }(window, document, 'script'));
+    </script>
+
+
+    <script>
+
+        //Visites totales Line Chart Ecommerce
+
+        gapi.analytics.ready(function () {
+
+            /**
+             * Authorize the user with an access token obtained server side.
+             */
+            gapi.analytics.auth.authorize({
+                'serverAuth': {
+                    'access_token': '{{ ACCESS_TOKEN_FROM_GOOGLE_SERVICE_ACCOUNT }}'
+                }
+            });
+
+            /**
+             * Create a new DataChart instance with the given query parameters
+             * and Google chart options. It will be rendered inside an element
+             * with the id "chart-container".
+             */
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:pageviews,ga:uniquePageViews',
+                    dimensions: 'ga:date',
+                    'start-date': '30daysAgo',
+                    'end-date': 'today',
+                    filters: 'ga:pagePathLevel1!=/appelsOffres/;ga:pagePathLevel1!=/dashboard/;ga:pagePathLevel1!=/journal/;ga:pagePathLevel1!=/e_commerce/;ga:pagePathLevel1!=/qa/;ga:pagePathLevel1!=/reseausocial/',
+                },
+                chart: {
+                    container: 'visites-totales-chart-container',
+                    type: 'LINE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+        });
+    </script>
+
+    <script>
+
+        //Vues total par pages du module Ecommerce
+
+        gapi.analytics.ready(function () {
+
+            /**
+             * Authorize the user with an access token obtained server side.
+             */
+            gapi.analytics.auth.authorize({
+                'serverAuth': {
+                    'access_token': '{{ ACCESS_TOKEN_FROM_GOOGLE_SERVICE_ACCOUNT }}'
+                }
+            });
+
+            /**
+             * Create a new DataChart instance with the given query parameters
+             * and Google chart options. It will be rendered inside an element
+             * with the id "chart-container".
+             */
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:pageviews,ga:uniquePageviews,ga:avgTimeOnPage',
+                    dimensions: 'ga:pageTitle,ga:pagePath',
+                    'start-date': '30daysAgo',
+                    'end-date': 'today',
+                    sort: '-ga:pageviews',
+                    filters: 'ga:pagePathLevel1!=/appelsOffres/;ga:pagePathLevel1!=/dashboard/;ga:pagePathLevel1!=/journal/;ga:pagePathLevel1!=/e_commerce/;ga:pagePathLevel1!=/qa/;ga:pagePathLevel1!=/reseausocial/',
+                    'max-results': 10,
+                },
+                chart: {
+                    container: 'pages-plus-visites-chart-container',
+                    type: 'TABLE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:users',
+                    dimensions: 'ga:source',
+                    filters: 'ga:pagePathLevel1!=/appelsOffres/;ga:pagePathLevel1!=/dashboard/;ga:pagePathLevel1!=/journal/;ga:pagePathLevel1!=/e_commerce/;ga:pagePathLevel1!=/qa/;ga:pagePathLevel1!=/reseausocial/',
+                    'max-results': 8,
+                },
+                chart: {
+                    container: 'traffic-source-chart-container',
+                    type: 'TABLE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:avgTimeOnPage',
+                    dimensions: 'ga:pagePath',
+                    filters: 'ga:pagePathLevel1!=/appelsOffres/;ga:pagePathLevel1!=/dashboard/;ga:pagePathLevel1!=/journal/;ga:pagePathLevel1!=/e_commerce/;ga:pagePathLevel1!=/qa/;ga:pagePathLevel1!=/reseausocial/',
+                    'max-results': 10,
+                    'sort': '-ga:avgTimeOnPage'
+                },
+                chart: {
+                    container: 'pages-plus-temps-chart-container',
+                    type: 'TABLE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:users',
+                    dimensions: 'ga:deviceCategory',
+                    filters: 'ga:pagePathLevel1!=/appelsOffres/;ga:pagePathLevel1!=/dashboard/;ga:pagePathLevel1!=/journal/;ga:pagePathLevel1!=/e_commerce/;ga:pagePathLevel1!=/qa/;ga:pagePathLevel1!=/reseausocial/',
+                },
+                chart: {
+                    container: 'appareils-chart-container',
+                    type: 'PIE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:users',
+                    dimensions: 'ga:city',
+                    filters: 'ga:pagePathLevel1!=/appelsOffres/;ga:pagePathLevel1!=/dashboard/;ga:pagePathLevel1!=/journal/;ga:pagePathLevel1!=/e_commerce/;ga:pagePathLevel1!=/qa/;ga:pagePathLevel1!=/reseausocial/',
+                },
+                chart: {
+                    container: 'origine-chart-container',
+                    type: 'PIE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+        });
+    </script>
+
+
+
+
+
+
+
+
+
+
+{% endblock scripts %}

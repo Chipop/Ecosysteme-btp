@@ -1,0 +1,228 @@
+{% extends 'qa/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+      <!-- =-=-=-=-=-=-= Main Area =-=-=-=-=-=-= -->
+  <div class="main-content-area" style="background: #eee url({% static 'images/darkgrain.png' %}) repeat scroll 0 0;">
+
+    <!-- =-=-=-=-=-=-= User Profile =-=-=-=-=-=-= -->
+    <section id="user-profile" class="user-profile parallex">
+      <div class="container">
+        <!-- Row -->
+        <div class="row">
+
+          <div class="col-md-12 col-xs-12 col-sm-12">
+            <div class="profile-sec ">
+              <div class="profile-head">
+                <div class="col-md-9 col-xs-12 col-sm-9 no-padding">
+                  <div class="profile-avatar">
+                    <span>
+                        {% if profile.photo_profil is None %}
+                            <img class="img-responsive img-circle" alt="image" src="{% static 'images/default-cover.jpg' %}">
+                        {% else %}
+                            <img class="img-responsive img-circle" alt="image" src="{{ profile.photo_profil.image.url }}">
+                        {% endif %}
+                    </span>
+                    <div class="profile-name">
+                      <h3>
+                          {{ profile.user.first_name|capfirst }} {{ profile.user.last_name|upper }}
+                      </h3>
+                      <i>{{ profile.fonction|upper }}</i>
+                        <p>{{ profile.resume }}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3 col-xs-12 col-sm-3 no-padding">
+                  <ul class="profile-count">
+                    <li>{{ profile.points }}<i>Points</i></li>
+                    <li>{{ profile.answer_set.count }}<i>Réponses</i></li>
+                      {% if qa_profile_pro %}
+                          <li>{{ profile.article_set.count }}<i>Articles</i></li>
+                      {% else %}
+                          <li>{{ profile.question_set.count }}<i>Questions</i></li>
+                      {% endif %}
+                  </ul>
+                  <ul class="social-btns" style="position: absolute; right: 16%; top: 0;">
+                      <li><a href="{{ profile.facebook }}" title="Facebook"><i class="fa fa-facebook"></i></a></li>
+                        <li><a href="{{ profile.linkedin }}" style="background: #0077B5" title="LinkedIn"><i class="fa fa-linkedin"></i></a></li>
+                        <li><a href="{{ profile.twitter }}" title="Twitter"><i class="fa fa-twitter"></i></a></li>
+                          <li><a href="{{ profile.instagram }}" style="background: #cd486b" title="Instagram"><i class="fa fa-instagram"></i></a></li>
+                        <li><a href="{{ profile.youtube }}" style="background: #ff0000" title="Youtube"><i class="fa fa-youtube"></i></a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <!-- Profile Sec -->
+          </div>
+
+        </div>
+        <!-- Row End -->
+      </div>
+      <!-- end container -->
+    </section>
+    <!-- =-=-=-=-=-=-= User Profile end =-=-=-=-=-=-= -->
+
+    <!-- =-=-=-=-=-=-= User Form Settings =-=-=-=-=-=-= -->
+    <section class="section-padding-40" id="login">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-6 col-md-4">
+
+            <div class="box-panel">
+                {% if form_profile.errors %}
+                  <div class="form-group">
+                      <div class="alert alert-warning">
+                          <p style="font-size: 18px; font-weight: bold;">Veuillez corriger les erreurs ci dessous :</p>
+                          {% for field in form %}
+                              {% for error in field.errors %}
+                                  <p style="padding-left: 40px"><strong>{{ field.name }} : </strong>{{ error|escape }}</p>
+                              {% endfor %}
+                          {% endfor %}
+                      </div>
+                  </div>
+                {% endif %}
+              <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+              <input type="hidden" name="method" value="profile">
+                <div class="form-group">
+                  <label>Changer Image Profil</label>
+                  <div class="input-group">
+                    <span class="input-group-btn">
+                <span class="btn btn-default btn-file">
+                    Parcourir… {{ form_profile.image_profile }}
+                </span>
+                    </span>
+                    <input type="text" class="form-control" readonly>
+                  </div>
+                    {% if profile.photo_profil is None %}
+                        <img id="img-upload" alt="image" src="{% static 'images/default-profil.jpg' %}">
+                    {% else %}
+                        <img id="img-upload" alt="image" src="{{ profile.photo_profil.image.url }}">
+                    {% endif %}
+                </div>
+                <button class="btn btn-primary btn-lg" style="width: 100%">Modifier Image Profil</button>
+              </form>
+            </div>
+          <div class="box-panel" style="margin-top: 30px;">
+                {% if form_cover.errors %}
+                  <div class="form-group">
+                      <div class="alert alert-warning">
+                          <p style="font-size: 18px; font-weight: bold;">Veuillez corriger les erreurs ci dessous :</p>
+                          {% for field in form %}
+                              {% for error in field.errors %}
+                                  <p style="padding-left: 40px"><strong>{{ field.name }} : </strong>{{ error|escape }}</p>
+                              {% endfor %}
+                          {% endfor %}
+                      </div>
+                  </div>
+                {% endif %}
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="method" value="cover">
+                <div class="form-group">
+                  <label>Changer Image Couverture</label>
+                  <div class="input-group">
+                    <span class="input-group-btn">
+                <span class="btn btn-default btn-file">
+                    Parcourir… {{ form_cover.image_cover }}
+                </span>
+                    </span>
+                    <input type="text" class="form-control" readonly>
+                  </div>
+                    {% if profile.photo_couverture is None %}
+                        <img id="img-upload1" alt="image" src="{% static 'images/default-cover.jpg' %}">
+                    {% else %}
+                        <img id="img-upload1" alt="image" src="{{ profile.photo_couverture.image.url }}">
+                    {% endif %}
+                </div>
+                <button class="btn btn-primary btn-lg" style="width: 100%">Modifier Couverture</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="col-md-8">
+
+            <div class="box-panel">
+
+                {% if form.errors %}
+                  <div class="form-group">
+                      <div class="alert alert-warning">
+                          <p style="font-size: 18px; font-weight: bold;">Veuillez corriger les erreurs ci dessous :</p>
+                          {% for field in form %}
+                              {% for error in field.errors %}
+                                  <p style="padding-left: 40px"><strong>{{ field.name }} : </strong>{{ error|escape }}</p>
+                              {% endfor %}
+                          {% endfor %}
+                      </div>
+                  </div>
+                {% endif %}
+
+              <!-- form login -->
+              <form method="post">
+                  {% csrf_token %}
+                <div class="form-group">
+                  <label>Prénom</label>
+                  {{ form.first_name }}
+                </div>
+                  <div class="form-group">
+                  <label>Nom</label>
+                      {{ form.last_name }}
+                </div>
+                <div class="form-group">
+                  <label>Description</label>
+                  {{ form.description }}
+                </div>
+                <div class="form-group">
+                  <label>Fonction</label>
+                  {{ form.job }}
+                </div>
+                <div class="form-group">
+                  <label>Facebook</label>
+                  {{ form.facebook }}
+                </div>
+                  <div class="form-group">
+                  <label>Twitter</label>
+                  {{ form.twitter }}
+                </div><div class="form-group">
+                  <label>LinkedIn</label>
+                  {{ form.linkedIn }}
+                </div><div class="form-group">
+                  <label>Youtube</label>
+                  {{ form.youtube }}
+                </div><div class="form-group">
+                  <label>Instagram</label>
+                  {{ form.instagram }}
+                </div>
+
+                <button class="btn btn-primary btn-lg">Modifier mon profil</button>
+
+              </form>
+              <!-- form login -->
+
+            </div>
+          </div>
+
+          <div class="clearfix"></div>
+        </div>
+      </div>
+      <!-- end container -->
+    </section>
+    <!-- =-=-=-=-=-=-= User Form Settings End =-=-=-=-=-=-= -->
+
+  </div>
+  <!-- =-=-=-=-=-=-= Main Area End =-=-=-=-=-=-= -->
+
+{% endblock %}
+
+
+{% block script %}
+    <script>
+        {% if profile.photo_couverture is not None %}
+            $("#user-profile").css("background-image","url({{ profile.photo_couverture.image.url }})");
+        {% else %}
+            $("#user-profile").css("background-image","url({% static 'images/default-cover.jpg' %})");
+        {% endif %}
+    </script>
+{% endblock %}

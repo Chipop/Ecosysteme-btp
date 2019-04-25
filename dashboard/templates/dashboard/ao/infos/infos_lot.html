@@ -1,0 +1,302 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+
+{% block title %}
+    Lot | AO | {{ block.super }}
+{% endblock title %}
+
+{% block stylesheets %}
+
+    {{ block.super }}
+
+{% endblock stylesheets %}
+
+
+{% block content %}
+
+    <div class="wrapper wrapper-content animated fadeInRight" style="width:100%">
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class=" float-left">
+                    <a href="{% url 'dashboard:ao_lots' %}">
+                        <button class="btn btn-primary dim"><i class="fa fa-arrow-left"></i> Liste de lots
+                        </button>
+                    </a>
+                </div>
+
+                <div class=" float-right">
+                    <a href="{% url 'dashboard:ao_delete_lot' id=lot.id %}">
+                        <button id="btn_lancer_compagne" class="btn btn-danger dim">
+                            <i class="fa fa-trash"></i> Supprimer
+                        </button>
+                    </a>
+
+                    <a href="{% url 'dashboard:ao_update_lot'  id=lot.id %}">
+                        <button class="btn btn-success dim"><i class="fa fa-pencil"></i> Modifier</button>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-6">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-eye fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Vues </span>
+                            <h2 class="font-bold">{{ lot.views }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-briefcase fa-5x"></i>
+                        </div>
+
+                        <div class="col-8 text-right">
+                            <span>Offres</span>
+                            <h2 class="font-bold">{{ lot.contact_set.all.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        {% if lot.ao.get_company is not None %}
+            <div class="row">
+                <div class="col-md-4">
+
+                    <div class="col-md-4 " style="">
+                        <img height="150" width="150"
+                             src="
+                                     {% if lot.ao.get_company and lot.ao.get_company.logo %}{{ lot.ao.get_company.logo.url }}{% else %}{% static 'dashboard/img/interrogation.jpg' %}{% endif %}"
+                             class="rounded-circle circle-border m-b-md"
+                             alt="profile">
+                    </div>
+                </div>
+
+                <div class="col-md-8" style="margin:auto;padding-left:30px;">
+                    <h2>Entreprise</h2>
+                    <div>
+                        <h4><i class="fa fa-building"></i> Nom : <span
+                                class="text-muted">{{ lot.ao.get_company.name }}</span></h4>
+
+
+                        <h4><i class="fa fa-file"></i> Titre du lot  : <span
+                                class="text-muted">{{ lot.title }}</span>
+                        </h4>
+                    </div>
+                </div>
+
+            </div>
+            {% else %}{# Si  ce n'est pas une entreprise qui  a fait l'offre alors c'est un profil  professionel #}
+            <div class="row">
+                <div class="col-md-4">
+
+                    <div class="col-md-12 " style="">
+                        <img height="150" width="150"
+                             src="{% if lot.ao.user and lot.ao.user.photo_profil.image %} {{ lot.ao.user.photo_profil.image.url }} {% else %} {% static 'dashboard/img/interrogation.jpg' %} {% endif %}"
+                             class="rounded-circle circle-border m-b-md"
+                             alt="profile">
+                    </div>
+
+                </div>
+
+                <div class="col-md-8" style="padding-left:30px;margin:auto;">
+                    <h2>Professionnel</h2>
+                    <div>
+                        <h4><i class="fa fa-user"></i> Nom et prénom : <span
+                                class="text-muted">{{ lot.ao.user.user.first_name|title }} {{ lot.ao.user.user.last_name|title }}</span>
+                        </h4>
+
+                        <h4><i class="fa fa-file"></i> Titre du lot : <span
+                                class="text-muted">{{ lot.title }}</span>
+                        </h4>
+                    </div>
+                </div>
+
+            </div>
+        {% endif %}
+        <div class="row m-b-lg m-t-lg">
+
+            <div class="col-md-4">
+                <div style="margin-left:15px;">
+                    <h4><i class="fa fa-map-marker"></i> Emplacement : <span
+                            class="text-muted">{{ lot.cities_s }}</span></h4>
+                    <h4><i class="fa fa-briefcase"></i> Annonceur : <span
+                            class="text-muted">{{ lot.ao.user.user.first_name|title }} {{ lot.ao.user.user.last_name|title }}</span>
+                    </h4>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div style="margin-left:15px;">
+                    <div class="">
+                        <div>
+                            <h4><i class="fa fa-money"></i> Budget : <span
+                                    class="text-muted">{{ lot.budget }} DH</span></h4>
+                            <h4><i class="fa fa-calendar"></i> Date d'ajout : <span
+                                    class="text-muted">{{ lot.creation_date }}</span></h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="row">
+
+            <div class="col-lg-12">
+
+                <div class="ibox">
+                    <div class="ibox-content">
+
+                        <div class="row">
+
+                            <div class="col-lg-12">
+                                <h3>Description</h3>
+
+                                <p class="small">
+                                    {{ lot.description }}
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-lg-12">
+
+                <div class="ibox">
+                    <div class="ibox-content">
+
+                        <div class="row">
+
+                            <div class="col-lg-12">
+                                <h3>Fichiers joints</h3>
+
+                                {% for fichier in lot.files.all %}
+                                    <p class="small">
+                                        <a href="{{ fichier.file.url }}">{{ fichier.name }}.{{ fichier.extension }}</a>
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+
+
+
+        <div class="row">
+
+            <div class="col-lg-12">
+
+                <div class="ibox">
+                    <div class="ibox-content">
+
+                        <div class="row">
+
+                            <div class=" col-lg-12 ">
+                                <h3>Offres reçues</h3>
+
+                                <div class="row">
+                                    {% for  contact in  lot.contact_set.all %}
+                                        <div class="col-md-3">
+                                            <div class="ibox">
+                                                <div class="ibox-content product-box">
+
+                                                    <div class="" style="padding:25px;">
+                                                        <h4> Entreprise :
+                                                            <span class="text-muted"><a
+                                                                    href="{% url 'dashboard:ao_profil_entreprise' id=contact.company.id %}">{{ contact.company.name }}</a></span>
+                                                        </h4>
+
+                                                        <h4> Budget :
+                                                            <span class="text-muted">{{ contact.budget }} DH</span>
+                                                        </h4>
+
+                                                        <h4> Jours :
+                                                            <span class="text-muted">{{ contact.days }}</span>
+                                                        </h4>
+
+                                                        <h4> Fichiers joint : {% if contact.file %}
+                                                            <a href="{{ contact.file.url }}">{{ contact.file.name|truncatechars:"10" }}</a>{% else %}
+                                                            <i class="fa fa-times" style="color:red;"></i>{% endif %}
+                                                        </h4>
+
+                                                        <h4> Message :
+                                                            <span class="text-muted"> <br>{{ contact.message }}</span>
+                                                        </h4>
+
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script>
+        $('#dashboard_ao').addClass("active");
+        $('#ao_lots').addClass("active");
+    </script>
+
+
+
+
+
+
+{% endblock scripts %}
+

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="ESPR">
+    <title>ESPR - Dashboard du Professeur</title>
+
+  <!-- Favicons-->
+    <link rel="shortcut icon" href="{% static 'dashboard-teacher/img/favicon.ico' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" type="image/x-icon" href="{% static 'dashboard-teacher/img/apple-touch-icon-57x57-precomposed.png' %}">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="72x72" href="{% static 'dashboard-teacher/img/apple-touch-icon-72x72-precomposed.png' %}">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="114x114" href="{% static 'dashboard-teacher/img/apple-touch-icon-114x114-precomposed.png' %}">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="144x144" href="{% static 'dashboard-teacher/img/apple-touch-icon-144x144-precomposed.png' %}">
+
+    <!-- Bootstrap core CSS-->
+    <link href="{% static 'dashboard-teacher/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <!-- Main styles -->
+    <link href="{% static 'dashboard-teacher/css/admin.css' %}" rel="stylesheet">
+    <!-- Icon fonts-->
+    <link href="{% static 'dashboard-teacher/vendor/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+    <!-- Plugin styles -->
+    <link href="{% static 'dashboard-teacher/vendor/datatables/dataTables.bootstrap4.css' %}" rel="stylesheet">
+    <!-- Your custom styles -->
+    <link href="{% static 'dashboard-teacher/css/custom.css' %}" rel="stylesheet">
+    {% block style %}{% endblock %}
+</head>
+
+<body class="fixed-nav sticky-footer" id="page-top" style="padding-top: 100px; position: relative; margin-bottom: 0; padding-bottom: 62px;">
+    <div style="margin-bottom: 60px; position: fixed; top: 0; width: 100%; z-index: 1030;">
+    {% include 'eLearning/includes/top_nav_fixed.html' %}
+    </div>
+    <!-- Navigation-->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-default fixed-top" style="top: 39px" id="mainNav">
+        <a class="navbar-brand" href="{% url 'eLearning:index' %}"><img src="{% static 'dashboard-teacher/img/logo_elearning.png' %}" data-retina="true" alt="" width="163" height="36"></a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
+                    <a class="nav-link" href="{% url 'eLearning:teacher_dashboard' %}">
+                        <i class="fa fa-fw fa-dashboard"></i>
+                        <span class="nav-link-text">Tableau de bord</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Bookings">
+                    <a class="nav-link" href="{% url 'eLearning:dashboard_courses' %}">
+                        <i class="fa fa-fw fa-archive"></i>
+                        <span class="nav-link-text">Cours</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Messages">
+                    <a class="nav-link" href="{% url 'eLearning:dashboard_messages' %}">
+                        <i class="fa fa-fw fa-envelope-open"></i>
+                        <span class="nav-link-text">Messages
+                            {% if number_messages %}
+                                <span class="badge badge-pill badge-primary"><span id="number_messages_base">{{ number_messages }}</span> Non lus</span>
+                            {% endif %}
+                        </span>
+                    </a>
+                </li>
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Reviews">
+                    <a class="nav-link" href="{% url 'eLearning:dashboard_revues' %}">
+                        <i class="fa fa-fw fa-star"></i>
+                        <span class="nav-link-text">Revues</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Add listing">
+                    <a class="nav-link" href="{% url 'eLearning:add_course' %}">
+                        <i class="fa fa-fw fa-plus-circle"></i>
+                        <span class="nav-link-text">Ajouter Cours</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="My profile">
+                    <a class="nav-link" href="{% url 'eLearning:dashboard_update_profile' %}">
+                        <i class="fa fa-fw fa-user"></i>
+                        <span class="nav-link-text">Mon profil</span>
+                    </a>
+                </li>
+            </ul>
+            <ul class="navbar-nav sidenav-toggler">
+                <li class="nav-item">
+                    <a class="nav-link text-center" id="sidenavToggler">
+                        <i class="fa fa-fw fa-angle-left"></i>
+                    </a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle mr-lg-2" id="messagesDropdown" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-fw fa-envelope"></i>
+                        <span class="d-lg-none">Messages
+                            {% if number_messages %}
+                                <span class="badge badge-pill badge-primary">{{ number_messages }} Non lu</span>
+                            {% endif %}
+                        </span>
+                        <span class="indicator text-primary d-none d-lg-block">
+                            <i class="fa fa-fw fa-circle"></i>
+                        </span>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="messagesDropdown" style="left: -290px">
+                        {% if messages_base %}
+                            <h6 class="dropdown-header">Nouveaux Messages : </h6>
+                            {% for message in messages_base %}
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{% url 'eLearning:dashboard_messages_reply' message.pk %}">
+                                    <strong>{{ message.student.user.last_name }} {{ message.student.user.first_name }}</strong>
+                                    <span class="small float-right text-muted">{{ message.date_add|date:"g:i" }}</span>
+                                    <div class="dropdown-message small">{% autoescape off %}{{ message.message|truncatewords:"10" }}{% endautoescape %}</div>
+                                </a>
+                            {% endfor %}
+                        {% endif %}
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item small" href="{% url 'eLearning:dashboard_messages' %}">Voir tous les messages</a>
+                    </div>
+                </li>
+                <!--<li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle mr-lg-2" id="alertsDropdown" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-fw fa-bell"></i>
+                        <span class="d-lg-none">Alerts
+                            <span class="badge badge-pill badge-warning">6 New</span>
+                        </span>
+                        <span class="indicator text-warning d-none d-lg-block">
+                            <i class="fa fa-fw fa-circle"></i>
+                        </span>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="alertsDropdown">
+                        <h6 class="dropdown-header">New Alerts:</h6>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">
+                            <span class="text-success">
+                                <strong><i class="fa fa-long-arrow-up fa-fw"></i>Status Update</strong>
+                            </span>
+                            <span class="small float-right text-muted">11:21 AM</span>
+                            <div class="dropdown-message small">This is an automated server response message. All systems are online.</div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">
+                            <span class="text-danger">
+                                <strong><i class="fa fa-long-arrow-down fa-fw"></i>Status Update</strong>
+                            </span>
+                            <span class="small float-right text-muted">11:21 AM</span>
+                            <div class="dropdown-message small">This is an automated server response message. All systems are online.</div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">
+                            <span class="text-success">
+                                <strong><i class="fa fa-long-arrow-up fa-fw"></i>Status Update</strong>
+                            </span>
+                            <span class="small float-right text-muted">11:21 AM</span>
+                            <div class="dropdown-message small">This is an automated server response message. All systems are online.</div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item small" href="#">View all alerts</a>
+                    </div>
+                </li>-->
+                <li class="nav-item" hidden>
+                    <form class="form-inline my-2 my-lg-0 mr-lg-2">
+                        <div class="input-group">
+                            <input class="form-control search-top" type="text" placeholder="Rechercher...">
+                            <span class="input-group-btn">
+                                <button class="btn btn-primary" type="button">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </form>
+                </li>
+                <li class="nav-item" hidden>
+                    <a class="nav-link" data-toggle="modal" data-target="#exampleModal">
+                        <i class="fa fa-fw fa-sign-out"></i>Se déconnecter
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <!-- /Navigation-->
+    {% block content %}
+    {% endblock %}
+    <!-- /.container-wrapper-->
+    <footer class="sticky-footer">
+        <div class="container">
+            <div class="text-center">
+                <small>Copyright © ESPR 2019</small>
+            </div>
+        </div>
+    </footer>
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fa fa-angle-up"></i>
+    </a>
+    <!-- Logout Modal-->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap core JavaScript-->
+    <script src="{% static 'dashboard-teacher/vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'dashboard-teacher/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <!-- Core plugin JavaScript-->
+    <script src="{% static 'dashboard-teacher/vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+    <!-- Page level plugin JavaScript-->
+    <script src="{% static 'dashboard-teacher/vendor/chart.js/Chart.js' %}"></script>
+    <script src="{% static 'dashboard-teacher/vendor/datatables/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'dashboard-teacher/vendor/datatables/dataTables.bootstrap4.js' %}"></script>
+	<script src="{% static 'dashboard-teacher/vendor/jquery.selectbox-0.2.js' %}"></script>
+	<script src="{% static 'dashboard-teacher/vendor/retina-replace.min.js' %}"></script>
+	<script src="{% static 'dashboard-teacher/vendor/jquery.magnific-popup.min.js' %}"></script>
+    <!-- Custom scripts for all pages-->
+    <script src="{% static 'dashboard-teacher/js/admin.js' %}"></script>
+	<!-- Custom scripts for this page-->
+    <script src="{% static 'dashboard-teacher/js/admin-charts.js' %}"></script>
+    <script src="{% static 'eLearning/js/sweetalert.min.js' %}"></script>
+    <script>
+        $("#linkELearning").addClass("active")
+    </script>
+	{% block script %}
+    {% endblock %}
+</body>
+</html>

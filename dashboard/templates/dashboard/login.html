@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+
+<!-- Mirrored from webapplayers.com/inspinia_admin-v2.8/login.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 06 Aug 2018 22:37:40 GMT -->
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Se connecter | Dashboard Ecosystème BTP</title>
+
+    <link href="{% static 'dashboard/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'dashboard/font-awesome/css/font-awesome.css' %}" rel="stylesheet">
+
+    <link href="{% static 'dashboard/css/animate.css' %}" rel="stylesheet">
+    <link href="{% static 'dashboard/css/style.css' %}" rel="stylesheet">
+
+    <!-- Toastr style -->
+    <link href="{% static 'dashboard/css/plugins/toastr/toastr.min.css' %}" rel="stylesheet">
+
+
+</head>
+
+<body class="gray-bg">
+
+<div class="middle-box text-center loginscreen animated fadeInDown">
+    <div>
+        <div>
+
+            <h1 class="logo-name">BTP</h1>
+
+        </div>
+
+        <h3>Bienvenue au tableau de bord Ecosystème BTP</h3>
+
+        <form class="m-t" role="form" method="POST" action="{% url 'dashboard:index' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="email" name="email" class="form-control" placeholder="e-mail" required>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" class="form-control" placeholder="**************" required>
+            </div>
+            <button type="submit" class="btn btn-primary block full-width m-b">Se connecter</button>
+
+        </form>
+    </div>
+</div>
+
+<!-- Mainly scripts -->
+<script src="{% static 'dashboard/js/jquery-3.1.1.min.js' %}"></script>
+<script src="{% static 'dashboard/js/popper.min.js' %}"></script>
+<script src="{% static 'dashboard/js/bootstrap.js' %}"></script>
+
+<!-- Toastr script -->
+<script src="{% static 'dashboard/js/plugins/toastr/toastr.min.js' %}"></script>
+
+
+<script>
+    {% if messages %}
+        {% for msg in messages %}
+            {% if msg.tags == "error" %}
+                toastr.options = {
+                    "closeButton": true,
+                    "debug": false,
+                    "progressBar": true,
+                    "preventDuplicates": false,
+                    "positionClass": "toast-top-full-width",
+                    "onclick": null,
+                    "showDuration": "400",
+                    "hideDuration": "1000",
+                    "timeOut": "7000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+
+
+                Command: toastr["error"]("{{ msg }}")
+
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</script>
+
+
+</body>
+
+
+</html>

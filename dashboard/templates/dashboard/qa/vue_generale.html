@@ -1,0 +1,646 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+
+
+{% block title %}
+    Vue d'ensemble | Q&A | {{ block.super }}
+{% endblock title %}
+
+
+{% block stylesheets %}
+    {{ block.super }}
+
+    <!-- c3 Charts -->
+    <link href="{% static 'dashboard/css/plugins/c3/c3.min.css' %}" rel="stylesheet">
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+        <div class="row">
+
+
+
+            <div class="col-lg-3">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-user fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Experts</span>
+                            <h2 class="font-bold">{{ experts.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="widget style1 bg-success">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-newspaper-o fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Articles</span>
+                            <h2 class="font-bold">{{ articles.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-3">
+                <div class="widget style1 bg-purple">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-question-circle-o fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span"> Questions </span>
+                            <h2 class="font-bold">{{ questions.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="widget style1 bg-purple">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-commenting-o fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Réponses</span>
+                            <h2 class="font-bold">{{ reponses.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="widget style1 bg-warning">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-eye fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Vues</span>
+                            <h2 class="font-bold">{{ nb_vues }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="widget style1 bg-danger">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-comments fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Moyenne de réponses par question</span>
+                            <h2 class="font-bold">{{ avg_reponse|floatformat:"2" }} %</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-lg-6">
+
+                <div class="ibox">
+                    <div class="ibox-content ibox-page-temps-utilisateur">
+                        <h3>Pages où passe l'utilisateur le plus de temps (secondes) <span class="pull-right"></span>
+                        </h3>
+
+                        <div id="pages-plus-temps-chart-container"></div>
+                        <div id="pages-plus-temps-view-selector-container" style="display:none;"></div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Membres les plus actifs</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div>
+                            <div id="pie"></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Visites </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="visites-totales-chart-container"></div>
+                        <div id="visites-totales-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Source des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content ibox-source-traffic">
+                        <div id="traffic-source-chart-container"></div>
+                        <div id="traffic-source-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Appareils des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="appareils-chart-container"></div>
+                        <div id="appareils-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Origine des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="origine-chart-container"></div>
+                        <div id="origine-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div class="col-lg-12">
+
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <h3>Pages les plus visitées <span class="pull-right"></span>
+                        </h3>
+
+                        <div id="pages-plus-visites-chart-container"></div>
+                        <div id="pages-plus-visites-view-selector-container" style="display:none;"></div>
+
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+        <div class="row">
+
+
+            <div class="col-lg-6 mar-b-30">
+
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action active bg-purple">
+                        Dernières questions
+                    </a>
+                    {% for question in questions.reverse|slice:"10" %}
+                        <a href="{% url 'dashboard:qa_question' id_question=question.id %}"
+                           class="list-group-item list-group-item-action">
+                            {{ question.title  |truncatechars:"55" }}
+                        </a>
+                    {% empty %}
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune question
+                        </span>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+
+
+        <div class="col-lg-6 mar-b-30">
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action active bg-purple">
+                        Questions les plus vues
+                    </a>
+                    {% for question in questions_plus_vues %}
+                        <a href="{% url 'dashboard:qa_question' id_question=question.id %}"
+                           class="list-group-item list-group-item-action">
+                            {{ question.title  |truncatechars:"50" }} <i class="fa fa-eye"></i> {{ question.views_number }}
+                        </a>
+                    {% empty %}
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune question
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+        <div class="col-lg-12 mar-b-30">
+
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action active bg-purple">
+                        Dernières réponses
+                    </a>
+                    {% for answer in reponses.reverse|slice:"10" %}
+                        <a href="{% url 'dashboard:qa_reponse' id_reponse=answer.id %}"
+                           class="list-group-item list-group-item-action">
+                            {{ answer.content  |truncatechars:"55" }}
+                        </a>
+                    {% empty %}
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune réponse
+                        </span>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-6 mar-b-30">
+
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action active bg-blue">
+                        Derniers articles du blog Q&A
+                    </a>
+                    {% for article in articles.reverse|slice:"10" %}
+                        <a href="{% url 'dashboard:qa_article' id_article=article.id %}"
+                           class="list-group-item list-group-item-action">
+                            {{ article.title|truncatechars:"120" }}
+                        </a>
+                    {% empty %}
+                        <span
+                                class="list-group-item list-group-item-action">
+                            Aucun article
+                        </span>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+
+        <div class="col-lg-6 mar-b-30">
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action active disabled bg-blue">
+                        Articles les plus vus
+                    </a>
+                    {% for article in articles_plus_vues %}
+                        <a href="{% url 'dashboard:qa_article' id_article=article.id %}"
+                           class="list-group-item list-group-item-action">
+                            {{ article.title|truncatechars:"120" }} <i class="fa fa-eye"></i> {{ article.views }}
+                        </a>
+                    {% empty %}
+                        <span
+                                class="list-group-item list-group-item-action">
+                            Aucun article
+                        </span>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+{% endblock content %}
+
+
+
+
+{% block scripts %}
+
+    {{ block.super }}
+
+
+
+    <!-- Data picker -->
+    <script src="{% static 'dashboard/js/plugins/datapicker/bootstrap-datepicker.js' %}"></script>
+
+
+    <!-- Date range use moment.js same as full calendar plugin -->
+    <script src="{% static 'dashboard/js/plugins/fullcalendar/moment.min.js' %}"></script>
+
+
+
+    <!-- Date range picker -->
+    <script src="{% static 'dashboard/js/plugins/daterangepicker/daterangepicker.js' %}"></script>
+
+
+
+
+
+
+
+    <script>
+        $('#dashboard_qa').addClass("active");
+        $('#qa_vue_generale').addClass("active");
+    </script>
+
+    <script>
+        $(function () {
+
+            // Moris Data
+            Morris.Line({
+                element: 'morris-line-chart',
+                data: [{y: '2006', a: 75, b: 90},
+                    {y: '2007', a: 75, b: 65},
+                    {y: '2008', a: 50, b: 40},
+                    {y: '2009', a: 75, b: 65},
+                    {y: '2010', a: 50, b: 40},
+                    {y: '2011', a: 75, b: 65},
+                    {y: '2012', a: 100, b: 90}],
+                xkey: 'y',
+                ykeys: ['a', 'b'],
+                labels: ['Visites totales', 'Visites Uniques'],
+                hideHover: 'auto',
+                resize: true,
+                lineColors: ['#54cdb4', '#1ab394'],
+            });
+
+
+        });
+
+    </script>
+
+
+
+    <!-- d3 and c3 charts -->
+    <script src="{% static 'dashboard/js/plugins/d3/d3.min.js' %}"></script>
+    <script src="{% static 'dashboard/js/plugins/c3/c3.min.js' %}"></script>
+
+
+    <script>
+        // Chart Js Pie Demo
+
+        $(document).ready(function () {
+
+            c3.generate({
+                bindto: '#pie',
+                data: {
+                    columns: [
+
+                        {% for membre in membres_actifs %}
+                            ['{{ membre.user__first_name }} {{ membre.user__last_name }} ({{ membre.user__email }}) ', {{ membre.points }}],
+                        {% empty %}
+                            ['Aucun', 1],
+                        {% endfor %}
+
+
+                    ],
+                    type: 'pie'
+                },
+                pie: {
+                    label: {
+                        format: function (value, ratio, id) {
+                            return value + " Points";
+                        }
+                    }
+                }
+            });
+
+
+        });
+
+
+    </script>
+
+
+
+    <script>
+        (function (w, d, s, g, js, fs) {
+            g = w.gapi || (w.gapi = {});
+            g.analytics = {
+                q: [], ready: function (f) {
+                    this.q.push(f);
+                }
+            };
+            js = d.createElement(s);
+            fs = d.getElementsByTagName(s)[0];
+            js.src = 'https://apis.google.com/js/platform.js';
+            fs.parentNode.insertBefore(js, fs);
+            js.onload = function () {
+                g.load('analytics');
+            };
+        }(window, document, 'script'));
+    </script>
+
+
+    <script>
+
+        //Visites totales Line Chart Ecommerce
+
+        gapi.analytics.ready(function () {
+
+            /**
+             * Authorize the user with an access token obtained server side.
+             */
+            gapi.analytics.auth.authorize({
+                'serverAuth': {
+                    'access_token': '{{ ACCESS_TOKEN_FROM_GOOGLE_SERVICE_ACCOUNT }}'
+                }
+            });
+
+            /**
+             * Create a new DataChart instance with the given query parameters
+             * and Google chart options. It will be rendered inside an element
+             * with the id "chart-container".
+             */
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:pageviews,ga:uniquePageViews',
+                    dimensions: 'ga:date',
+                    'start-date': '30daysAgo',
+                    'end-date': 'today',
+                    filters: 'ga:pagePath=@/qa/',
+                },
+                chart: {
+                    container: 'visites-totales-chart-container',
+                    type: 'LINE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:pageviews,ga:uniquePageviews,ga:avgTimeOnPage',
+                    dimensions: 'ga:pageTitle,ga:pagePath',
+                    'start-date': '30daysAgo',
+                    'end-date': 'today',
+                    sort: '-ga:pageviews',
+                    filters: 'ga:pagePath=@/qa/',
+                    'max-results': 10,
+                },
+                chart: {
+                    container: 'pages-plus-visites-chart-container',
+                    type: 'TABLE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:users',
+                    dimensions: 'ga:source',
+                    filters: 'ga:pagePath=@/qa/',
+                    'max-results': 8,
+                },
+                chart: {
+                    container: 'traffic-source-chart-container',
+                    type: 'TABLE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:avgTimeOnPage',
+                    dimensions: 'ga:pagePath',
+                    filters: 'ga:pagePath=@/qa/',
+                    'max-results': 10,
+                    'sort':'-ga:avgTimeOnPage'
+                },
+                chart: {
+                    container: 'pages-plus-temps-chart-container',
+                    type: 'TABLE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:users',
+                    dimensions: 'ga:deviceCategory',
+                    filters: 'ga:pagePath=@/qa/',
+                },
+                chart: {
+                    container: 'appareils-chart-container',
+                    type: 'PIE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:users',
+                    dimensions: 'ga:city',
+                    filters: 'ga:pagePath=@/qa/',
+                },
+                chart: {
+                    container: 'origine-chart-container',
+                    type: 'PIE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+        });
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock scripts %}

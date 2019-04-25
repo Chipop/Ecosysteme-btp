@@ -1,5 +1,5 @@
 {% load widget_tweaks %}
-<form class=" form-horizontal" id="formAjouterLangue" method="post" action=""
+<form class=" form-horizontal" id="formAjouterLangue" method="post" action="/reseausocial/entreprise/{{ page_entreprise.id }}/publier_offre_emploi/"
       style="background-color:inherit" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="modal-body  "

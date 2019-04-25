@@ -83,23 +83,19 @@
                             <!-- Page Count Start -->
                             <div class="page--count pt--30">
                                 <label class="ff--primary fs--14 fw--500 text-darker">
-                                    <span>Viewing</span>
+                                    <span>Voir</span>
                                     {% if demandesAmis.has_previous %}
                                         <button id="btfirst" href="?page=1" class="btn-link"><i class="fa fa-caret-left"></i><i class="fa fa-caret-left"></i></button>
                                         <button id="btprevious" page="{{ demandesAmis.previous_page_number }}" class="btn-link"><i class="fa fa-caret-left"></i></button>
-                                    {% else %}
-                                        <button id="btfirst" href="1" class="btn-link"><i class="fa fa-caret-left"></i><i class="fa fa-caret-left"></i></button>
-                                        <button id="btprevious" page="1" class="btn-link"><i class="fa fa-caret-left"></i></button>
                                     {% endif %}
-                                        <input id="RequestsPageNum" type="number" name="page-count" value="{{ demandesAmis.number }}" class="form-control form-sm">
+                                    <span style="background-color: #eeeeee;padding-right: 16px;">
+                                        <input id="RequestsPageNum" style="border: none;" type="number" name="page-count" readonly value="{{ demandesAmis.number }}" class="form-control form-sm"> /
+                                        <span id="numPages" style=" margin-left: 14px;">{{ demandesAmis.paginator.num_pages }}</span>
+                                    </soan>
                                     {% if demandesAmis.has_next %}
                                         <button id="btnext" page="{{ demandesAmis.next_page_number }}" class="btn-link"><i class="fa fa-caret-right"></i></button>
                                         <button id="btlast" page="{{ demandesAmis.paginator.num_pages }}" class="btn-link"><i class="fa fa-caret-right"></i><i class="fa fa-caret-right"></i></button>
-                                    {% else %}
-                                        <button id="btnext" page="{{ demandesAmis.paginator.num_pages }}" class="btn-link"><i class="fa fa-caret-right"></i></button>
-                                        <button id="btlast" page="{{ demandesAmis.paginator.num_pages }}" class="btn-link"><i class="fa fa-caret-right"></i><i class="fa fa-caret-right"></i></button>
                                     {% endif %}
-                                        <span id="numPages">{{ demandesAmis.paginator.num_pages }}</span>
 
                                 </label>
                             </div>

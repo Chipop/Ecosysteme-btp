@@ -1,0 +1,273 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+
+{% block stylesheets %}
+
+    {{ block.super }}
+
+
+    <!-- Toastr style -->
+    <link href="{% static 'dashboard/css/plugins/toastr/toastr.min.css' %}" rel="stylesheet">
+
+
+    <!-- Multi Select -->
+    <link href="{% static 'dashboard/multi-select/jquery.dropdown.min.css' %}" rel="stylesheet">
+
+    <style>
+        label {
+
+            font-weight: 600;
+            line-height: 32px;
+            font-size: 15px;
+            color: #333;
+        }
+    </style>
+
+
+
+{% endblock stylesheets %}
+
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script>
+        $('#dashboard_parametres').addClass("active");
+
+        langue_checked = "{{ parametres.langue }}";
+
+
+        if (langue_checked === "True"){
+            document.getElementById("id_activer_langue").checked = true;
+        }
+
+    </script>
+
+
+
+
+    <!-- Multi Select -->
+    <script src="{% static 'dashboard/multi-select/jquery.dropdown.min.js' %}"></script>
+
+    <!-- Toastr script -->
+    <script src="{% static 'dashboard/js/plugins/toastr/toastr.min.js' %}"></script>
+
+    <script>
+        {% if messages %}
+            {% for msg in messages %}
+                toastr.options = {
+                    "closeButton": true,
+                    "debug": false,
+                    "progressBar": true,
+                    "preventDuplicates": false,
+                    "positionClass": "toast-top-right",
+                    "onclick": null,
+                    "showDuration": "400",
+                    "hideDuration": "1000",
+                    "timeOut": "7000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+
+                Command: toastr["{{ msg.tags }}"]("{{ msg }}")
+
+            {% endfor %}
+        {% endif %}
+    </script>
+
+    <script>
+        $('.multi_select_demo').dropdown({
+
+            searchNoData: '<li style="color:#333">Aucun résultat</li>',
+            input: '<input type="text" maxLength="20" placeholder="Recherche...">',
+
+
+        });
+
+    </script>
+
+
+
+
+{% endblock scripts %}
+
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="tabs-container">
+
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li><a class="nav-link active show" data-toggle="tab" href="#tab-1"> Paramètres</a></li>
+                    </ul>
+
+
+                    <div class="tab-content">
+
+
+                        <div role="tabpanel" id="tab-1" class="tab-pane active show">
+                            <div class="panel-body">
+
+                                <div class="">
+
+                                    <h2>
+                                        Paramètres de l'application
+                                    </h2>
+                                    <div class="mail-tools tooltip-demo m-t-md error_color"
+                                         style="padding:5px 50px 0px 50px;">
+
+                                    </div>
+                                </div>
+                                <div class="" style="padding:5px 50px 25px 50px;">
+
+                                    <form action="" method="POST">
+
+
+                                        {% csrf_token %}
+
+                                        <h3>Titre de la plateforme <span class="error_color"></span></h3>
+                                        <div class="form-group row">
+                                            <label class="col-sm-2 col-form-label"></label>
+
+                                            <div class="col-sm-10">
+                                                <div class="row">
+
+                                                    <div class="col-lg-2">
+                                                        <label for="id_titre">Titre</label>
+                                                    </div>
+
+                                                    <div class="col-lg-4">
+                                                        <input id="id_titre" type="text" name="titre_site"
+                                                               value="{{ parametres.titre_site }}" class="form-control">
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <h3>Langue <span class="error_color"></span></h3>
+                                        <div class="form-group row">
+                                            <label class="col-sm-2 col-form-label"></label>
+
+                                            <div class="col-sm-10">
+                                                <div class="row">
+
+                                                    <div class="col-md-12">
+                                                        <label style="padding-right:12px;" for="id_activer_langue">Activer
+                                                            l'Anglais</label>
+
+                                                        <input id="id_activer_langue" name="activer_langue"
+                                                               type="checkbox"  >
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <h3>Paramètres de l'email <span class="error_color"></span></h3>
+                                        <div class="form-group row">
+                                            <label class="col-sm-2 col-form-label"></label>
+
+                                            <div class="col-sm-10">
+                                                <div class="row">
+
+                                                    <div class="row">
+
+                                                        <div class="col-lg-2">
+                                                            <label for="email_host">Email Host</label>
+                                                        </div>
+
+                                                        <div class="col-lg-4">
+                                                            <input type="text"  id="email_host" name="email_host" value="{{ parametres.email_host }}" class="form-control">
+                                                        </div>
+
+                                                        <br><br><br>
+
+
+                                                        <div class="col-lg-2">
+                                                            <label for="email_host_user">Nom d'utilisateur</label>
+                                                        </div>
+
+                                                        <div class="col-lg-4">
+                                                            <input type="text" id="email_host_user" name="email_host_user" value="{{ parametres.email_host_user }}" class="form-control">
+                                                        </div>
+
+                                                        <br><br><br>
+
+
+                                                        <div class="col-lg-2">
+                                                            <label for="email_host_password">Mot de passe</label>
+                                                        </div>
+
+                                                        <div class="col-lg-4">
+                                                            <input type="text" id="email_host_password" name="email_host_password" value="{{ parametres.email_host_password }}" class="form-control">
+                                                        </div>
+
+                                                        <br><br><br>
+
+
+                                                        <div class="col-lg-2">
+                                                            <label for="email_port">Port</label>
+                                                        </div>
+
+                                                        <div class="col-lg-4">
+                                                            <input type="text" id="email_port"  name="email_port" value="{{ parametres.email_port }}" class="form-control">
+                                                        </div>
+
+                                                        <br><br><br>
+
+
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-12">
+                                            <div class="float-right">
+
+                                                <input value="Modifier" type="submit"
+                                                       class="btn btn-success"
+                                                       style="width:100px;">
+                                            </div>
+                                        </div>
+
+
+                                    </form>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+{% endblock content %}
+
+

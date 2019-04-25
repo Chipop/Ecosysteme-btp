@@ -1,5 +1,5 @@
 {% extends 'base_qa.html' %}
-{% load django_markdown %}
+
 {% load static %}
 {% load crispy_forms_tags %}
 {% load widget_tweaks %}
@@ -28,11 +28,11 @@
                       <h3>{{ user.first_name }}-{{ user.last_name }}</h3>
                       <i>{{ profil.fonction }}</i>
                       <ul class="social-btns">
-                        <li><a href="/qa#" title=""><i class="fa fa-facebook"></i></a>
+                        <li><a href="{{ profil.facebook }}" title=""><i class="fa fa-facebook-official"></i></a>
                         </li>
-                        <li><a href="/qa#" title=""><i class="fa fa-google-plus"></i></a>
+                        <li><a href="{{ profil.linkedin }}" title=""><i class="fa fa-linkedin"></i></a>
                         </li>
-                        <li><a href="/qa#" title=""><i class="fa fa-twitter"></i></a>
+                        <li><a href="{{ profil.website }}" title=""><i class="fa fa-internet-explorer"></i></a>
                         </li>
                       </ul>
                     </div>

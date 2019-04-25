@@ -12,7 +12,11 @@
     <!-- Page Wrapper Start -->
     <section class="page--wrapper pb--20">
         <div class="container-fluid">
+            {% if page_entreprise.img_couverture %}
         <div class="row" id="entrepriseBG" style="height: 204px;background-position: center;background-repeat: no-repeat;background-image: url('{{ page_entreprise.img_couverture.url }}');background-size:  cover;">
+        {% else %}
+        <div class="row" id="entrepriseBG" style="height: 204px;background-position: center;background-repeat: no-repeat;background-image: url('{% static 'SocialMedia/img/office_orange_1920p.jpg' %}');background-size:  cover;">
+        {% endif %}
         {% if user.profil in page_entreprise.administrateurs.all %}
             <button id="btcoverchange" class="btchangepic" data-toggle="modal"
                                 data-target="#squarespaceModal"><i class="fa fa-picture-o" aria-hidden="true"></i>
@@ -33,7 +37,7 @@
                             </div>
                             <div id="options_page_entreprise" style=" display:none; position:absolute; background-color:white; width: 150px; border: 1px solid black; text-align:center; right:0px;top: 50px; z-index: 10;">
                                 {% if user.profil in page_entreprise.administrateurs.all or user.profil in page_entreprise.moderateurs.all %}
-                                    <a href="/reseausocial/entreprise/{{ page_entreprise.id }}/poster_offre">
+                                    <a href="/reseausocial/entreprise/{{ page_entreprise.id }}/publier_offre_emploi">
                                         <div id="poster_offre_emploi" style="padding: 5px; font-weight: bold; font-size: 14px; color:#333; cursor:pointer;">
                                             Poster une offre d'emploi
                                         </div>
@@ -125,7 +129,7 @@
                                         <button class="btn btn-primary" style="padding: 6px 12px;">Aucune offre d'emploi
                                         </button>
                                     {% else %}
-                                        <a href="{% if entreprise.offreemploi_set.all.count == 0 %} {% else %} >1 {% endif %}">
+                                        <a href="{% if entreprise.offreemploi_set.all.count == 0 %} {% else %}/reseausocial/entreprise/{{ page_entreprise.id }}/offres_emploi/{% endif %}">
                                             <button class="btn btn-primary" style="padding: 6px 12px;">Voir
                                                 les {{ entreprise.offreemploi_set.all.count }}offres
                                                 d'emploi
@@ -136,9 +140,6 @@
 
                                 </div>
                             </div>
-
-
-
                         </div>
                         <!-- Cover Header End -->
                         <div id="navTop"></div>
@@ -167,7 +168,7 @@
                             <div class="buddy-finder--widget ">
                                 {% for entr in autres_entreprises %}
                                     <div class="row">
-                                        <a href="f">
+                                        <a href="/reseausocial/entreprise/{{ entr.id }}">
                                             <div class="col-md-4 " style="width:84px;height:84px">
                                                 <img id="" class=" " src="
 
@@ -212,7 +213,6 @@
         </div>
     </section>
     <!-- Page Wrapper End -->
-
 
 
 {% endblock content %}

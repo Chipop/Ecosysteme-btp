@@ -1,0 +1,418 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+
+{% block title %}
+    Profile | Réseau social | {{ block.super }}
+{% endblock title %}
+
+{% block stylesheets %}
+
+    {{ block.super }}
+
+{% endblock stylesheets %}
+
+
+{% block content %}
+
+    <div class="wrapper wrapper-content animated fadeInRight">
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class=" float-left">
+                    <a href="{% url 'dashboard:socialmedia_profils_list' %}">
+                        <button class="btn btn-primary dim"><i class="fa fa-arrow-left"></i> Listes des profiles
+                        </button>
+                    </a>
+
+                </div>
+
+                <div class=" float-right">
+                    <a href="{% url 'dashboard:socialmedia_delete_profile' id_profil=profil.id %}">
+                        <button id="btn_lancer_compagne" class="btn btn-danger dim">
+                            <i class="fa fa-trash"></i> Supprimer
+                        </button>
+                    </a>
+
+                    <a href="{% url 'dashboard:socialmedia_update_profil' id_profil=profil.id %}">
+                        <button class="btn btn-success dim"><i class="fa fa-pencil"></i> Modifier</button>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-6">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-eye fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Vues</span>
+                            <h2 class="font-bold">{{ profil.socialmedia_profil_views_number }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-comment fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Posts </span>
+                            <h2 class="font-bold">{{ profil.pub.all.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-users fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Contacts</span>
+                            <h2 class="font-bold">{{ nb_amis }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <div class="row">
+        <div class="col-lg-4">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-users fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Groupes</span>
+                            <h2 class="font-bold">{{ groupes.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <div class="col-lg-4">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-building fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Pages entreprises</span>
+                            <h2 class="font-bold">{{ pages.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <div class="col-lg-4">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-bullhorn fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Offres d'emploi</span>
+                            <h2 class="font-bold">{{ offres.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div style="background-image:url('{% if profil.photo_profil.image %} {{ profil.photo_couverture.image.url }} {% else %} {% static 'dashboard/img/default_cover.jpg' %} {% endif %} ');height:150px;">
+
+                </div>
+
+                <div class="col-lg-12 text-center" style="margin-top:-100px;">
+                    <img height="150" width="150"
+                         src="{% if profil.photo_profil.image %} {{ profil.photo_profil.image.url }} {% else %} {% static 'dashboard/img/default_profil_m.png' %} {% endif %}"
+                         class="rounded-circle circle-border m-b-md"
+                         alt="profile">
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <div class="row m-b-lg m-t-lg">
+            <div class="col-md-12" style="text-align:center;">
+
+
+                <div style="margin-left:15px;">
+                    <div class="">
+                        <div>
+                            <h2 class="no-margins">
+                                {{ profil.user.first_name | title }} {{ profil.user.last_name | title }}
+                                | {{ profil.type }}
+                            </h2>
+                            <h4>{{ profil.user.email }}</h4>
+                            {% if profil.resume %} <h4>{{ profil.resume }}</h4> {% endif %}
+
+                            <small> Crée le {{ profil.user.date_joined|date:"d/m/Y" }} </small>
+                            <br>
+                            <small><a href="{% url 'dashboard:user_infos' id_user=profil.id %}">  <i class="fa fa-link"></i> VOIR LA PAGE UTILISATEUR</a> </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="row">
+
+
+            <div class="col-md-6 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_publications' %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Ses dernières publications <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for statut in profil.pub.all|dictsortreversed:"id"|slice:"10" %}
+                        <a href="{% url 'dashboard:socialmedia_infos_publication' id_publication=statut.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ statut.contenu_statut | truncatechars:"30" }} <i class="fa fa-thumbs-up"
+                                                                                        style="color:#1c84c6;"></i>
+                                <span class="small-text">{{ statut.likes.all.count }}</span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune publication.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+            <div class="col-md-6 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_publications' %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Publications aimées <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for statut in statuts_aimes|slice:"10" %}
+                        <a href="{% url 'dashboard:socialmedia_infos_publication' id_publication=statut.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ statut.contenu_statut | truncatechars:"30" }} <i class="fa fa-thumbs-up"
+                                                                                        style="color:#1c84c6;"></i>
+                                <span class="small-text">{{ statut.likes.all.count }}</span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune publication.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+            <div class="col-md-6 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_groups_list' %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Groupes gérés <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for groupe in groupes|slice:"10" %}
+                        <a href="{% url 'dashboard:socialmedia_infos_group' id_group=groupe.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ groupe.nom | title }} <i class="fa fa-users" style="color:#1c84c6;"></i>
+                                <span class="small-text">{{ groupe.adherents.all.count }}</span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun  groupe.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+            <div class="col-md-6 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_page_entreprise_list' %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Pages entreprises gérées <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for page in pages|slice:"10" %}
+                        <a href="{% url 'dashboard:socialmedia_infos_page_entreprise' id_page_entreprise=page.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ page.entreprise.nom | title }} <i class="fa fa-bullhorn"
+                                                                         style="color:#1c84c6;"></i>
+                                <span class="small-text">{{ page.offreemploi_set.all.count }}</span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune page.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+        <div class="col-md-12 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_publications' %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Ses publications partagées <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for statut in publications_partagees|slice:"10" %}
+                        <a href="{% url 'dashboard:socialmedia_infos_publication' id_publication=statut.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ statut.contenu_statut | truncatechars:"30" }} <i class="fa fa-thumbs-up"
+                                                                                        style="color:#1c84c6;"></i>
+                                <span class="small-text">{{ statut.likes.all.count }}</span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune publication.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+
+            <div class="col-md-6 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_publications' %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Ses derniers commentaires <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for commentaire in profil.commented_user.all %}
+                        <a href="{% url 'dashboard:socialmedia_infos_publication' id_publication=commentaire.statut.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ commentaire.comment | truncatechars:"30" }} <i class="fa fa-thumbs-up"
+                                                                                      style="color:#1c84c6;"></i>
+                                <span class="small-text">{{ commentaire.likes.all.count }}</span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun commentaire.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+
+            <div class="col-md-6 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_publications' %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Ses offre d'emploi publiées <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for offre in profil.profil_publicateur.all %}
+                        <a href="{% url 'dashboard:socialmedia_infos_offre_emploi' id_offre_emploi=offre.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ offre.nom_poste | title }}
+                                <span class="small-text">{{ offre.ville | title }}</span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune offre d'emploi.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script>
+        $('#dashboard_socialmedia').addClass("active");
+        $('#socialmedia_liste_profils').addClass("active");
+    </script>
+
+    <!-- blueimp gallery -->
+    <script src="{% static 'dashboard/js/plugins/blueimp/jquery.blueimp-gallery.min.js' %}"></script>
+
+
+
+
+
+    <!-- Sparkline -->
+    <script src="{% static 'dashboard/js/plugins/sparkline/jquery.sparkline.min.js' %}"></script>
+
+    <script>
+        $(document).ready(function () {
+
+
+            $("#sparkline1").sparkline([34, 43, 43, 35, 44, 32, 44, 48], {
+                type: 'line',
+                width: '100%',
+                height: '50',
+                lineColor: '#1ab394',
+                fillColor: "transparent"
+            });
+
+
+        });
+    </script>
+
+
+
+
+
+{% endblock scripts %}
+

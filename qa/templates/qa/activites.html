@@ -1,8 +1,10 @@
 {% extends 'base_qa.html' %}
- {% load staticfiles %}
+ {% load static %}
 {% load i18n %}
-
+{% load widget_tweaks %}
+{% load questions_tags %}
 {% block style %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <style type="text/css">
 	
 .q_text
@@ -65,16 +67,16 @@
               <div class="profile-head">
                 <div class="col-md-6 col-xs-12 col-sm-6 no-padding">
                   <div class="profile-avatar">
-                    <span><img class="img-responsive img-circle" alt="" src="/media/photos/4.jpg"></span>
+                    <span><img class="img-responsive img-circle" alt="" src="{{ profil.photo_profil.image.url }}"></span>
                     <div class="profile-name">
-                      <h3>{{ user.first_name }}-{{ user.last_name }}</h3>
+                      <h3>{{ profil.user.first_name }}-{{ profil.user.last_name }}</h3>
                       <i>{{ profil.fonction }}</i>
                       <ul class="social-btns">
-                        <li><a href="/qa{{ profil.facebook }}" title=""><i class="fa fa-facebook-official"></i></a>
+                        <li><a href="{{ profil.facebook }}" title=""><i class="fa fa-facebook-official"></i></a>
                         </li>
-                        <li><a href="/qa{{ profil.linkedin }}" title=""><i class="fa fa-linkedin"></i></a>
+                        <li><a href="{{ profil.linkedin }}" title=""><i class="fa fa-linkedin"></i></a>
                         </li>
-                        <li><a href="/qa{{ profil.website }}" title=""><i class="fa fa-internet-explorer"></i></a>
+                        <li><a href="{{ profil.website }}" title=""><i class="fa fa-internet-explorer"></i></a>
                         </li>
                       </ul>
                     </div>
@@ -141,6 +143,11 @@
 					                                        <a style="color: black;" data-toggle="tab" href="/qa#tab2">{% trans "Réponses" %} ({{ nbAnswer }})</a>
 					                                    </td>
 					                                </tr>
+					                                <tr>
+					                                    <td>
+					                                        <a style="color: black;" data-toggle="tab" href="/qa#tab3">{% trans "en attente" %} </a>
+					                                    </td>
+					                                </tr>
 					                               <!--  <tr>
 					                                    <td>
 					                                        <a style="color: black;" data-toggle="tab" href="/qa#tab3">Recents</a>
@@ -191,15 +198,15 @@
 										<div class="row">
 											<div class="col-md-1">
 												<!-- <img style="margin-top: 10px;" class="profile_photo_img img-circle resize" src="https://qsf.ec.quoracdn.net/-3-images.new_grid.profile_pic_default_small.png-26-902da2b339fedf49.png" alt="Sante Sport" height="50" width="50"> -->
-												{% if user.profil.photo_profil.image.url %}
-																<img style="margin-top: 10px;" class="profile_photo_img img-circle resize"  src="{{ user.profil.photo_profil.image.url }}" alt="Sante Sport" height="100" width="100">
+												{% if profil.photo_profil.image.url %}
+																<img style="margin-top: 10px;" class="profile_photo_img img-circle resize"  src="{{ profil.photo_profil.image.url }}" alt="Sante Sport" height="100" width="100">
 															{% else %}
-										                      <img height="70" width="70" style="margin-top: 10px;" class="profile_photo_img img-circle resize"  class="img-sm"  src='{% static "qa/images/p1.png" %}'>
+										                      <img height="70" width="70" style="margin-top: 10px;" class="profile_photo_img img-circle resize"  class="img-sm"  src='{% static "images/p1.png" %}'>
 										                    {% endif %}
 										                    
 											</div>
 											<div class="col-md-10" style="margin-top: 10px; margin-left: -15px;">
-												<a style="color: black; ">{{ user.username }}</a>
+												<a style="color: black; ">{{ profil.user.username }}</a>
 											</div>
 											
 										</div>
@@ -245,21 +252,26 @@
 														<div class="row">
 															<div class="col-md-1 col-sm-1 col-xs-1">
 																<!-- <img style="margin-top: 10px;" class="profile_photo_img img-circle resize" src="https://qsf.ec.quoracdn.net/-3-images.new_grid.profile_pic_default_small.png-26-902da2b339fedf49.png" alt="Sante Sport" height="50" width="50"> -->
-																{% if user.profil.photo_profil.image.url %}
-																				<img style="margin-top: 10px;" class="profile_photo_img img-circle resize"  src="{{ user.profil.photo_profil.image.url }}" alt="Sante Sport" height="100" width="100">
+																{% if profil.photo_profil.image.url %}
+																				<img style="margin-top: 10px;" class="profile_photo_img img-circle resize"  src="{{ profil.photo_profil.image.url }}" alt="Sante Sport" height="100" width="100">
 																			{% else %}
-														                      <img height="70" width="70" style="margin-top: 10px;" class="profile_photo_img img-circle resize"  class="img-sm"  src='{% static "qa/images/p1.png" %}'>
+														                      <img height="70" width="70" style="margin-top: 10px;" class="profile_photo_img img-circle resize"  class="img-sm"  src='{% static "images/p1.png" %}'>
 														                    {% endif %}
 														                    
 															</div>
 															<div class="col-md-10 col-sm-10 col-xs-10" style="margin-top: 10px; margin-left: -15px;">
-																<a style="color: black; ">{{ user.username }}</a> | <span class="label label-info">{{ user.profil.mylevel.libelle }}</span>&nbsp;&nbsp; {% trans "Demandé en " %}<!-- Asked on --> {{ question.pub_date}} , <a style="color: blue;" >{{ question.categorie.title_categorie}}</a>
+																<a style="color: black; ">{{ profil.user.username }}</a> | <span class="label label-info">{{ profil.mylevel.libelle }}</span>&nbsp;&nbsp; {% trans "Demandé en " %}<!-- Asked on --> {{ question.pub_date}} , <a style="color: blue;" >{{ question.categorie.title_categorie}}</a>
 															</div>
 
 															<div class="col-md-1 col-sm-10 col-xs-10">
-															{% if user.id == question.user_data.user.id  or user.profil.mylevel.id == 2 %}
+															{% if profil.user.id == question.user_data.user.id  or profil.mylevel.id == 2 %}
 											                    <form action="/qa/updateq/{{ question.id }}" >
-											                      <button  onclick="myFunction({{ question.id }} )" type="button" class="btncomt pull-right " data-toggle="modal" data-target="#exampleModal" class="btncomt pull-right" > <li class="glyphicon glyphicon-trash" ></li> {% trans "Supprimer" %}</button>
+											                    	<div class="pull-right">
+											                      <button  onclick="myFunction({{ question.id }} )" type="button" class="btncomt" data-toggle="modal" data-target="#exampleModal" class="btncomt" > <li class="glyphicon glyphicon-trash" ></li> </button>
+
+											                      <button  type="submit" class="btncomt" > <li class=" glyphicon glyphicon-edit" ></li></button>
+
+											                      </div>
 											                    </form>
 											                  {% endif %} 
 											                </div>  
@@ -270,7 +282,7 @@
 														<ul class="question-statistic">
 															<li class="col-md-4"> <a data-toggle="tooltip" data-placement="bottom" title='{% trans "Réponses" %}'><span>{{ question.answer_set.count }}</span></a> {% trans "Rép..." %}
 															</li>
-															<li class="col-md-4"> <a data-toggle="tooltip" data-placement="bottom" title="Votes"><span>{{ question.qvoter_set.count }}</span> </a> Vote
+															<li class="col-md-4"> <a data-toggle="tooltip" data-placement="bottom" title="Votes"><span>{{ question.qvote.count }}</span> </a> Vote
 															</li>
 															<li class="col-md-4"> <a data-toggle="tooltip" data-placement="bottom" title="Votes"><span>{{ question.views }}</span></a> {% trans "Vues" %}
 															</li>
@@ -331,6 +343,12 @@
 													<div class="col-md-9 col-sm-9  col-xs-12">
 														<div class="row" style="padding: 10px; ">
 															<h3><em><u>Question</u></em>: {{ answer.question.question_title }}</h3>
+															<button class="btncomt pull-right" onclick='update_answer({{ answer.id }} , {{ user.id }})' data-toggle="modal" data-target="#modal_modelupdate_answer" ><li class="glyphicon glyphicon-edit" ></li></button>
+
+
+															<button class="btncomt pull-right" onclick='deleteanswer({{ answer.id }} , {{ answer.question.id }} )' data-toggle="modal" data-target="#model_deleteanswer" ><li class="glyphicon glyphicon-trash" ></li></button>
+
+
 															<div style="border-left:5px solid #808080; margin-left:15px ; padding-left:5px ;">
 																<p style="color: #808080;"><a style="color: #808080;" href="/qa/q/{{ answer.question.id }}/"> <span class="icon-quote"></span>{{ answer.answer_text|truncatechars_html:50| safe  }} </a></p>
 															</div>
@@ -345,15 +363,15 @@
 														<div class="row">
 															<div class="col-md-1 col-sm-1 col-xs-1">
 																<!-- <img style="margin-top: 10px;" class="profile_photo_img img-circle resize" src="https://qsf.ec.quoracdn.net/-3-images.new_grid.profile_pic_default_small.png-26-902da2b339fedf49.png" alt="Sante Sport" height="50" width="50"> -->
-																{% if user.profil.photo_profil.image.url %}
-																				<img style="margin-top: 10px;" class="profile_photo_img img-circle resize"  src="{{ user.profil.photo_profil.image.url }}" alt="Sante Sport" height="100" width="100">
+																{% if profil.photo_profil.image.url %}
+																				<img style="margin-top: 10px;" class="profile_photo_img img-circle resize"  src="{{ profil.photo_profil.image.url }}" alt="Sante Sport" height="100" width="100">
 																			{% else %}
-														                      <img height="70" width="70" style="margin-top: 10px;" class="profile_photo_img img-circle resize"  class="img-sm"  src='{% static "qa/images/p1.png" %}'>
+														                      <img height="70" width="70" style="margin-top: 10px;" class="profile_photo_img img-circle resize"  class="img-sm"  src='{% static "images/p1.png" %}'>
 														                    {% endif %}
 														                    
 															</div>
 															<div class="col-md-10 col-sm-10 col-xs-10" style="margin-top: 10px; margin-left: -15px;">
-																<a style="color: black; ">{{ user.username }}</a> | <span class="label label-info">{{ user.profil.mylevel.libelle }}</span>&nbsp;&nbsp; - {{ answer.pub_date}} 
+																<a style="color: black; ">{{ profil.user.username }}</a> | <span class="label label-info">{{ profil.mylevel.libelle }}</span>&nbsp;&nbsp; - {{ answer.pub_date}} 
 															</div>
 															
 														</div>
@@ -398,6 +416,9 @@
 										</div>
 										<!-- Pagination View More End -->
 								</div>
+
+
+								{% include 'qa/question_no_active.html' %}
 							</div>
 						</div>
 					</div>
@@ -469,4 +490,125 @@ $('#exampleModal').on('show.bs.modal', function (event) {
 </script>
 
 
+
+<div class="modal fade" id="modal_modelupdate_answer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{% trans "Modifier réponse" %}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="/qa/update_answer/">
+		 	{% csrf_token %}
+		 	<div class="form-group">
+		 		<label></label>
+		 		<div>
+		 			{{ form_a.media }}
+		 			{{ form_a.answer_text  }}
+		 		</div>
+		 	</div>
+		 	<input type="hidden" name="answer_id" id="answer_id">
+		 	<input type="hidden" name="user" id="us">
+		 	<!-- <button class="btn btn-primary btn-lg btn-block">{% trans "Postez votre réponse" %}</button> -->
+
+		 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+        <button class="btn btn-primary">{% trans "Postez votre réponse" %}</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="model_deleteanswer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Supprimer </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="/qa/deleteanswer/" method="POST">
+      <div class="modal-body">
+        
+          {% csrf_token %}
+          <h3>voulez vous vraiment supprimer cette reponse ?</h3>
+          <input type="hidden" name="id_answer_delete" id="id_answer_delete">
+          <input type="hidden" name="id_question" id="id_question" >
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+        <button type="submit" class="btn btn-danger">Supprimer</button>
+      </div>
+
+      
+      
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+
+	function deleteanswer(id_answer ,qst ) {
+    
+    document.getElementById("id_answer_delete").value = id_answer;
+    document.getElementById("id_question").value = qst;
+
+}
+
+
+	function update_answer(answer , user ) {
+    document.getElementById("answer_id").value = answer;
+    document.getElementById("us").value = user;  
+
+	$.ajax({
+	        url : '/qa/update_answer/',
+	        type : 'GET',
+	        // data : { treasure_id : $(this).attr("data-id")},
+	        data : { answer_id : answer },
+
+	        success : function(data){
+	          if (data.success){
+	                CKEDITOR.instances.id_answer_text.setData(data.txt);
+	            }
+	            else
+	            {
+	              alert("nonn");
+	            }
+
+	            // element.html(' ' + data.nb);
+	            
+	        }
+	    }); 
+
+    
+    // CKEDITOR.instances['editor1'].setData("value..................");
+    // $( 'textarea.editor' ).val( 'My new content' );
+ //    for(var instanceName in CKEDITOR.instances) {
+	// 	   alert( instanceName );
+	// }
+
+}
+
+
+$('#modal_modelupdate_answer').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var recipient = button.data('whatever') // Extract info from data-* attributes
+  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+  var modal = $(this)
+  modal.find('.modal-title').text('New message to ' + recipient)
+  modal.find('.modal-body input').val(recipient)
+})
+</script>
   {% endblock content %}

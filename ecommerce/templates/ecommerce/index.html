@@ -130,7 +130,7 @@
                                                                                         <div class="col-md-6 static-menu">
                                                                                     {% else %}
                                                                                         <div class="col-md-12 static-menu">
-                                                                                    {% endif %}*
+                                                                                    {% endif %}
                                                                                         <div class="menu">
                                                                                             <ul>
                                                                                             {% for category_one in category.commercescategoryone_set.all %}
@@ -302,7 +302,7 @@
             </div>
             <!--banners End -->
             <div class="featured-sale module clearfix">
-                <h3 class="modtitle"><span>Achetez nos meilleurs vedettes</span></h3>
+                <h3 class="modtitle"><span>Acheter Nos Produits Vedettes</span></h3>
                 <div class="modcontent">
                     <div class="">
                         <div class="row">
@@ -321,7 +321,7 @@
                                     </div>
                                     <div class="content-info">
                                         <h4>Jusqu'à {{ el.percentage__max }}% de réduction sur {{ el.product__cat__category_two__category_one__category.name }}</h4>
-                                        <p><a href="{% url 'e_commerce:products' "category" el.product__cat__category_two__category_one__category.pk %}">View All</a></p>
+                                        <p><a href="{% url 'e_commerce:products' "category" el.product__cat__category_two__category_one__category.pk %}">Voir tout</a></p>
                                     </div>
                                 </div>
                                 {% if forloop.counter|divisibleby:2 and not forloop.last %}
@@ -356,9 +356,9 @@
                                                         <a class="iframe-link btn-button quickview quickview_handler visible-lg" href="{% url 'e_commerce:contact_supplier' sale.id.product.pk %}" title="Quick view" data-fancybox-type="iframe"><i class="fa fa-envelope"></i><span>Contacter Fournisseur</span></a>
                                                     {% else %}
                                                         <form id="formAddCart{{ sale.id.product.pk }}" method="get" action="{% url 'e_commerce:add_to_cart' %}" data-validate-url="{% url 'e_commerce:add_to_cart' %}"><input type="hidden" name="product" value="{{ sale.id.product.pk }}"></form>
-                                                        <button class="btn-button addToCart" title="Ajouter au Chariot" type="button" onclick="cart.add('{{ sale.id.product.pk }}', '{{ user.is_authenticated }}', '{{ sale.id.product.name }}', '{{ sale.id.product.image.url }}', '{% url 'e_commerce:product' sale.id.product.pk %}');">
+                                                        <button class="btn-button addToCart" title="Ajouter au Panier" type="button" onclick="cart.add('{{ sale.id.product.pk }}', '{{ user.is_authenticated }}', '{{ sale.id.product.name }}', '{{ sale.id.product.image.url }}', '{% url 'e_commerce:product' sale.id.product.pk %}');">
                                                             <i class="fa fa-shopping-basket"></i>
-                                                            <span>Ajouter au Chariot</span>
+                                                            <span>Ajouter au Panier</span>
                                                         </button>
                                                     {% endif %}
                                                         <form id="formAddWish{{ sale.id.product.pk }}" method="get" action="{% url 'e_commerce:add_to_wish_list' %}" data-validate-url="{% url 'e_commerce:add_to_wish_list' %}"><input type="hidden" name="product" value="{{ sale.id.product.pk }}"></form>
@@ -570,8 +570,8 @@
                                             {% else %}
                                                 <form id="formAddCart{{ best.product__id.pk }}" method="get" action="{% url 'e_commerce:add_to_cart' %}" data-validate-url="{% url 'e_commerce:add_to_cart' %}"><input type="hidden" name="product" value="{{ best.product__id.pk }}"></form>
                                                 <a>
-                                                    <button type="button" class="addToCart btn-button" title="Ajouter au chariot" onclick="cart.add('{{ best.product__id.pk }}', '{{ user.is_authenticated }}', '{{ best.product__id.name }}', '{{ best.product__id.image.url }}', '{% url 'e_commerce:product' best.product__id.pk %}');">
-                                                        <span style="line-height: 19px">Ajouter au chariot</span>
+                                                    <button type="button" class="addToCart btn-button" title="Ajouter au Panier" onclick="cart.add('{{ best.product__id.pk }}', '{{ user.is_authenticated }}', '{{ best.product__id.name }}', '{{ best.product__id.image.url }}', '{% url 'e_commerce:product' best.product__id.pk %}');">
+                                                        <span style="line-height: 19px">Ajouter au Panier</span>
                                                     </button>
                                                 </a>
                                             {% endif %}

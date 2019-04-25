@@ -1,0 +1,450 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}
+    Article | Journal | {{ block.super }}
+{% endblock title %}
+
+{% block stylesheets %}
+
+    {{ block.super }}
+
+    <link href="{% static 'dashboard/css/plugins/summernote/summernote-bs4.css' %}" rel="stylesheet">
+
+    <!-- Image Gallery -->
+    <link href="{% static 'dashboard/css/plugins/blueimp/css/blueimp-gallery.min.css' %}" rel="stylesheet">
+
+    <!-- Toastr style -->
+    <link href="{% static 'dashboard/css/plugins/toastr/toastr.min.css' %}" rel="stylesheet">
+
+
+{% endblock stylesheets %}
+
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class=" float-left">
+                    <a href="{% url 'dashboard:news_articles' %}">
+                        <button class="btn btn-primary dim"><i class="fa fa-arrow-left"></i> Liste de articles
+
+                        </button>
+                    </a>
+
+                </div>
+
+                <div class=" float-right">
+                    <a href="{% url 'dashboard:delete_article' id_article=article.id %}">
+                        <button id="btn_lancer_compagne" class="btn btn-danger dim">
+                            <i class="fa fa-trash"></i> Supprimer
+                        </button>
+                    </a>
+
+                    <a href="{% url 'dashboard:update_article' id_article=article.id %}">
+                        <button class="btn btn-success dim"><i class="fa fa-pencil"></i> Modifier</button>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-6">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-user-circle fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Auteur</span>
+                            <h2 class="font-bold">{{ article.journalist.first_name.title }} {{ article.journalist.last_name.title }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-eye fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Vues</span>
+                            <h2 class="font-bold">{{ article.view_number }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-3">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-commenting fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Commentaires</span>
+                            <h2 class="font-bold">{{ article.comment_set.all.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-thumbs-up fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>J'aime</span>
+                            <h2 class="font-bold">{{ article.likes }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-share fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Partages</span>
+                            <h2 class="font-bold">{{ article.shares }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-exclamation-circle fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Signalements</span>
+                            <h2 class="font-bold">{{ nb_signals }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+        <div class="row justify-content-md-center">
+            <div class="col-lg-11">
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <div class="float-right">
+                        </div>
+                        <div class="text-center article-title" style="    margin-bottom: 30px;">
+                            <span class="text-muted"><i class="fa fa-clock-o"></i> {{ article.date_publication }}</span>
+                            <h1>
+                                {{ article.title }}
+                            </h1>
+                        </div>
+
+                        {% if article.video_url %}
+                            <figure style="text-align:center; margin-bottom:30px;">
+                                <iframe src="{{ article.video_url }}" frameborder="0" allowfullscreen=""
+                                        data-aspectratio="0.8211764705882353"
+                                        style="width: 720px; height: 350px;"></iframe>
+                            </figure>
+                        {% endif %}
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="ibox ">
+
+                                    <div class="ibox-content" style="border-style:none;">
+
+                                        <div class="lightBoxGallery">
+                                            {% if article.primary_image.image %}
+                                                <a href="{{ article.primary_image.image.url }}"
+                                                   data-gallery="" class="inline-block">
+                                                    <img src="{{ article.primary_image.image.url }}" height="150">
+
+                                                    <i class="fa fa-star fa-icons-image-article article-image-actions-star"
+                                                       title="Image principale"></i>
+                                                </a>
+                                            {% endif %}
+
+                                            {% if article.imagenews_set.all.count is not 0 %}
+                                                {% for image  in article.imagenews_set.all %}
+                                                    <a href="{{ image.image.url }}"
+                                                       data-gallery="" class="inline-block"><img
+                                                            src="{{ image.image.url }}    "
+                                                            height="150">
+                                                        <span
+                                                                class="">  <i
+                                                                class="fa fa-trash fa-icons-image-article article-image-actions-trash"
+                                                                title="Supprimer"></i> </span></a>
+                                                {% endfor %}
+                                            {% endif %}
+
+                                            <!-- The Gallery as lightbox dialog, should be a child element of the document body -->
+                                            <div id="blueimp-gallery" class="blueimp-gallery blueimp-gallery-controls"
+                                                 style="display: none;">
+                                                <div class="slides" style="width: 99144px;"></div>
+                                                <h3 class="title">Titre de l'article</h3>
+                                                <a class="prev">‹</a>
+                                                <a class="next">›</a>
+                                                <a class="close">×</a>
+                                                <a class="play-pause"></a>
+                                                <ol class="indicator"></ol>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        {{ article.content | safe }}
+
+
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Tags:</h5>
+                                {% for tag in article.tag.all %}
+                                    <button class=" badge badge-primary" type="button"
+                                            style="background-color:{{ tag.color }};">{{ tag.name }}</button>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <div class="small text-right">
+                                    <div><i class="fa fa-comments-o"> </i> {{ article.comment_set.all.count }}
+                                        Commentaires
+                                    </div>
+                                    <i class="fa fa-eye"> </i> {{ article.view_number }} vues
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+
+                                <h2>Commentaires:</h2>
+
+
+                                {% for comment in article.comment_set.all %}
+
+                                    <div class="social-feed-box">
+                                        <div class="social-avatar">
+                                            <div class="media-body">
+                                                <span href="#">
+                                                    {{ comment.full_name }} - {{ comment.email }}
+                                                    <a style="display:inline;"
+                                                       href="{% url 'dashboard:news_delete_comment' id_comment=comment.id article_type='normal' %}"><button
+                                                            class="btn btn-danger btn-xs">Supprimer</button></a>
+
+                                                </span>
+                                                <br>
+                                                <br>
+                                                <small class="text-muted">{{ comment.date_publication }}</small>
+                                                <small class="text-muted"><i
+                                                        class="fa fa-thumbs-up"></i> {{ comment.number_like }}</small>
+                                                {% if comment.signalements.all.count is not 0 %}
+                                                    <span class="error_msg"> <i
+                                                            class="fa fa-warning "></i> signalé </span>
+                                                {% endif %}
+
+
+                                            </div>
+                                        </div>
+
+                                        <div class="social-body">
+                                            <p>
+                                                {{ comment.message }}
+                                            </p>
+                                            {% for signal in comment.signalements.all %}
+                                                {% if forloop.counter == 1 %}
+                                                    <hr>
+                                                    <h5>Cause des signalements :</h5>
+                                                {% endif %}
+                                                <p>- <span class="error_msg">{{ signal.cause }}</span>
+                                                    <small>Par {{ signal.email }} le {{ signal.date_send }}</small>
+                                                </p>
+
+                                                {% if forloop.counter == forloop.last %}
+                                                    <hr>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+
+                                        {% for reply in comment.answer_set.all %}
+
+                                            <div class="social-feed-box" style="    margin: 0 30px 30px 30px;">
+                                                <div class="social-avatar">
+                                                    <div class="media-body">
+                                                        <span href="#">
+                                                            {{ reply.full_name }} - {{ reply.email }}
+                                                            <a style="display:inline;"
+                                                               href="{% url 'dashboard:news_delete_answer' id_answer=reply.id article_type='normal' %}"><button
+                                                                    class="btn btn-danger btn-xs">Supprimer</button></a>
+                                                        </span>
+                                                        <br><br>
+                                                        <small class="text-muted">{{ reply.date_publication }}</small>
+                                                        <small class="text-muted"><i
+                                                                class="fa fa-thumbs-up"></i> {{ reply.number_like }}
+                                                        </small>
+                                                        {% if reply.signalements.all.count is not 0 %}
+                                                            <span class="error_msg"> <i
+                                                                    class="fa fa-warning "></i> signalé </span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+
+                                                <div class="social-body">
+                                                    <p>
+                                                        {{ reply.message }}
+                                                    </p>
+
+                                                    {% for signal in reply.signalements.all %}
+                                                        {% if forloop.counter == 1 %}
+                                                            <hr>
+                                                            <h5>Cause des signalements :</h5>
+                                                        {% endif %}
+                                                        <p>- <span class="error_msg">{{ signal.cause }}</span>
+                                                            <small>Par {{ signal.email }}
+                                                                le {{ signal.date_send }}</small>
+                                                        </p>
+
+                                                        {% if forloop.counter == forloop.last %}
+                                                            <hr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+
+                                        {% endfor %}
+                                    </div>
+
+
+
+                                {% empty %}
+                                    0 Commentaires.
+                                {% endfor %}
+
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+                <div class="col-lg-11 mar-b-30">
+                    <div class="list-group">
+                        <a href="{% url 'dashboard:tracking_visites' %}?url={{ article.tracking_get_absolute_url }}"
+                           class="list-group-item list-group-item-action active disabled">
+                            Derniers visites <span class="pull-right">Voir tout</span>
+                        </a>
+
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                            <th>Utilisateur</th>
+                            <th>Date</th>
+                            </thead>
+
+                            <tbody>
+                            {% for tracking in tracking_dernieres_visites %}
+                                <tr>
+                                    <td>{% if not tracking.user %} Visiteur non connecté {% else %}
+                                        <a href="{% url 'dashboard:user_infos' id_user=tracking.user.profil.id %}">{{ tracking.user.first_name|title }} {{ tracking.user.last_name|title }}</a>{% endif %}
+                                    </td>
+                                    <td>{{ tracking.timestamp }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td valign="top" colspan="2" class="dataTables_empty text-center">Aucun élément à
+                                        afficher
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script>
+        $('#dashboard_news').addClass("active");
+        $('#news_liste_articles').addClass("active");
+    </script>
+
+    <!-- blueimp gallery -->
+    <script src="{% static 'dashboard/js/plugins/blueimp/jquery.blueimp-gallery.min.js' %}"></script>
+
+
+
+    <!-- Toastr script -->
+    <script src="{% static 'dashboard/js/plugins/toastr/toastr.min.js' %}"></script>
+
+    <script>
+        {% if messages %}
+            {% for msg in messages %}
+                {% if msg.tags == "success" %}
+                    toastr.options = {
+                        "closeButton": true,
+                        "debug": false,
+                        "progressBar": true,
+                        "preventDuplicates": false,
+                        "positionClass": "toast-top-right",
+                        "onclick": null,
+                        "showDuration": "400",
+                        "hideDuration": "1000",
+                        "timeOut": "7000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+
+                    Command: toastr["success"]("{{ msg }}")
+
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+
+
+
+
+
+
+{% endblock scripts %}
+

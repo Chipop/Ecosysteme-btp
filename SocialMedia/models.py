@@ -1,3 +1,5 @@
+
+
 from django.db import models
 from django.contrib.auth.models import User
 import os.path
@@ -5,10 +7,12 @@ from django.urls import reverse
 from itertools import chain
 from django.db.models import Max
 from django.utils.timezone import now
+import datetime
 
 
 class Groupe(models.Model):
     statuts = (('publique', 'publique'), ('prive', 'privé'))
+
     nom = models.CharField(max_length=255)
     date_creation = models.DateField()
     statut_groupe = models.CharField(choices=statuts, max_length=255, null=False, blank=False)
@@ -20,12 +24,26 @@ class Groupe(models.Model):
     moderators = models.ManyToManyField('main_app.Profil', related_name="moderateur")
     creator = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE, related_name="createur")
     adherents = models.ManyToManyField('main_app.Profil', related_name="adherent")
+    views_number = models.IntegerField(default=0)
 
     def __str__(self):
         return "Groupe: " + self.nom + "\b\bCree Par: " + self.creator.user.username
 
     def get_absolute_url(self):
         return reverse('SocialMedia:groupe', args=[str(self.id)])
+
+    class Meta:
+        verbose_name_plural = 'Groupes'
+        verbose_name = "Groupe"
+
+    def tracking_get_admin_url(self):
+        return reverse('dashboard:socialmedia_infos_group', kwargs={'id_group': self.id})
+
+    def tracking_get_absolute_url(self):
+        return reverse('SocialMedia:groupe', kwargs={'pk': self.id})
+
+    def tracking_get_description(self):
+        return self.nom
 
 
 class DemandeGroupe(models.Model):
@@ -52,41 +70,8 @@ class ReseauSocialFile(models.Model):
     date_telechargement = models.DateTimeField()
     profil = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE, related_name="FileOwner")
 
-    def str(self):
-        return self.fichier.name
-
-
-class Statut(models.Model):
-    is_shared = models.BooleanField(default=False)
-    original_statut_id = models.IntegerField(null=True, blank=True)
-    date_statut = models.DateTimeField()
-    contenu_statut = models.CharField(max_length=6000)
-    is_group_statut = models.BooleanField(default=False)
-    is_profil_statut = models.BooleanField(default=False)
-    publisher = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE, related_name="pub")
-    mur_profil = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE, null=True, blank=True,
-                                   related_name="statut_mur_profil")
-    mur_groupe = models.ForeignKey(Groupe, on_delete=models.CASCADE, null=True, blank=True)
-    images = models.ManyToManyField(ReseauSocialFile, related_name="images", blank=True, null=True)
-    videos = models.ManyToManyField(ReseauSocialFile, related_name="videos", blank=True, null=True)
-    files = models.ManyToManyField(ReseauSocialFile, related_name="files", blank=True, null=True)
-    likes = models.ManyToManyField('main_app.Profil', blank=True, null=True)
-
     def __str__(self):
-        return self.publisher.user.username + " a publié un statut"
-
-    def get_absolute_url(self):
-        return reverse('SocialMedia:Statut', args=[str(self.id)])
-
-
-class Commentaire(models.Model):
-    comment = models.CharField(null=False, blank=False, max_length=6000)
-    date_commentaire = models.DateField()
-    statut = models.ForeignKey(Statut, on_delete=models.CASCADE)
-    user = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE, related_name="commented_user")
-    image = models.ManyToManyField(ReseauSocialFile, null=True, blank=True)
-    likes = models.ManyToManyField('main_app.Profil', null=True, blank=True)
-
+        return self.fichier.name
 
 
 class DemandeAmi(models.Model):
@@ -94,7 +79,6 @@ class DemandeAmi(models.Model):
     emetteur = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE, related_name="sender")
     recepteur = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE, related_name="receiver")
     statut = models.IntegerField(null=False, blank=False, choices=demandes)
-
 
     @staticmethod
     def sont_ami(user1, user2):
@@ -105,13 +89,28 @@ class DemandeAmi(models.Model):
             return True
         return False
 
+    @staticmethod
+    def nb_amis(profil):
+
+        try:
+            demande_acceptee = DemandeAmi.objects.filter(recepteur=profil, statut=1).count()
+        except:
+            demande_acceptee = 0
+
+        try:
+            demande_acceptee2 = DemandeAmi.objects.filter(emetteur=profil, statut=1).count()
+        except Exception as e:
+            demande_acceptee2 = 0
+
+        return demande_acceptee + demande_acceptee2
+
     def __str__(self):
         return self.demandes[self.statut][1]
 
 
 class Suivie(models.Model):
     follower = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE, related_name="suiveur")
-    followed_profil = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE, related_name="suive")
+    followed_profil = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE, related_name="suivi", null=True)
 
     class Meta:
         unique_together = ('follower', 'followed_profil',)
@@ -121,8 +120,9 @@ class Suivie(models.Model):
 
 
 class Conversation(models.Model):
-    start_date = models.DateTimeField(blank=False)
+    start_date = models.DateTimeField(auto_now_add=True)
     participants = models.ManyToManyField(User)
+    id_chat = models.CharField(max_length=1000)
 
     def __str__(self):
         show = ""
@@ -131,17 +131,17 @@ class Conversation(models.Model):
         return show
 
 
-class Responseconversation(models.Model):
+class MessageConversation(models.Model):
     message = models.CharField(max_length=6000)
-    message_date = models.DateTimeField(blank=False)
+    date = models.DateTimeField(auto_now_add=True)
     is_image = models.BooleanField(default=False)
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE)
-    image = models.ForeignKey('main_app.Image', on_delete=models.CASCADE, blank=True, null=True)
-    user_responsed = models.ForeignKey(User, on_delete=models.CASCADE)
+    image = models.ForeignKey("main_app.Image", on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     is_read = models.BooleanField(default=False)
 
     def __str__(self):
-        return "Response Of: " + self.user_responsed.username
+        return "Response Of: " + self.user.username
 
 
 VALID_IMAGE_EXTENSIONS = [
@@ -175,18 +175,34 @@ class PageEntreprise(models.Model):
     abonnees = models.ManyToManyField('main_app.Profil', related_name="abonnees", blank=True)
     administrateurs = models.ManyToManyField('main_app.Profil', related_name="administrateurs", blank=True)
     moderateurs = models.ManyToManyField('main_app.Profil', related_name="moderateurs", blank=True)
-    img_couverture = models.ImageField(upload_to="",null=True,blank=True)
+    img_couverture = models.ImageField(upload_to="", null=True, blank=True)
+    views_number = models.IntegerField(default=0)
 
-    def is_administrateur(self,user):
+    def is_administrateur(self, user):
         if user.profil not in self.administrateurs.all():
             return False
         return True
 
-    def is_moderateur(self,user):
+    def is_moderateur(self, user):
         if user.profil not in self.moderateurs.all():
             return False
         return True
 
+    def employes(self):
+        return Experience.objects.filter(entreprise=self.entreprise, actuel=True).values('profil')
+
+    class Meta:
+        verbose_name_plural = 'Pages Entreprise'
+        verbose_name = "Page Entreprise"
+
+    def tracking_get_admin_url(self):
+        return reverse('dashboard:socialmedia_infos_page_entreprise', kwargs={'id_page_entreprise': self.id})
+
+    def tracking_get_absolute_url(self):
+        return reverse('SocialMedia:page_entreprise', kwargs={'id_page_entreprise': self.id})
+
+    def tracking_get_description(self):
+        return self.entreprise.nom
 
     def __str__(self):
         return self.entreprise.nom
@@ -204,25 +220,43 @@ class OffreEmploi(models.Model):
     pays = models.CharField(max_length=300)
     ville = models.CharField(max_length=300)
     diplome_requis = models.CharField(max_length=300)
-    type_contrat = models.CharField(max_length=300,choices=TYPES_CONTRAT)
+    type_contrat = models.CharField(max_length=300, choices=TYPES_CONTRAT)
     description_poste = models.TextField()
     profil_recherche = models.TextField()
     date_publication = models.DateField(auto_now_add=True)
     en_cours = models.BooleanField(default=True)
-    date_fin = models.DateField(null=True,default=None,blank=True)
+    date_fin = models.DateField(null=True, default=None, blank=True)
     type_emploi = models.CharField(max_length=300, choices=TYPES_EMPLOI)
     poste = models.ForeignKey(Poste, on_delete=models.CASCADE,
-                              related_name="poste_recherche",null=True)
+                              related_name="poste_recherche", null=True)
     nom_poste = models.CharField(max_length=300)
     page_entreprise = models.ForeignKey(PageEntreprise, on_delete=models.CASCADE)
     profil_publicateur = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE,
                                            related_name="profil_publicateur")
     profil_postulants = models.ManyToManyField('main_app.Profil', related_name="profil_postulants", blank=True)
-    fichier_joint = models.FileField(null=True,blank=True)
+    fichier_joint = models.FileField(null=True, blank=True)
+    views_number = models.IntegerField(default=0)
+    shares = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.page_entreprise.entreprise.nom + " propose un poste d'un " + self.poste.nom_poste
+        return self.page_entreprise.entreprise.nom + " propose un poste d'un " + self.nom_poste
 
+    class Meta:
+        verbose_name_plural = "Offres d'emploi"
+        verbose_name = "Offre d'emploi"
+
+    def tracking_get_admin_url(self):
+        return reverse('dashboard:socialmedia_infos_offre_emploi', kwargs={'id_offre_emploi': self.id})
+
+    def tracking_get_absolute_url(self):
+        return reverse('SocialMedia:page_offre_emploi', kwargs={'id_offre_emploi': self.id})
+
+    def tracking_get_description(self):
+        return self.nom_poste + " par " + self.page_entreprise.entreprise.nom
+
+    def add_share(self):
+        self.shares += 1
+        self.save()
 
 
 class Experience(models.Model):
@@ -357,15 +391,6 @@ class LangueProfil(models.Model):
     niveau = models.ForeignKey(NiveauLangue, on_delete=models.CASCADE)
 
 
-class Reply(models.Model):
-    replyContent = models.CharField(max_length=6000)
-    commentaire = models.ForeignKey(Commentaire, on_delete=models.CASCADE)
-    image = models.ManyToManyField(ReseauSocialFile, null=True, blank=True)
-    user = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE, related_name='publisher')
-    date_reply = models.DateTimeField()
-    likes = models.ManyToManyField('main_app.Profil', related_name='likedBy', null=True, blank=True)
-
-
 def get_object_or_none(classmodel, **kwargs):
     try:
         return classmodel.objects.get(**kwargs)
@@ -373,22 +398,205 @@ def get_object_or_none(classmodel, **kwargs):
         return None
 
 
+"""""""""""
+class Statut(models.Model):
+    is_shared = models.BooleanField(default=False)
+    original_statut_id = models.IntegerField(null=True, blank=True)
+    date_statut = models.DateTimeField()
+    contenu_statut = models.CharField(max_length=6000)
+    is_group_statut = models.BooleanField(default=False)
+    is_profil_statut = models.BooleanField(default=False)
+    publisher = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE, related_name="pub")
+    mur_profil = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE, null=True, blank=True,
+                                   related_name="statut_mur_profil")
+    mur_groupe = models.ForeignKey(Groupe, on_delete=models.CASCADE, null=True, blank=True)
+    images = models.ManyToManyField(ReseauSocialFile, related_name="images", blank=True)
+    videos = models.ManyToManyField(ReseauSocialFile, related_name="videos", blank=True)
+    files = models.ManyToManyField(ReseauSocialFile, related_name="files", blank=True)
+    likes = models.ManyToManyField('main_app.Profil', blank=True, related_name="profil_likes_statut")
+    shares_number = models.IntegerField(default=0)
+    views_number = models.IntegerField(default=0)
+
+    class Meta:
+        verbose_name_plural = 'Statuts'
+        verbose_name = "Statut"
+
+    def tracking_get_admin_url(self):
+        return reverse('dashboard:socialmedia_infos_publication', kwargs={'id_publication': self.id})
+
+    def tracking_get_absolute_url(self):
+        return reverse('SocialMedia:Statut', kwargs={'pk': self.id})
+
+    def tracking_get_description(self):
+        return self.contenu_statut[:20]
+
+    def __str__(self):
+        return self.publisher.user.username + " a publié un statut " + self.contenu_statut[:30]
+
+    def get_absolute_url(self):
+        return reverse('SocialMedia:Statut', args=[str(self.id)])
+
+    def shares(self):
+        return Statut.objects.filter(is_shared=True, original_statut_id=self.id).count()
+
+"""""""""""
+
+
+class AbstractStatut(models.Model):
+    date_statut = models.DateTimeField(auto_now_add=True)
+    contenu_statut = models.CharField(max_length=6000,default="")
+    publisher = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE, related_name="publisher_statut",default=1)
+    mur_profil = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE, null=True, blank=True,
+                                   related_name="statut_mur_profil",default=1)
+
+    likes = models.ManyToManyField('main_app.Profil', blank=True, related_name="profil_likes_statut")
+    views_number = models.IntegerField(default=0)
+
+    def get_max_comment_id(self):
+        return self.commentaire_set.filter(parent=None).aggregate(max=Max('id'))['max']
+
+    def get_commentaires(self):
+        return self.commentaire_set.filter(parent=None)
+
+    def get_absolute_url(self):
+        return reverse('SocialMedia:Statut', kwargs={'pk': self.id} )
+
+
+
+    def get_signals(self):
+        return self.statut_signales.filter(active=True)
+
+
+class Statut(AbstractStatut):
+    is_group_statut = models.BooleanField(default=False)
+    is_profil_statut = models.BooleanField(default=False)
+    is_entreprise_statut = models.BooleanField(default=False)
+
+    is_link_statut = models.BooleanField(default=False)
+    link_icon = models.CharField(max_length=1000, default="", null=True, blank=True,)
+    link_title = models.CharField(max_length=1000, default="", null=True, blank=True,)
+    link_description = models.CharField(max_length=1000, default="", null=True, blank=True,)
+    link_url = models.CharField(max_length=1000, default="", null=True, blank=True,)
+
+    mur_groupe = models.ForeignKey(Groupe, on_delete=models.CASCADE, null=True, blank=True,
+                                   related_name="statut_mur_groupe")
+    mur_entreprise = models.ForeignKey(PageEntreprise, on_delete=models.CASCADE, null=True, blank=True,
+                                       related_name="statut_mur_entreprise")
+
+    images = models.ManyToManyField(ReseauSocialFile, related_name="images", blank=True)
+    videos = models.ManyToManyField(ReseauSocialFile, related_name="videos", blank=True)
+    files = models.ManyToManyField(ReseauSocialFile, related_name="files", blank=True)
+
+
+    class Meta:
+        verbose_name_plural = 'Statuts'
+        verbose_name = "Statut"
+
+    # Original = statut nom  partagé
+    # shared = statut partgé
+    def type(self):
+        return "original"
+
+    def tracking_get_admin_url(self):
+        return reverse('dashboard:socialmedia_infos_publication', kwargs={'id_publication': self.id})
+
+    def tracking_get_absolute_url(self):
+        return reverse('SocialMedia:Statut', kwargs={'pk': self.id})
+
+    def tracking_get_description(self):
+        return self.contenu_statut[:20]
+
+    def __str__(self):
+        return self.publisher.user.username + " a publié un statut " + self.contenu_statut[:30]
+
+    def shares(self):
+        return SharedStatut.objects.filter(shared_statut=self).count()
+
+    def type_statut(self):
+        if self.is_group_statut:
+            return "Groupe"
+        elif self.is_entreprise_statut:
+            return "Page d'entreprise"
+        else:
+            return "Profil"
+
+
+class SharedStatut(AbstractStatut):
+    shared_statut = models.ForeignKey(Statut,on_delete=models.CASCADE,related_name="shared_statut")
+    date_share = models.DateTimeField(auto_now_add=True)
+
+    # Original = statut nom  partagé
+    # shared = statut partgé
+    def type(self):
+        return "shared"
+
+    class Meta:
+        verbose_name_plural = 'Statut partagé'
+        verbose_name = "Statut partagé"
+
+    def tracking_get_admin_url(self):
+        return reverse('dashboard:socialmedia_infos_publication', kwargs={'id_publication': self.id})
+
+    def tracking_get_absolute_url(self):
+        return reverse('SocialMedia:Statut', kwargs={'pk': self.id})
+
+    def tracking_get_description(self):
+        return self.contenu_statut[:20]
+
+
+class Commentaire(models.Model):
+    TYPE_STATUT_CHOICES = (('original','original'),('shared','shared'))
+    content = models.TextField(null=False, blank=False)
+    date_commentaire = models.DateTimeField(auto_now_add=True)
+    statut = models.ForeignKey(AbstractStatut, on_delete=models.CASCADE)
+    type_statut = models.CharField(max_length=15, default="original",choices=TYPE_STATUT_CHOICES)
+    user = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE, related_name="commented_user")
+    image = models.ForeignKey(ReseauSocialFile, blank=True,null=True,on_delete=models.CASCADE)
+    likes = models.ManyToManyField('main_app.Profil', blank=True)
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.content
+
+    def replies(self):
+        return self.commentaire_set.all()
+
+    def count_replies(self):
+        return self.commentaire_set.all().count()
+
+    class Meta:
+        ordering = ['-date_commentaire']
+
+    def get_related_statut(self):
+        print(self.type_statut)
+        if self.type_statut == "original":
+            return Statut.objects.get(id=self.statut.id)
+        else:
+            return SharedStatut.objects.get(id=self.statut.id)
+
+
+
 class StatutSignales(models.Model):
-    statut = models.ForeignKey(Statut, on_delete=models.CASCADE)
+    statut_signale = models.ForeignKey(AbstractStatut, on_delete=models.CASCADE, related_name="statut_signales")
+    active = models.BooleanField(default=True)
     signal_sender = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE)
-    data_signale = models.DateTimeField(default=now)
+    cause = models.CharField(max_length=1000, default="")
+    type = models.CharField(max_length=15, default="original")
+    date_signale = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-date_signale']
 
 
 class CommentaireSignales(models.Model):
     commentaire = models.ForeignKey(Commentaire, on_delete=models.CASCADE)
+    active = models.BooleanField(default=True)
     signal_sender = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE)
-    data_signale = models.DateTimeField(default=now)
+    cause = models.CharField(max_length=1000, default="")
+    date_signale = models.DateTimeField(auto_now_add=True)
 
-
-class ReplySignales(models.Model):
-    reply = models.ForeignKey(Reply, on_delete=models.CASCADE)
-    signal_sender = models.ForeignKey('main_app.Profil', on_delete=models.CASCADE)
-    data_signale = models.DateTimeField(default=now)
+    class Meta:
+        ordering = ['-date_signale']
 
 
 class Notification(models.Model):
@@ -413,4 +621,4 @@ class Notification(models.Model):
                                          on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.profil_to_notify.user.username+": "+self.message
+        return self.message

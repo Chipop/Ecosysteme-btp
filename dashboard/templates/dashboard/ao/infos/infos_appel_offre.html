@@ -1,0 +1,449 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+
+{% block title %}
+    Appel d'offre | AO | {{ block.super }}
+{% endblock title %}
+
+{% block stylesheets %}
+
+    {{ block.super }}
+
+{% endblock stylesheets %}
+
+
+{% block content %}
+
+    <div class="wrapper wrapper-content animated fadeInRight" style="width:100%">
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class=" float-left">
+                    <a href="{% url 'dashboard:ao_appels_offres' %}">
+                        <button class="btn btn-primary dim"><i class="fa fa-arrow-left"></i> Liste des appels d'offres
+                        </button>
+                    </a>
+
+                </div>
+
+                <div class=" float-right">
+                    <a href="{% url 'dashboard:ao_delete_appel_offre' id=offre.id %}">
+                        <button id="btn_lancer_compagne" class="btn btn-danger dim">
+                            <i class="fa fa-trash"></i> Supprimer
+                        </button>
+                    </a>
+
+                    <a href="{% url 'dashboard:ao_update_appel_offre' id=offre.id %}">
+                        <button class="btn btn-success dim"><i class="fa fa-pencil"></i> Modifier</button>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-4">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-eye fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span>Vues </span>
+                            <h2 class="font-bold">{{ offre.views }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-briefcase fa-5x"></i>
+                        </div>
+
+                        <div class="col-8 text-right">
+                            <span>Offres</span>
+                            <h2 class="font-bold">{{ offre.contact_set.all.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-file-text fa-5x"></i>
+                        </div>
+
+                        <div class="col-8 text-right">
+                            <span>Devis</span>
+                            <h2 class="font-bold">{{ offre.quotation_set.all.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if offre.get_company is not None %}
+            <div class="row">
+                <div class="col-md-4">
+
+                    <div class="col-md-4 " style="">
+                        <img height="150" width="150"
+                             src="
+                                     {% if offre.get_company and offre.get_company.logo %}{{ offre.get_company.logo.url }}{% else %}{% static 'dashboard/img/interrogation.jpg' %}{% endif %}"
+                             class="rounded-circle circle-border m-b-md"
+                             alt="profile">
+                    </div>
+                </div>
+
+                <div class="col-md-8" style="margin:auto;padding-left:30px;">
+                    <h2>Entreprise</h2>
+                    <div>
+                        <h4><i class="fa fa-building"></i> Nom : <span
+                                class="text-muted">{{ offre.get_company.name }}</span></h4>
+
+
+                        <h4><i class="fa fa-file"></i> Titre de l'appel d'offre : <span
+                                class="text-muted">{{ offre.title }}</span>
+                        </h4>
+                    </div>
+                </div>
+
+            </div>
+            {% else %}{# Si  ce n'est pas une entreprise qui  a fait l'offre alors c'est un profil  professionel #}
+            <div class="row">
+                <div class="col-md-4">
+
+                    <div class="col-md-12 " style="">
+                        <img height="150" width="150"
+                             src="{% if offre.user and offre.user.photo_profil.image %} {{ offre.user.photo_profil.image.url }} {% else %} {% static 'dashboard/img/interrogation.jpg' %} {% endif %}"
+                             class="rounded-circle circle-border m-b-md"
+                             alt="profile">
+                    </div>
+
+                </div>
+
+                <div class="col-md-8" style="padding-left:30px;margin:auto;">
+                    <h2>Professionnel</h2>
+                    <div>
+                        <h4><i class="fa fa-user"></i> Nom et prénom : <span
+                                class="text-muted">{{ offre.user.user.first_name|title }} {{ offre.user.user.last_name|title }}</span>
+                        </h4>
+
+                        <h4><i class="fa fa-file"></i> Titre de l'appel d'offre : <span
+                                class="text-muted">{{ offre.title }}</span>
+                        </h4>
+                    </div>
+                </div>
+
+            </div>
+        {% endif %}
+        <div class="row m-b-lg m-t-lg">
+
+            <div class="col-md-4">
+                <div style="margin-left:15px;">
+                    <h4><i class="fa fa-map-marker"></i> Emplacement : <span
+                            class="text-muted">{{ offre.cities }}</span></h4>
+                    <h4><i class="fa fa-briefcase"></i> Annonceur : <span
+                            class="text-muted">{{ offre.user.user.first_name|title }} {{ offre.user.user.last_name|title }}</span>
+                    </h4>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div style="margin-left:15px;">
+                    <div class="">
+                        <div>
+                            <h4><i class="fa fa-money"></i> Budget : <span
+                                    class="text-muted">{{ offre.budget }} DH</span></h4>
+                            <h4><i class="fa fa-calendar"></i> Date d'ajout : <span
+                                    class="text-muted">{{ offre.creation_date }}</span></h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="row">
+
+            <div class="col-lg-12">
+
+                <div class="ibox">
+                    <div class="ibox-content">
+
+                        <div class="row">
+
+                            <div class="col-lg-12">
+                                <h3>Description</h3>
+
+                                <p class="small">
+                                    {{ offre.description }}
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-lg-12">
+
+                <div class="ibox">
+                    <div class="ibox-content">
+
+                        <div class="row">
+
+                            <div class="col-lg-12">
+                                <h3>Fichiers joints</h3>
+
+                                {% for fichier in offre.files.all %}
+                                    <p class="small">
+                                        <a href="{{ fichier.file.url }}">{{ fichier.name }}.{{ fichier.extension }}</a>
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-12">
+
+                <div class="ibox">
+                    <div class="ibox-content">
+
+                        <div class="row">
+
+                            <div class=" col-lg-12 ">
+                                <h3>Liste de lots</h3>
+
+                                <div class="row">
+                                    {% for  lot in  offre.project_set.all %}
+                                        <div class="col-md-3">
+                                            <div class="ibox">
+                                                <div class="ibox-content product-box">
+
+                                                    <div class="" style="padding:25px;border-bottom:  1px solid grey;">
+                                                        <h4> Titre :
+                                                            <span class="text-muted">{{ lot.title }}</span>
+                                                        </h4>
+
+                                                        <h4> Catégories :
+                                                            <span class="text-muted">{{ lot.categories_s }}</span>
+                                                        </h4>
+                                                    </div>
+
+                                                    <div class="product-desc">
+
+                                                        <div style="margin-left:15px;">
+                                                            <h4><i class="fa fa-map-marker"></i> Emplacement : <span
+                                                                    class="text-muted">{{ lot.cities_s }}</span></h4>
+                                                            <h4><i class="fa fa-money"></i> Budget : <span
+                                                                    class="text-muted">{{ lot.budget }} DH</span>
+                                                            </h4>
+                                                            <h4><i class="fa fa-calendar"></i> Date de création :<br>
+                                                                <span
+                                                                        class="text-muted">{{ lot.creation_date }} </span>
+                                                            </h4>
+                                                        </div>
+
+                                                        <a href="{% url 'dashboard:ao_lot' id=lot.id %}"
+                                                           class="btn btn-xs btn-outline btn-primary pull-right">Détails...
+                                                            <i
+                                                                    class="fa fa-long-arrow-right"></i> </a>
+                                                        <div class="clearfix">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-12">
+
+                <div class="ibox">
+                    <div class="ibox-content">
+
+                        <div class="row">
+
+                            <div class=" col-lg-12 ">
+                                <h3>Offres reçues</h3>
+
+                                <div class="row">
+                                    {% for  contact in  offre.contact_set.all %}
+                                        <div class="col-md-3">
+                                            <div class="ibox">
+                                                <div class="ibox-content product-box">
+
+                                                    <div class="" style="padding:25px;">
+                                                        <h4> Entreprise :
+                                                            <span class="text-muted"><a
+                                                                    href="{% url 'dashboard:ao_profil_entreprise' id=contact.company.id %}">{{ contact.company.name }}</a></span>
+                                                        </h4>
+
+                                                        <h4> Budget :
+                                                            <span class="text-muted">{{ contact.budget }} DH</span>
+                                                        </h4>
+
+                                                        <h4> Jours :
+                                                            <span class="text-muted">{{ contact.days }}</span>
+                                                        </h4>
+
+                                                        <h4> Fichiers joint : {% if contact.file %}
+                                                            <a href="{{ contact.file.url }}">{{ contact.file.name|truncatechars:"10" }}</a>{% else %}
+                                                            <i class="fa fa-times" style="color:red;"></i>{% endif %}
+                                                        </h4>
+
+                                                        <h4> Message :
+                                                            <span class="text-muted"> <br>{{ contact.message }}</span>
+                                                        </h4>
+
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    {% endfor %}
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="row">
+
+        <div class="col-lg-12">
+
+            <div class="ibox">
+                <div class="ibox-content">
+
+                    <div class="row">
+
+                        <div class=" col-lg-12 ">
+                            <h3>Devis reçues</h3>
+
+                            <div class="row">
+                                {% for  devis in  offre.quotation_set.all %}
+                                    <div class="col-md-3">
+                                        <div class="ibox">
+                                            <div class="ibox-content product-box">
+
+                                                <div class="" style="padding:25px;">
+                                                    <h4> Entreprise :
+                                                        <span class="text-muted"><a
+                                                                href="{% url 'dashboard:ao_profil_entreprise' id=devis.company.id %}">{{ devis.company.name }}</a></span>
+                                                    </h4>
+
+                                                    <h4> Budget :
+                                                        <span class="text-muted">{{ devis.budget }} DH</span>
+                                                    </h4>
+
+                                                    <h4> TVA :
+                                                        <span class="text-muted">{{ devis.tva }} DH</span>
+                                                    </h4>
+
+                                                    <h4> Jours :
+                                                        <span class="text-muted">{{ devis.days }}</span>
+                                                    </h4>
+
+                                                    <h4> Message :
+                                                        <span class="text-muted"> <br>{{ devis.message }}</span>
+                                                    </h4>
+
+                                                    <a href="{% url 'dashboard:ao_devis_one' id=devis.id %}"
+                                                       class="btn btn-xs btn-outline btn-primary pull-right">Détails...
+                                                        <i
+                                                                class="fa fa-long-arrow-right"></i> </a>
+                                                    <div class="clearfix">
+
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script>
+        $('#dashboard_ao').addClass("active");
+        $('#ao_appels_offres').addClass("active");
+    </script>
+
+
+
+
+
+
+{% endblock scripts %}
+

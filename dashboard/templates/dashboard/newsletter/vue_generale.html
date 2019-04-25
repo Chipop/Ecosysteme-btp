@@ -1,0 +1,185 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+
+{% block title %}
+    Vue d'ensemble | Newsletter | {{ block.super }}
+{% endblock title %}
+
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+        <div class="row">
+
+            <div class="col-lg-3">
+                <div class="widget style1 bg-black">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-envelope fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span  class="card_span">Emails envoyés</span>
+                            <h2 class="font-bold">{{ emails_envoyes }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="widget style1 bg-black">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-envelope-open fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span"> Emails ouverts </span>
+                            <h2 class="font-bold">{{ emails_ouverts }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-plus fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Nouveaux Inscrits </span>
+                            <h2 class="font-bold">{{ nouveaux_inscrits }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-users fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Total inscrits</span>
+                            <h2 class="font-bold">{{ emails.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+
+
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Compagnes</h5>
+                    </div>
+                    <div class="ibox-content" style="    min-height: 390px;">
+                        <div class="row">
+
+                            <div class="col-lg-2">
+                                <i class="fa fa-envelope-o" style="font-size: 57px;"></i>
+                            </div>
+
+                            <div class="col-lg-10">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <strong>Compagnes</strong>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        {{ compagnes.count }} Compagnes lancées
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <a href="{% url 'dashboard:compagnes' %}">Voir</a> | <a href="{% url 'dashboard:lancer_compagne_new' %}">Nouvelle compagne</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-2" style="margin-top:15px;">
+                                <i class="fa fa-users" style="font-size: 57px;"></i>
+                            </div>
+
+                            <div class="col-lg-10" style="margin-top:15px;">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <strong>Abonnés</strong>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        {{ emails.count }} Abonnés
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <a href="{% url 'dashboard:emails_list' %}">Voir et gérer</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Mes abonnés </h5>
+                    </div>
+                    <div class="ibox-content" style="min-height: 390px;">
+                        <div id="morris-line-chart"></div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+{% endblock content %}
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script>
+        $('#dashboard_newsletter').addClass("active");
+        $('#newsletter_vue_generale').addClass("active");
+    </script>
+
+
+    <script>
+        $(function () {
+
+            // Moris Data
+            Morris.Line({
+                element: 'morris-line-chart',
+                data: [
+                    {% for abonne in abonnees_per_month %}
+                        {months: '{{ abonne.month }}', a: '{{ abonne.total_abonnees }}'},
+                    {% empty %}
+                        {months: '1', a: '0'},
+                        {months: '2', a: '0'},
+                        {months: '3', a: '0'},
+                        {months: '4', a: '0'},
+                        {months: '6', a: '0'},
+                        {months: '7', a: '0'},
+                    {% endfor %}
+                ],
+                xkey: 'months',
+                ykeys: ['a'],
+                labels: ['Abonnees'],
+                hideHover: 'auto',
+                resize: true,
+                lineColors: ['#54cdb4'],
+                parseTime: false,
+                xLabelFormat: function (x) {
+                    return 'Mois ' + x.label
+                }
+            });
+
+        });
+
+    </script>
+
+{% endblock scripts %}

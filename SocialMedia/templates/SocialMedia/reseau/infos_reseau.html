@@ -1,0 +1,62 @@
+{% load staticfiles %}
+{% load nbsp %}
+
+                            <div class="col-md-4 col-xs-6 col-xxs-12 infinite-item cn{{ contact.id }}" style="background-color: #f7f8f9;outline: #cdcfd2 solid 1px;padding: 0;">
+                                <!-- Member Item Start -->
+                                <div class="member--item online" style="margin-top: 0;">
+
+<div id="statuts" class="pymk-card ember-view contactDIV">
+
+<a data-control-name="pymk_profile break" href="{% url 'SocialMedia:getProfil' contact.id %}" id="ember5694" class="pymk-card__image pt3 ember-view">  <img class="lazy-image EntityPhoto-circle-7  loaded"  src="{{ contact.photo_profil.image.url }}" />
+</a>
+
+<div class="pymk-card__details pv0 ph2 text-align-center mt1">
+<a data-control-name="pymk_profile" href="{% url 'SocialMedia:getProfil' contact.id %}" id="ember5695" class="pymk-card__link ember-view">    <span class="visually-hidden">Nom du membre</span>
+    <span class="pymk-card__name Sans-15px-black-85%-semibold">
+      {{ contact.user.first_name }} {{ contact.user.last_name }}
+    </span><br>
+    <span class="visually-hidden">Fonction du membre</span>
+    <span class="pymk-card__occupation Sans-13px-black-55%">
+      {% if contact.experience_profil is not None %}{{ contact.experience_profil.nom_poste  }}{% else %}Libre{% endif %}
+    </span>
+</a>
+      <div class="member-insights member-insights--center-align ">
+          <button onclick="communFriend({{ contact.my_friend.id }}, {{ contact.id }})" class="
+              member-insights__btn
+
+              Sans-13px-black-55%
+            " data-ember-action="" data-ember-action-5698="5698">
+            <span class="member-insights__icon svg-icon-wrap"><li-icon aria-hidden="true" type="in-common-icon" size="small"><svg viewBox="0 0 24 24" width="24px" height="24px" x="0" y="0" preserveAspectRatio="xMinYMin meet" class="artdeco-icon" focusable="false"><path d="M11,3C9.9,3,8.9,3.4,8,4C5.8,2.3,2.7,2.8,1,5s-1.2,5.3,1,7c0.9,0.6,1.9,1,3,1s2.1-0.4,3-1c2.2,1.7,5.3,1.2,7-1s1.2-5.3-1-7C13.1,3.4,12.1,3,11,3z M1.9,8c0-1.7,1.4-3.1,3.1-3.1c0.6,0,1.2,0.2,1.7,0.5c-1,1.6-1,3.6,0,5.2c-1.4,1-3.4,0.6-4.3-0.8C2.1,9.2,1.9,8.6,1.9,8z M11,11.1c-0.6,0-1.2-0.2-1.7-0.5c1-1.6,1-3.6,0-5.2c1.4-1,3.4-0.6,4.3,0.9s0.6,3.4-0.9,4.3C12.2,10.9,11.6,11.1,11,11.1z" class="small-icon" style="fill-opacity: 1"></path></svg></li-icon></span>
+            <span class="member-insights__count">
+                {{ contact.my_friend.user.first_name }} {{ contact.my_friend.user.last_name }}
+            </span>
+          </button>
+  </div>
+
+<!---->
+</div>
+</div>
+
+                                    <div class="actions">
+                                        <ul class="nav">
+                                            <li>
+                                                <form onsubmit="addFriend(event, {{ contact.id }})" id="formAddContact{{ contact.id }}" style="float: left;padding-right: 5px;" class="" method="POST">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="rep" value="0">
+                                                    <button id="btFriend" class="btJoinGroupe fw--400" style="font-size: 12px;padding: 0px 10px;font-weight: normal;">
+                                                        <i class="fa fa-user-plus" aria-hidden="true"></i> Se
+                                                        connecter
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                    <a class="hidden" id="contactLINK{{ contact.id }}" target="_blank" href="{% url 'SocialMedia:getProfil' contact.id %}">
+                                                    <button id="btFriend" class="btJoinGroupe fw--400" style="font-size: 12px;padding: 0px 10px;font-weight: normal;"><i class="fa fa-user" aria-hidden="true"></i> Voir le profil</button>
+                                                        </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <!-- Member Item End -->
+                            </div>
+

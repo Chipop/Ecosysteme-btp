@@ -6,7 +6,7 @@
                         {% for profil in profils %}
                             <div class="col-md-3 col-xs-6 col-xxs-12">
                                 <!-- Member Item Start -->
-                                <div class="member--item online">
+                                <div class="member--item ">
                                     <div class="img img-circle">
                                         <a href="{% url 'SocialMedia:getProfil' profil.id %}" class="btn-link">
                                             <img src="{{ profil.photo_profil.image.url }}" alt=""

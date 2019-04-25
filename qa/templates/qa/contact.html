@@ -1,0 +1,155 @@
+{% extends 'qa/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+    <!-- =-=-=-=-=-=-= Main Area =-=-=-=-=-=-= -->
+  <div class="main-content-area">
+
+    <!-- =-=-=-=-=-=-= Page Breadcrumb =-=-=-=-=-=-= -->
+    <section class="page-title" style="padding: 15px 0">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6 col-sm-7 co-xs-12 text-left">
+            <h1>Contacter Nous</h1>
+          </div>
+          <!-- end col -->
+          <div class="col-md-6 col-sm-5 co-xs-12 text-right">
+            <div class="bread">
+              <ol class="breadcrumb" style="margin-top: 15px">
+                <li><a href="{% url 'qa:home' %}">Acceuil</a></li>
+                <li class="active">Contact</li>
+              </ol>
+            </div>
+            <!-- end bread -->
+          </div>
+          <!-- end col -->
+        </div>
+        <!-- end row -->
+      </div>
+      <!-- end container -->
+    </section>
+    <!-- =-=-=-=-=-=-= Page Breadcrumb End =-=-=-=-=-=-= -->
+
+  <!-- =-=-=-=-=-=-= Google Map   =-=-=-=-=-=-= -->
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3310.09899108403!2d-6.8968116854471555!3d33.93858198063703!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xffb95f12141d7f72!2sELECTRONIC+SERVICE+PROVIDERS+(ESPR)!5e0!3m2!1sfr!2sma!4v1526178947045"
+            width="100%" height="400" frameborder="0" style="border:0" allowfullscreen=""></iframe>
+    <!-- =-=-=-=-=-=-= Google Map End =-=-=-=-=-=-= -->
+
+    <!-- =-=-=-=-=-=-= Contact Us   =-=-=-=-=-=-= -->
+    <section class="section-padding-40 white contact-us" id="contacts">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-8 col-sm-8 col-xs-12">
+
+              {% if message == 'success' %}
+
+                  <div class="alert alert-success alert-dismissible">
+                      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                      <p>Votre message a été envoyer avec succées</p>
+                    </div>
+
+              {% elif message == 'recaptcha' %}
+
+                  <div class="alert alert-warning alert-dismissible">
+                      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                      <p>Le <strong>reCaptcha</strong> est invalide. Merci de réessayer.</p>
+                  </div>
+
+              {% elif form.errors %}
+
+                  <div class="form-group">
+                      <div class="alert alert-warning">
+                          <p style="font-size: 18px; font-weight: bold;">Veuillez corriger les erreurs ci dessous :</p>
+                          {% for field in form %}
+                              {% for error in field.errors %}
+                                  <p style="padding-left: 40px"><strong>{{ field.name }} : </strong>{{ error|escape }}</p>
+                              {% endfor %}
+                          {% endfor %}
+                      </div>
+                  </div>
+
+              {% endif %}
+
+            <h2>Envoyer un Message</h2>
+
+            <form method="post">
+                {% csrf_token %}
+                {{ form.media }}
+              <div class="row">
+                <div class="col-lg-6 formmargin">
+
+                  <div class="form-group">
+                    {{ form.name }}
+                  </div>
+
+                  <div class="form-group">
+                      {{ form.email }}
+                  </div>
+
+                  <div class="form-group">
+                      {{ form.subject }}
+                  </div>
+
+                    <div style="display: inline-block;">
+                        <script src='https://www.google.com/recaptcha/api.js'></script>
+                        <div class="g-recaptcha" data-sitekey="6LcIOV8UAAAAAO0kQRvjLmlOt7Q08VEubXgfvG6l"></div>
+                    </div>
+
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                      {{ form.message }}
+                  </div>
+                    <div>
+                        <button id="yes" style="width: 100%" class="btn btn-primary" type="submit">Envoyez votre message</button>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="col-md-4 col-sm-4 col-xs-12 contact-detail">
+            <h2>Details de Contact</h2>
+
+            <div class="contact-info">
+              <p>Etiam sit amet orci eget eros faucibus tincidunt. Pellentesque commodo eros a enim. Etiam rhoncus. Nulla facilisi. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras sagittis. </p>
+              <p>Vestibulum turpis sem, aliquet eget, lobortis pellentesque.</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid animi blanditiis culpa dolore eum eveniet explicabo impedit inventore ipsam magni maxime minima numquam optio provident, quidem similique suscipit temporibus ullam?</p>
+              <div class="social-links-two clearfix">
+                <a class="facebook img-circle" href="#">
+                  <span class="fa fa-facebook-f"></span>
+                </a>
+                <a class="twitter img-circle" href="#">
+                  <span class="fa fa-twitter"></span>
+                </a>
+                <a class="google-plus img-circle" href="#">
+                  <span class="fa fa-google-plus"></span>
+                </a>
+                <a class="linkedin img-circle" href="#">
+                  <span class="fa fa-pinterest-p"></span>
+                </a>
+                <a class="linkedin img-circle" href="#">
+                  <span class="fa fa-linkedin"></span>
+                </a>
+              </div>
+            </div>
+            <!-- end links -->
+
+          </div>
+
+          <div class="clearfix"></div>
+        </div>
+      </div>
+      <!-- end container -->
+    </section>
+    <!-- =-=-=-=-=-=-= Contact Us End =-=-=-=-=-=-= -->
+
+  </div>
+  <!-- =-=-=-=-=-=-= Main Area End =-=-=-=-=-=-= -->
+
+{% endblock %}

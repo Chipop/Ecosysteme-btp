@@ -1,0 +1,48 @@
+{% load staticfiles %}
+<div class="modal fade" id="FriendModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel" style="font-weight: 400;">1 relation en commun avec {{ contact.user.first_name }} {{ contact.user.last_name }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="statuts" style=";padding: 0;" class="modal-body feed-shared-update-v2__commentary Sans-15px-black-70% feed-shared-text ember-view">
+
+
+        <ul id="ember3852" class="feed-shared-likers-modal__actor-list actor-list ember-view">
+
+                <li class="actor-item">
+                <a data-control-name="like_actor" target="_blank" href="{% url 'SocialMedia:getProfil' friend.id %}" id="ember3853" class="ember-view">
+                <div class="actor-image">
+                    <div id="ember3854" class="feed-shared-avatar-image b0 member ember-view">
+                        <img src="{% if friend.photo_profil != "" %}{{ friend.photo_profil.image.url }}{% else %}{% static 'SocialMedia/img/preview-img' %}{% endif %}" class="avatar member EntityPhoto-circle-3 ghost-person" alt="walter antonio schmitz">
+                    </div>
+                </div>
+
+                    <div class="profile-link">
+                        <h3 class="name">
+                            {% if friend.user.first_name == "" and friend.user.last_name == "" %}
+                                Utilisateur
+                            {% else %}
+                          {{ friend.user.first_name }} {{ friend.user.last_name }}
+                            {% endif %}
+                <!----> </h3>
+                        <p class="headline">
+                                    {% if friend.experience_profil is not None %}{{ friend.experience_profil.nom_poste  }}{% else %}Libre{% endif %}
+                        </p>
+                    </div>
+                </a>
+                </li>
+
+<!----></ul>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btSubmitComment" data-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>

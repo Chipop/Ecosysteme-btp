@@ -1,0 +1,223 @@
+{% extends 'eLearning/base.html' %}
+{% load static %}
+{% block content %}
+
+    <!-- Main styles -->
+    <link href="{% static 'dashboard-teacher/css/admin.css' %}" rel="stylesheet">
+    <!-- Icon fonts-->
+    <link href="{% static 'dashboard-teacher/vendor/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+    <!-- Your custom styles -->
+    <link href="{% static 'dashboard-teacher/css/custom.css' %}" rel="stylesheet">
+
+    <style>
+        h1, h2, h3, h4, h5, h6 {
+            color: #fff !important;
+        }
+        .box_general h1, .box_general h2, .box_general h3, .box_general h4, .box_general h5, .box_general h6 {
+            color: #333 !important;
+        }
+        .page-item.active .page-link {
+            background-color: #ea4c0f;
+            border-color: #ea4c0f;
+        }
+
+        a.page-link {
+            color: #ea4c0f;
+        }
+
+        .page-link:focus, .page-link:hover {
+            color: #fff;
+            background-color: #ea4c0f;
+            border-color: #ea4c0f;
+        }
+        .mark_as_read {
+            font-style: initial;
+            color: #365899;
+            font-size: 13px;
+            font-weight: 600;
+        }
+    </style>
+
+<section id="hero_in" class="courses">
+    <div class="wrapper">
+        <div class="container">
+            <h1 class="fadeInUp">Messages</h1>
+            <h1 class="fadeInUp"><span></span></h1>
+        </div>
+    </div>
+</section>
+
+
+	<div class="container" style="padding-top: 30px">
+        <div class="box_general">
+            <form method="get" id="formFilter">
+                <div class="header_box">
+                    <h4 class="d-inline-block">Boîte de réception</h4>
+                    <input type="hidden" name="page" value="{{ messages.number }}">
+                    <div class="filter" style="margin-left: 20px">
+                        <select title="" name="filter_by" class="selectbox" onchange="document.getElementById('formFilter').submit();">
+                            <option value="1" {% if filter_by == '1' %}selected{% endif %}>Filtrer par lecture</option>
+                            <option value="2" {% if filter_by == '2' %}selected{% endif %}>Non Lus</option>
+                            <option value="3" {% if filter_by == '3' %}selected{% endif %}>Lus</option>
+                        </select>
+                    </div>
+                    <div class="filter">
+                        <select title="" name="order_by" class="selectbox" onchange="document.getElementById('formFilter').submit();">
+                            <option value="1" {% if order_by == '1' %}selected{% endif %}>Trier Par</option>
+                            <option value="2" {% if order_by == '2' %}selected{% endif %}>Nouveau</option>
+                            <option value="3" {% if order_by == '3' %}selected{% endif %}>Ancien</option>
+                            <option value="4" {% if order_by == '4' %}selected{% endif %}>Etudiants (A-Z)</option>
+                            <option value="5" {% if order_by == '5' %}selected{% endif %}>Etudiants (Z-A)</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+            <div class="list_general">
+                <ul>
+                    {% for message in messages %}
+                        <li>
+                            <form id="formMarkAsRead{{ message.pk }}" action="{% url 'eLearning:mark_as_read' %}" data-validate-url="{% url 'eLearning:mark_as_read' %}">
+                                <input type="hidden" value="{{ message.pk }}" name="message">
+                                <input type="hidden" value="student" name="type">
+                                {% if message.is_read %}
+                                    <input type="hidden" value="read" name="is_read">
+                                {% else %}
+                                    <input type="hidden" value="unread" name="is_read" id="mark_as_read_hidden{{ message.pk }}">
+                                {% endif %}
+                            </form>
+                            <span><a href="javascript:" data-pk="{{ message.pk }}" class="mark_as_read">
+                                <u id="mark_as_read_link{{ message.pk }}">Marquer comme {% if message.is_read %}non {% endif %}lu</u></a>
+                            </span>
+                            <figure>
+                                {% if message.parent_message.teacher.photo_profil %}
+                                    {% if message.parent_message.teacher.photo_profil.image %}
+                                        <img src="{{ message.parent_message.teacher.photo_profil.image.url }}" alt="Image">
+                                    {% else %}
+                                        <img src="{% static 'eLearning/img/default-profil.jpg' %}" alt="Image">
+                                    {% endif %}
+                                {% else %}
+                                    <img src="{% static 'eLearning/img/default-profil.jpg' %}" alt="Image">
+                                {% endif %}
+                            </figure>
+                            <h4>{{ message.parent_message.teacher.user.last_name }} {{ message.parent_message.teacher.user.first_name }}
+                                {% if message.is_read %}
+                                    <i class="read" id="read_or_not{{ message.pk }}">Lu</i>
+                                {% else %}
+                                    <i class="unread" id="read_or_not{{ message.pk }}">Non lu</i>
+                                {% endif %}
+                            </h4>
+                            <h6>
+                                {{ message.parent_message.object }}
+                                <span style="float: none; color: #333; margin-left: 7px;">-</span>
+                                <span style="float: none; font-style: normal; color: #333; font-size: 13px; margin-left: 7px;">{{ message.date_add }}</span>
+                            </h6>
+                            <p>{% autoescape off %}{{ message.message|striptags }}{% endautoescape %}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <!-- /box_general-->
+        <div style="height: 60px;">
+        {% if messages.has_other_pages %}
+            <nav aria-label="..." style="float: right">
+                <ul class="pagination pagination-sm add_bottom_30">
+                    {% if messages.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ messages.previous_page_number }}&filter_by={{ filter_by }}&order_by={{ order_by }}&filter_students={{ filter_students }}">Précédent</a>
+                        </li>
+                    {% endif %}
+                    {% for i in messages.paginator.page_range %}
+                        {% if messages.number == i %}
+                            <li class="page-item active"><a class="page-link" href="?page={{ i }}&filter_by={{ filter_by }}&order_by={{ order_by }}&filter_students={{ filter_students }}">{{ i }}</a></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}&filter_by={{ filter_by }}&order_by={{ order_by }}&filter_students={{ filter_students }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if messages.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ messages.next_page_number }}&filter_by={{ filter_by }}&order_by={{ order_by }}&filter_students={{ filter_students }}">Suivant</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+        </div>
+        <!-- /pagination-->
+    </div>
+    <!-- /container-fluid-->
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'dashboard-teacher/vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'dashboard-teacher/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <!-- Core plugin JavaScript-->
+	<script src="{% static 'dashboard-teacher/vendor/jquery.selectbox-0.2.js' %}"></script>
+    <!-- Custom scripts for all pages-->
+    <script src="{% static 'dashboard-teacher/js/admin.js' %}"></script>
+	<!-- Custom scripts for this page-->
+    <script src="{% static 'dashboard-teacher/js/admin-charts.js' %}"></script>
+    <script type="text/javascript">
+        $(".filter>.sbHolder:nth-child(3)").remove();
+        /*$(document).on("click", ".mark_as_read", function (e) {
+            e.preventDefault();
+            var id = $(this).data('pk');
+            var form = $('#formMarkAsRead'+id);
+            $.ajax({
+                url: form.attr("data-validate-url"),
+                data: form.serialize(),
+                dataType: 'json',
+                success: function (data) {
+                    if(data.message_error === "") {
+                        var my_div = $("#read_or_not"+id);
+                        my_div.removeClass("unread");
+                        my_div.addClass("read");
+                        my_div.html("Lu")
+                    }
+                    else
+                        swal({title: "Erreur!", text: data.message_error, icon: "error"});
+                }
+            });
+        });*/
+        $(document).on("click", ".mark_as_read", function (e) {
+            e.preventDefault();
+            var id = $(this).data('pk');
+            var form = $('#formMarkAsRead' + id);
+            $.ajax({
+                url: form.attr("data-validate-url"),
+                data: form.serialize(),
+                dataType: 'json',
+                success: function (data) {
+                    if(data.message_error === "") {
+                        var my_div = $("#read_or_not" + id);
+                        var my_link = $("#mark_as_read_link" + id);
+                        var my_input = $("#mark_as_read_hidden" + id);
+                        // unread = non lu
+                        if(data.is_read === "unread") {
+                            my_div.removeClass("unread");
+                            my_div.addClass("read");
+                            my_div.html("Lu");
+                            my_link.html("Marquer comme non lu");
+                            my_input.val("read");
+                        }
+                        else{
+                            my_div.removeClass("read");
+                            my_div.addClass("unread");
+                            my_div.html("Non lu");
+                            my_link.html("Marquer comme lu");
+                            my_input.val("unread");
+                        }
+                        var span_base = $("#number_messages_base");
+                        var num;
+                        if(data.is_read === "unread")
+                            num = parseInt(span_base.html()) - 1;
+                        else
+                            num = parseInt(span_base.html()) + 1;
+                        span_base.html(num+"");
+                    }
+                    else
+                        swal({title: "Erreur!", text: data.message_error, icon: "error"});
+                }
+            });
+        });
+    </script>
+{% endblock %}

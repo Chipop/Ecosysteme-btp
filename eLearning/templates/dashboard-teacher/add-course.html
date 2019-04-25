@@ -1,0 +1,194 @@
+{% extends 'dashboard-teacher/base.html' %}
+{% load static %}
+
+{% block style %}
+
+    <style>
+        .django-ckeditor-widget {
+            width: 100%;
+        }
+    </style>
+
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="container-fluid">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'eLearning:teacher_dashboard' %}">Tableau de bord</a>
+            </li>
+            <li class="breadcrumb-item active">Ajouter Cours</li>
+        </ol>
+        {% if form.errors %}
+            <div class="alert alert-danger" id="form-error">
+                <p>Veuillez corriger les erreurs ci-dessous:</p>
+                <ul>
+                    {% for field in form %}
+                        {% if field.errors %}
+                            <li>{{ field.name }} - {{ field.errors|striptags }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% elif message_error %}
+            <div class="alert alert-danger" id="form-error">
+                <p>Veuillez corriger les erreurs ci-dessous:</p>
+                <ul>
+                    <li>{{ message_error }}</li>
+                </ul>
+            </div>
+        {% endif %}
+        <form method="post" action="{% url 'eLearning:add_course' %}" enctype="multipart/form-data">
+            {% csrf_token %}{{ form.media }}
+            <div class="box_general padding_bottom">
+                <div class="header_box version_2">
+                    <h2><i class="fa fa-file"></i>Informations de base</h2>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Titre de cours</label>
+                            {{ form.name }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Durée</label>
+                            {{ form.duration }}
+                        </div>
+                    </div>
+                </div>
+                <!-- /row-->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Lien de la présentation</label>
+                            {{ form.video_url }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Image de couverture</label>
+                            {{ form.image }}
+                        </div>
+                    </div>
+                </div>
+                <!-- /row-->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Cours est gratuit?</label>
+                            {{ form.is_free }}
+                            {{ form.price }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <img  src="{% static 'eLearning/img/static_image.jpg' %}"
+                                 alt="profil" width="400" height="200" id="photo_profil"/>
+                    </div>
+                </div>
+                <!-- /row-->
+                <div class="row">
+                    <div class="col-md-12">
+
+                    </div>
+                </div>
+                <!-- /row-->
+            </div>
+            <!-- /box_general-->
+
+            <div class="box_general padding_bottom">
+                <div class="header_box version_2">
+                    <h2><i class="fa fa-file"></i>Informations de supplémentaires</h2>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Niveau</label>
+                            {{ form.level }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Langue</label>
+                            {{ form.language }}
+                        </div>
+                    </div>
+                </div>
+                <!-- /row-->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Cours a certificat ?</label>
+                            {{ form.has_certificate }}
+                        </div>
+                    </div>
+                </div>
+                <!-- /row-->
+            </div>
+            <div class="box_general padding_bottom">
+                <div class="header_box version_2">
+                    <h2><i class="fa fa-file-text"></i>Description</h2>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Description</label><br>
+                            {{ form.description }}
+                        </div>
+                    </div>
+                </div>
+                <!-- /row-->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Catégorie <a href="#" data-toggle="tooltip" data-placement="top" title="Separated by commas"><i class="fa fa-fw fa-question-circle"></i></a></label>
+                            <select class="form-control" name="category" id="menu_categories" required>
+                                {% for category in categories %}
+                                    <optgroup label="{{ category.name }}">
+                                    {% for sub_category in category.elearning_subcategory_set.all %}
+                                        <option value="{{ sub_category.pk }}">{{ sub_category.name }}</option>
+                                    {% endfor %}
+                                    </optgroup>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!-- /row-->
+            </div>
+            <div class="box_general padding_bottom">
+                <div class="header_box version_2">
+                    <h2><i class="fa fa-envelope"></i>Messages</h2>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Message de bienvenue</label><br>
+                            {{ form.welcome_msg }}
+                        </div>
+                    </div>
+                </div>
+                <!-- /row-->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Message de félicitations</label><br>
+                            {{ form.congratulation_msg }}
+                        </div>
+                    </div>
+                </div>
+                <!-- /row-->
+            </div>
+            <p class="add_top_30" style="text-align: right">
+                <input style="padding: 10px 100px; font-size: 18px; text-transform: uppercase;" type="submit" value="Créer" class="btn_1 rounded" id="submit-contact">
+            </p>
+        </form>
+    </div>
+	  <!-- /.container-fluid-->
+   	</div>
+{% endblock %}
+{% block script %}
+<script src="{% static 'eLearning/js/readUrlScript.js' %}"></script>
+{% endblock %}

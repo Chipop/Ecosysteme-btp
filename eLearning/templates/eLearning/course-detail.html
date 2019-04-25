@@ -1,0 +1,805 @@
+{% extends 'eLearning/base.html' %}
+{% load chipop_social_share %}
+{% load static %}
+{% block content %}
+    <style>
+        .secondary_nav ul li a.active, .secondary_nav ul li a:hover {
+            color: #ea4c0f;
+        }
+        iframe{
+            height: 600px;
+        }
+        .modal-backdrop.fade.show, .modal-backdrop.show {
+            display: none;
+        }
+        .rate {
+            float: left;
+            height: 46px;
+            padding: 13px 10px 13px 45px;
+        }
+        .rate input{
+            display: none;
+        }
+        .rate:not(:checked) > input {
+            position:absolute;
+            top:-9999px;
+        }
+        .rate:not(:checked) > label {
+            float:right;
+            width:1em;
+            overflow:hidden;
+            white-space:nowrap;
+            cursor:pointer;
+            font-size:30px;
+            color:#ccc;
+        }
+        .rate:not(:checked) > label:before {
+            content: '★ ';
+        }
+        .rate > input:checked ~ label {
+            color: #ffc700;
+        }
+        .rate:not(:checked) > label:hover,
+        .rate:not(:checked) > label:hover ~ label {
+            color: #deb217;
+        }
+        .rate > input:checked + label:hover,
+        .rate > input:checked + label:hover ~ label,
+        .rate > input:checked ~ label:hover,
+        .rate > input:checked ~ label:hover ~ label,
+        .rate > label:hover ~ input:checked ~ label {
+            color: #c59b08;
+        }
+
+        #review_summary {
+            background-color: #ea4c0f;
+        }
+
+        .reviews-container .progress-bar {
+            background-color: #ea4c0f;
+        }
+        .back_to_menu{
+            position: absolute; color: #fff; opacity: 1; top: -40px; font-weight: 100; font-size: 30px; cursor: pointer; right: 620px; width: 300px;
+        }
+
+        .modal button.close.next_video, .modal button.close.previous_video{
+            top: 46% !important;
+            transform: scale(.6, 1);
+            font-size: 61px !important;
+        }
+
+        .modal button.close.next_video{
+            right: -85px !important;
+        }
+
+        .modal button.close.previous_video{
+            left: -85px !important;
+        }
+
+        .modal button.close.close-modal{
+            right: 5px !important;
+            top: -44px !important;
+            font-size: 46px !important;
+        }
+
+        .modal button.close.close-modal.back_to_menu{
+            left: -20px !important;
+            top: -40px !important;
+            font-size: 30px !important;
+        }
+        .modal>.modal-body>div>img {
+            bottom: 76px;
+            top: initial !important;
+            left: 30px !important;
+        }
+
+        .dj-vimeo iframe {
+            height: 375px !important;
+        }
+
+        a.download_resources {
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .card-header h5 a i.indicator {
+            color: #ea4c0f;
+        }
+    </style>
+<section id="hero_in" class="courses">
+    <div class="wrapper">
+        <div class="container">
+            <h1 class="fadeInUp"><span></span>{{ course.name }}</h1>
+        </div>
+    </div>
+</section>
+<!--/hero_in-->
+
+<div class="bg_color_1">
+    <!--<nav class="secondary_nav sticky_horizontal" style="background: #333;">-->
+    <nav class="secondary_nav" style="background: #333;">
+        <div class="container">
+            <ul class="clearfix">
+                <li><a href="#description" class="active">Description</a></li>
+                {% if allow %}
+                    <li><a href="#Progress">Progrès</a></li>
+                {% endif %}
+                <li><a href="#lessons">Chapitres</a></li>
+                <li><a href="#teacher">Formateur</a></li>
+                <li><a href="#reviews">Revues</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container margin_60_35">
+        <div class="row">
+            <div class="col-lg-8">
+                <section id="description">
+                    <h5>Vous allez apprendre</h5>
+                    <ul class="list_ok">
+                        {% for post in course.elearning_postskills_set.all %}
+                            <li style="padding-top: 8px;">
+                                <h6>{{ post.value }}</h6>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <h2>Description</h2>
+                    <p>{% autoescape off %}{{ course.description }}{% endautoescape %}</p>
+                    <hr>
+                    <p>Avant ce cours vous devez être à l'aise avec</p>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <ul class="bullets">
+                                {% for pre in course.elearning_prerequisites_set.all %}
+                                    <li>{{ pre.value }}</li>
+                                    {% if forloop.counter|divisibleby:"4" %}
+                                        </ul>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <ul class="bullets">
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- /row -->
+                </section>
+                <!-- /section -->
+                {% if allow %}
+                <section id="Progress">
+                    <h2>Progression</h2>
+                    <div class="reviews-container">
+                        <div class="row">
+                            <br>
+                            <div class="col-lg-12 col-12">
+                                <div class="progress">
+                                    <div id="progress_course" class="progress-bar" role="progressbar" style="width: {{ progress }}%" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">
+                                        <b style="font-weight: initial">{{ progress|floatformat:0 }}%</b>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /row -->
+                    </div>
+                    <hr>
+                </section>
+                {% endif %}
+                <!-- /Progress -->
+                <section id="lessons">
+                    <div class="intro_title">
+                        <h2>Chapitres</h2> <a href="javascript:" class="download_resources">Ressources</a>
+                        <ul>
+                            <li>{{ number_chapters }} chapitres</li>
+                            <li>{{ course.duration }}</li>
+                        </ul>
+                    </div>
+                    <div id="accordion_lessons" role="tablist" class="add_bottom_45">
+                        {% for part in course.elearning_part_set.all %}
+                        <div class="card">
+                            <div class="card-header" role="tab" id="headingOne">
+                                <h5 class="mb-0">
+                                    <a data-toggle="collapse" href="#collapse{{ part.pk }}" aria-expanded="true" aria-controls="collapse{{ part.pk }}"><i class="indicator ti-minus"></i> {{ part.name }}</a>
+                                </h5>
+                            </div>
+
+                            <div id="collapse{{ part.pk }}" class="collapse show" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion_lessons">
+                                <div class="card-body">
+                                    <div class="list_lessons">
+                                        <ul>
+                                            {% for chapter in part.elearning_chapter_set.all %}
+                                                {{ counter.increment_x }}
+                                                <li>
+                                                    {% if allow and user.is_authenticated %}
+                                                        <form id="formProgress{{ chapter.pk }}" method="get" action="{% url 'eLearning:add_progress' %}" data-validate-url="{% url 'eLearning:add_progress' %}"><input type="hidden" name="chapter" value="{{ chapter.pk }}"></form>
+
+                                                        <a onclick="progress.add('{{ chapter.pk }}', '{{ user.is_authenticated }}')" id="egZ35EG{{ counter.count_x }}ihaizaZF21faY73"
+                                                            {% if chapter.video_file %}
+                                                                href="#etr{{ chapter.pk }}pa{{ chapter.part.pk }}azraeg{{ chapter.part.course.pk }}fzef"
+                                                            {% else %}
+                                                                href="#modalYoutube" data-link="{{ chapter.video_url }}" data-count_x="{{ counter.count_x }}" data-max="{{ number_chapters }}"
+                                                            {% endif %} role="button" data-toggle="modal" class="video_link">
+
+                                                            {% if chapter.pk in list_seen %}
+                                                                <b id="video_link{{ chapter.pk }}" class="last_seen" {% if chapter.pk == last_chapter_id %}style="color: #ea4c0f;"{% endif %}>
+                                                                    {{ chapter.name }}
+                                                                </b>
+                                                            {% else %}
+                                                                <u style="text-decoration: none" id="video_link{{ chapter.pk }}">{{ chapter.name }}</u>
+                                                            {% endif %}
+                                                        </a>
+                                                        <span>{{ chapter.duration }}</span>
+                                                    {% elif part.is_free %}
+                                                        <a onclick="progress.add('{{ chapter.pk }}', '{{ user.is_authenticated }}')" id="egZ35EG{{ counter.count_x }}ihaizaZF21faY73"
+                                                            {% if chapter.video_file %}
+                                                                href="#etr{{ chapter.pk }}pa{{ chapter.part.pk }}azraeg{{ chapter.part.course.pk }}fzef"
+                                                            {% else %}
+                                                                href="#modalYoutube" data-link="{{ chapter.video_url }}" data-count_x="{{ counter.count_x }}" data-max="{{ number_chapters }}"
+                                                            {% endif %} role="button" data-toggle="modal" class="video_link">
+                                                            {{ chapter.name }}
+                                                        </a>
+                                                        <span>
+                                                            <i>Aperçu</i> {{ chapter.duration }}
+                                                        </span>
+                                                    {% else %}
+                                                        <a href="javascript:" class="video_link">{{ chapter.name }}</a><span>{{ chapter.duration }}</span>
+                                                    {% endif %}
+                                                </li>
+                                            {% endfor %}
+                                            {% if part.attached_file %}
+                                                {% if allow and user.is_authenticated %}
+                                                    <li><a href="{{ part.attached_file.url }}" class="icon-download"> Télécharger le fichier attaché</a><span></span></li>
+                                                {% else %}
+                                                    <li><a href="javascript:" class="icon-download"> Télécharger le fichier attaché</a><span></span></li>
+                                                {% endif %}
+                                            {% endif %}
+                                            {% if part.attached_file_url %}
+                                                {% if allow and user.is_authenticated %}
+                                                    <li><a href="{{ part.attached_file_url }}" class="icon-link-ext" target="_blank"> Accéder au fichier attaché</a><span></span></li>
+                                                {% else %}
+                                                    <li><a href="javascript:" class="icon-link-ext"> Accéder au fichier attaché</a><span></span></li>
+                                                {% endif %}
+                                            {% endif %}
+                                            {% if part.exam %}
+                                                {% if part.exam.pk in list_quiz %}
+                                                    <li><b><a href="{% url 'eLearning:quiz' part.exam.pk %}" class="icon-question"> Quiz : {{ part.exam.title }}</a></b><span>{{ part.exam.elearning_question_set.count }} questions</span></li>
+                                                {% else %}
+                                                    <li><a href="{% url 'eLearning:quiz' part.exam.pk %}" class="icon-question"> Quiz : {{ part.exam.title }}</a><span>{{ part.exam.elearning_question_set.count }} questions</span></li>
+                                                {% endif %}
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        <!-- /card -->
+                    </div>
+                    <!-- /accordion -->
+                </section>
+                <!-- /section -->
+                <section id="teacher">
+                    <h2>Formateur</h2>
+                    <div class="reviews-container">
+                        <div class="row">
+                            <div class="col-lg-12" style="padding-top: 30px;">
+                                <div style="display: inline; float: left; margin-top: -11px;">
+                                    {% if course.teacher.photo_profil %}
+                                        <a href="{% url 'eLearning:teacher' course.teacher_id %}">
+                                            <img style="border-radius: 5px;" alt="image {{ course.teacher.user.last_name }}" src="{{ course.teacher.photo_profil.image.url }}" width="100px" />
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'eLearning:teacher' course.teacher_id %}">
+                                            <img style="border-radius: 5px;" alt="image {{ course.teacher.user.last_name }}" src="" />
+                                        </a>
+                                    {% endif %}
+                                </div>
+                                <div style="display: inline">
+                                    <div></div>
+                                    <b><a style="font-size: 22px; padding-left: 20px;" href="{% url 'eLearning:teacher' course.teacher_id %}">{{ course.teacher.user.last_name }} {{ course.teacher.user.first_name }}</a></b>
+                                    <br>
+                                    <span class="rating" style="padding-left: 23px;">
+                                         {% for i in "*****" %}
+                                            {% if forloop.counter <= teacher_ratting %}
+                                               <i class="icon_star voted"></i>
+                                            {% elif forloop.counter == teacher_ratting|add:"1" and teacher_rattingInt < teacher_ratting %}
+                                                <i class="icon_star-half_alt voted"></i>
+                                            {% else %}
+                                                <i class="icon_star_alt"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <small>({{ teacher_ratting_count }} avis)</small>
+                                    </span>
+                                    <br>
+                                    <p style="padding-left: 23px; display: inline-block;">{{ course.teacher.teacher_title }}</p>
+                                </div>
+                                <br />
+                                <p style="font-size: 17px; margin-bottom: 10px">
+                                    <span style="font-weight: bold">Biographie : &nbsp;</span>
+                                    <span>{% autoescape off %}{{ course.teacher.biography }}{% endautoescape %}</span>
+                                </p>
+                            </div>
+                        </div>
+                        <hr>
+                        <!-- /row -->
+                    </div>
+                </section>
+                <!-- /section -->
+                <section id="reviews">
+                    <h2>Revues</h2>
+                    <div class="reviews-container">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <div id="review_summary">
+                                    <strong style="max-width: 60px; display: inline-block; overflow: hidden;"
+                                    id="progressAvgValue">{{ ratting }}</strong>
+                                    <div class="rating">
+                                        {% for i in "*****" %}
+                                            {% if forloop.counter <= ratting %}
+                                               <i class="icon_star voted"></i>
+                                            {% elif forloop.counter == ratting|add:"1" and rattingInt < ratting %}
+                                                    <i class="icon_star-half_alt voted"></i>
+                                            {% else %}
+                                                <i class="icon_star_alt"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <small>Basé sur {{ number_reviews }} revues</small>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <div class="row">
+                                    <div class="col-lg-10 col-9">
+                                        <div class="progress">
+                                            <div class="progress-bar" role="progressbar" style="width: {{ five }}%" aria-valuenow="{{ five }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-3"><small><strong>5 étoiles</strong></small></div>
+                                </div>
+                                <!-- /row -->
+                                <div class="row">
+                                    <div class="col-lg-10 col-9">
+                                        <div class="progress">
+                                            <div class="progress-bar" role="progressbar" style="width: {{ four }}%" aria-valuenow="{{ four }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-3"><small><strong>4 étoiles</strong></small></div>
+                                </div>
+                                <!-- /row -->
+                                <div class="row">
+                                    <div class="col-lg-10 col-9">
+                                        <div class="progress">
+                                            <div class="progress-bar" role="progressbar" style="width: {{ three }}%" aria-valuenow="{{ three }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-3"><small><strong>3 étoiles</strong></small></div>
+                                </div>
+                                <!-- /row -->
+                                <div class="row">
+                                    <div class="col-lg-10 col-9">
+                                        <div class="progress">
+                                            <div class="progress-bar" role="progressbar" style="width: {{ two }}%" aria-valuenow="{{ two }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-3"><small><strong>2 étoiles</strong></small></div>
+                                </div>
+                                <!-- /row -->
+                                <div class="row">
+                                    <div class="col-lg-10 col-9">
+                                        <div class="progress">
+                                            <div class="progress-bar" role="progressbar" style="width: {{ one }}%" aria-valuenow="{{ one }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-3"><small><strong>1 étoiles</strong></small></div>
+                                </div>
+                                <!-- /row -->
+                            </div>
+                        </div>
+                        <!-- /row -->
+                    </div>
+                    <hr>
+                    <div class="reviews-container">
+                        {% for rating in course.elearning_ratting_set.all %}
+                        <div class="review-box clearfix">
+                            <figure class="rev-thumb"><img src="{{ rating.student.photo_profil.image.url }}" alt="">
+                            </figure>
+                            <div class="rev-content">
+                                <div class="rating">
+                                {% for i in "*****" %}
+                                    {% if forloop.counter <= rating.value %}
+                                       <i class="icon_star voted"></i>
+                                    {% else %}
+                                        <i class="icon_star_alt"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                </div>
+                                <div class="rev-info">
+                                    {{ rating.date_addd }}
+                                </div>
+                                <div class="rev-text">
+                                    <p>{{ rating.comment }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <!-- /review-container -->
+                </section>
+                <!-- /section -->
+                <section id="rate">
+                    <form method="post" action="{% url 'eLearning:course_rate' %}">
+                        <h2 style="display: inline-block; padding-right: 30px;">Donner avis</h2>
+                        <div class="rateContainer" style="display: inline-block; position: relative">
+                            <span style="float: left; position: absolute; top: 28px;">Note : </span>
+                            <div class="rate">
+                                <input type="radio" id="star5" name="valueRating" required value="5" />
+                                <label for="star5" title="5">5 stars</label>
+                                <input type="radio" id="star4" name="valueRating" required value="4" />
+                                <label for="star4" title="4">4 stars</label>
+                                <input type="radio" id="star3" name="valueRating" required value="3" />
+                                <label for="star3" title="3">3 stars</label>
+                                <input type="radio" id="star2" name="valueRating" required value="2" />
+                                <label for="star2" title="2">2 stars</label>
+                                <input type="radio" id="star1" name="valueRating" required value="1" />
+                                <label for="star1" title="1">1 star</label>
+                            </div>
+                        </div>
+                        <div class="reviews-container">
+                            {% csrf_token %}
+                            <input title="hidden" type="hidden" value="{{ course.pk }}" name="ratedCourse">
+
+                            <!-- /row -->
+                            <span class="input">
+                                <textarea title="" class="input_field" id="message_contact" name="commentRating" style="height:150px;"></textarea>
+                                <label class="input_label">
+                                    <span class="input__label-content">Votre Commentaire</span>
+                                </label>
+                            </span>
+                            <p class="add_top_30"><input type="submit" value="Envoyer" class="btn_1 rounded" id="submit-contact"></p>
+                        </div>
+                    </form>
+                    <hr>
+                </section>
+            </div>
+            <!-- /col -->
+
+            <aside class="col-lg-4" id="sidebar">
+                <div class="box_detail">
+                    <figure>
+                        <a href="{{ course.video_url }}" class="video"><i class="arrow_triangle-right"></i><img src="{{ course.image.url }}" alt="" class="img-fluid"><span>Voir l'aperçu du cours</span></a>
+                    </figure>
+                    <div class="price" id="price_div">
+                        {% if course.is_free %}
+                            Gratuit
+                        {% else %}
+                            {% if sale %}
+                                {{ sale.new_price }} Dh<span class="original_price"><br><em>{{ course.price }} Dh</em>{{ sale.percentage }}% de réduction</span>
+                            {% else %}
+                            {{ course.price }} Dh
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    {% if not allow %}
+                        {% if course.is_free %}
+                            <form method="post" action="{% url 'eLearning:purchase' %}" id="formPurchase{{ course.pk }}">
+                                {% csrf_token %}
+                                <input type="hidden" name="course" value="{{ course.pk }}" />
+                            </form>
+                            <a href="javascript:" onclick="document.getElementById('formPurchase{{ course.pk }}').submit();" class="btn_1 full-width">S'inscrire dès maintenant</a>
+                        {% else %}
+                            <form id="formAddToCart{{ course.pk }}" method="get" action="{% url 'eLearning:add_to_cart' %}" data-validate-url="{% url 'eLearning:add_to_cart' %}"><input type="hidden" name="course" value="{{ course.pk }}"></form>
+                            <a href="javascript:" onclick="cart.add('{{ course.pk }}', '{{ user.is_authenticated }}')" class="btn_1 full-width">Ajouter au panier</a>
+                        {% endif %}
+                        <form id="formAddToWish{{ course.pk }}" method="get" action="{% url 'eLearning:add_to_wish' %}" data-validate-url="{% url 'eLearning:add_to_wish' %}"><input type="hidden" name="course" value="{{ course.pk }}"></form>
+                        <a href="javascript:" onclick="wishlist.add('{{ course.pk }}', '{{ user.is_authenticated }}')" id="buttonWish{{ course.pk }}" class="btn_1 full-width outline"><i class="icon_heart"></i> Ajouter au favoris</a>
+                    {% endif %}
+                    <div id="list_feat">
+                        <h3>Inclut</h3>
+                        <ul>
+                            <li><i class="icon_mobile"></i> Support mobile</li>
+                            <li><i class="icon_archive_alt"></i> Archive de cours</li>
+                            <li><i class="icon-rss"></i>{{ course.level }}</li>
+                            <li><i class="icon-language"></i>{{ course.language }}</li>
+                            {% if course.has_certificate %}
+                                <li><i class="icon_document_alt"></i> Certificat de cours</li>
+                            {% endif %}
+                        </ul>
+                    </div><br>
+                    {% if not course.is_free %}
+                        <div class="col-12" style="padding: 0">
+                            <form action="{% url 'eLearning:apply_coupon' %}" data-validate-url="{% url 'eLearning:apply_coupon' %}" id="formApplyCoupon">
+                                <input name="course" type="hidden" value="{{ course.pk }}" >
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="coupon" placeholder="Coupon">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary" type="submit" style="background: #ea4c0f; border-color: #ea4c0f; cursor: pointer;padding: 10px 12px;">
+                                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                            <i class="fa fa-arrow-right"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                                <div class="alert alert-danger" id="error_coupon" style="display: none; margin-top: 10px;">
+                                </div>
+                            </form>
+                        </div>
+                        <hr>
+                    {% endif %}
+                    <div id="list_feat">
+                        <style>
+                            #list_feat span a {
+                                font-size: 17px; margin: 0 3px; text-align: center;
+                            }
+                        </style>
+                        <h3 style="display: inline-block; margin-right: 10px; margin-top: 0;">Partager</h3>
+                        <span onclick="share_article({{ course.id }})">{% post_to_facebook article "" %}</span>
+                        <span style="display: none" onclick="share_article({{ course.id }})">{% post_to_messenger article "" %}</span>
+                        <span onclick="share_article({{ course.id }})">{% post_to_whatsapp article "" %}</span>
+                        <span onclick="share_article({{ course.id }})">{% post_to_twitter "" article "" %}</span>
+                        <span onclick="share_article({{ course.id }})">{% post_to_linkedin "" article "" %}</span>
+                    </div>
+                </div>
+            </aside>
+        </div>
+        <!-- /row -->
+
+        <div class="row">
+            <!-- /section -->
+            <section id="associated_courses" style="padding: 0 18px;">
+                <h2 style="padding-bottom: 10px">Plus de cours enseignés par <a style="" href="{% url 'eLearning:teacher' course.teacher_id %}">{{ course.teacher.user.last_name }} {{ course.teacher.user.first_name }}</a></h2>
+                <div class="reviews-container">
+                    <div class="row">
+                        {% for course in associated_courses %}
+                            <div class="col-md-4">
+                                <div class="box_grid wow">
+                                    <figure class="block-reveal">
+                                        <div class="block-horizzontal"></div>
+                                        <form id="formAddToWish{{ course.c.pk }}" method="get" action="{% url 'eLearning:add_to_wish' %}" data-validate-url="{% url 'eLearning:add_to_wish' %}"><input type="hidden" name="course" value="{{ course.c.pk }}"></form>
+                                        <a href="javascript:" onclick="wishlist.add('{{ course.c.pk }}', '{{ user.is_authenticated }}')" id="buttonWish{{ course.c.pk }}" class="wish_bt"></a>
+                                        <a href="{% url 'eLearning:course' course.c.pk %}"><img src="{{ course.c.image.url }}" class="img-fluid" alt="image {{ course.c.name }}"></a>
+                                        <div class="price">
+                                            {% if course.c.is_free %}Gratuit{% elif course.sale %}{{ course.sale.new_price }} Dh (-{{ course.sale.percentage }}%){% else %}{{ course.c.price }} Dh{% endif %}
+                                        </div>
+                                        <div class="preview">
+                                            <h5>Vous allez apprendre</h5>
+                                            <ul>
+                                                {% for post_skill in course.c.elearning_postskills_set.all %}
+                                                    <li>{{ post_skill.value }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </figure>
+                                    <div class="wrapper">
+                                        <small>{{ course.c.category.category.name }} > {{ course.c.category.name }}</small>
+                                        <h3>{{ course.c.name }}</h3>
+                                        <p>{% autoescape off %}{{ course.c.description|striptags|truncatewords:20 }}{% endautoescape %}</p>
+                                        <div class="rating">
+                                            {% for i in "*****" %}
+                                                {% if forloop.counter <= course.ratting %}
+                                                   <i class="icon_star voted"></i>
+                                                {% elif forloop.counter == course.ratting|add:"1" and course.rattingInt < course.ratting %}
+                                                        <i class="icon_star-half_alt voted"></i>
+                                                {% else %}
+                                                    <i class="icon_star_alt"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <small>({{ course.number }})</small>
+                                        </div>
+                                    </div>
+                                    <ul>
+                                        <li><i class="icon_clock_alt"></i> {{ course.c.duration }}</li>
+                                        <li><a href="{% url 'eLearning:course' course.c.pk %}">Voir Cours</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <!-- /row -->
+                </div>
+            </section>
+            <!-- /section -->
+        </div>
+
+    </div>
+    <!-- /container -->
+</div>
+<div class="modals">
+{% if allow and user.is_authenticated %}
+    {% for part in course.elearning_part_set.all %}
+        {% for chapter in part.elearning_chapter_set.all %}
+            {{ counter.increment_y }}
+            {% if chapter.video_file %}
+                {% if chapter.video_file.url != "" %}
+                    <div id="etr{{ chapter.pk }}pa{{ chapter.part.pk }}azraeg{{ chapter.part.course.pk }}fzef" class="modal modal-to-hide hide" data-backdrop="static" data-keyboard="false" aria-labelledby="myLargeModalLabel" aria-hidden="true" role="dialog">
+                        <div class="modal-header" style="padding:0 0; border-bottom: 0;"></div>
+                        <div class="modal-body video-modal" style="max-height:none; position: relative; top:70px">
+                            <div style="width: 900px; margin: auto; position: relative;">
+                                <div>
+                                    <video controls height="506" id="video_tag" width="900" autoplay>
+                                        <source id="video_source" src="{{ chapter.video_file.url }}" type="video/mp4" />
+                                    </video>
+                                    {% if forloop.first and forloop.parentloop.first %}{% else %}
+                                        <button type="button" class="close previous_video" data-pk="egZ35EG{{ counter.count_y|add:-1 }}ihaizaZF21faY73" style="position: absolute; color: #fff; opacity: 1; top: 270px; font-weight: 100; font-size: 40px; cursor: pointer; right: 940px;"><<</button>
+                                    {% endif %}
+                                    {% if forloop.last and forloop.parentloop.last %}{% else %}
+                                        <button type="button" class="close next_video" data-pk="egZ35EG{{ counter.count_y|add:1 }}ihaizaZF21faY73" style="position: absolute; color: #fff; opacity: 1; top: 270px; font-weight: 100; font-size: 40px; cursor: pointer; right: -80px;">>></button>
+                                    {% endif %}
+                                </div>
+                                <button type="button" class="close close-modal" aria-hidden="true" data-dismiss="modal"  style="position: absolute; color: #fff; opacity: 1; top: 5px; font-weight: 100; font-size: 40px; cursor: pointer; right: -40px;">×</button>
+                                <button type="button" class="close close-modal back_to_menu" aria-hidden="true" data-dismiss="modal">Retourner au menu</button>
+                                <img src="{% static 'eLearning/img/logo_elearning.png' %}" alt="" style="position: absolute; max-width: 120px; top: 20px; left: 20px; opacity: 0.7;">
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+{% else %}
+    {% for part in course.elearning_part_set.all %}
+        {% if part.is_free %}
+            {% for chapter in part.elearning_chapter_set.all %}
+                {{ counter.increment_y }}
+                {% if chapter.video_file %}
+                    {% if chapter.video_file.url != "" %}
+                        <div id="etr{{ chapter.pk }}pa{{ chapter.part.pk }}azraeg{{ chapter.part.course.pk }}fzef" class="modal modal-to-hide hide" data-backdrop="static" data-keyboard="false" aria-labelledby="myLargeModalLabel" aria-hidden="true" role="dialog">
+                            <div class="modal-header" style="padding:0 0; border-bottom: 0;"></div>
+                            <div class="modal-body video-modal" style="max-height:none; position: relative; top:70px">
+                                <div style="width: 900px; margin: auto; position: relative;">
+                                    <div>
+                                        <video controls height="506" id="video_tag" width="900" autoplay>
+                                            <source id="video_source" src="{{ chapter.video_file.url }}" type="video/mp4" />
+                                        </video>
+                                        {% if forloop.first and forloop.parentloop.first %}{% else %}
+                                            <button type="button" class="close previous_video" data-pk="egZ35EG{{ counter.count_y|add:-1 }}ihaizaZF21faY73" style="position: absolute; color: #fff; opacity: 1; top: 270px; font-weight: 100; font-size: 40px; cursor: pointer; right: 940px;"><<</button>
+                                        {% endif %}
+                                        {% if forloop.last and forloop.parentloop.last %}{% else %}
+                                            <button type="button" class="close next_video" data-pk="egZ35EG{{ counter.count_y|add:1 }}ihaizaZF21faY73" style="position: absolute; color: #fff; opacity: 1; top: 270px; font-weight: 100; font-size: 40px; cursor: pointer; right: -80px;">>></button>
+                                        {% endif %}
+                                    </div>
+                                    <button type="button" class="close close-modal" aria-hidden="true" data-dismiss="modal"  style="position: absolute; color: #fff; opacity: 1; top: 5px; font-weight: 100; font-size: 40px; cursor: pointer; right: -40px;">×</button>
+                                    <button type="button" class="close close-modal back_to_menu" aria-hidden="true" data-dismiss="modal">Retourner au menu</button>
+                                    <img src="{% static 'eLearning/img/logo_elearning.png' %}" alt="" style="position: absolute; max-width: 120px; top: 20px; left: 20px; opacity: 0.7;">
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+<div id="modalYoutube" class="modal modal-to-hide hide" data-backdrop="static" data-keyboard="false" aria-labelledby="myLargeModalLabel" aria-hidden="true" role="dialog">
+    <div class="modal-header" style="padding:0 0; border-bottom: 0;"></div>
+    <div class="modal-body video-modal" style="max-height:none; position: relative; top:70px">
+        <div style="width: 900px; margin: auto; position: relative;">
+            <div id="div_iframe">
+                <iframe id="iframe_video" class="iframe_video" src="" frameborder="0" allowfullscreen></iframe>
+                <button type="button" class="close previous_video" id="previous_video" data-pk="" style="position: absolute; color: #fff; opacity: 1; top: 270px; font-weight: 100; font-size: 40px; cursor: pointer; right: 940px;"><<</button>
+                <button type="button" class="close next_video" id="next_video" data-pk="" style="position: absolute; color: #fff; opacity: 1; top: 270px; font-weight: 100; font-size: 40px; cursor: pointer; right: -80px;">>></button>
+            </div>
+            <button type="button" class="close close-modal" aria-hidden="true" data-dismiss="modal"  style="position: absolute; color: #fff; opacity: 1; top: 5px; font-weight: 100; font-size: 40px; cursor: pointer; right: -40px;">×</button>
+            <img src="{% static 'eLearning/img/logo_elearning.png' %}" alt="" style="position: absolute; max-width: 120px; top: 720px; left: 20px; opacity: 0.7;">
+            <button type="button" class="close close-modal back_to_menu" aria-hidden="true" data-dismiss="modal">Retourner au menu</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<style type="text/css">
+    video{
+        display: block;
+        margin: 4% auto auto;
+        width: auto;
+        top: auto;
+        bottom: auto;
+        left: auto;
+        right: auto;
+        position: relative;
+        opacity: 1;
+    }
+    .modal{
+        overflow: hidden;
+        padding-right: 16px;
+        background: rgba(97,97,97 ,.7);
+    }
+    .video_link:before{
+        font-family: 'ElegantIcons', serif;
+        content: "\49";
+        margin-right: 10px;
+    }
+    .box_grid figure .preview{
+        background: #eee;
+        height: 90%;
+        top: 11%;
+        width: 94%;
+        left: 3%;
+        border-radius: 5px;
+        padding: 12px 8px;
+    }
+
+    .box_grid figure .preview h3 {
+        font-weight: bold;
+        font-size: 20px;
+        padding-top: 8px;
+    }
+
+    .box_grid .preview ul{
+        padding: 0;
+        overflow: hidden;
+        max-height: 116px;
+    }
+
+    .box_grid .preview ul li {
+        display: block !important;
+        float: none;
+        padding: 0;
+    }
+</style>
+<script type="text/javascript">
+    $('#formApplyCoupon').submit(function(event) {
+        var form = $(this);
+        event.preventDefault();
+        $.ajax({
+            url: form.attr("data-validate-url"),
+            data: form.serialize(),
+            dataType: 'json',
+            success: function (data) {
+                if(data.message_error === "") {
+                    var percentage = parseFloat(data.percentage);
+                    if(percentage > 0) {
+                        var price = parseFloat(data.price);
+                        var new_price = price - ((percentage * price) / 100);
+                        var row = new_price + ' Dh<span class="original_price"><br><em>' + price + ' Dh</em>' + percentage + '% de réduction</span>';
+                        $("#price_div").html(row);
+                        $('#error_coupon').hide();
+                    }
+                }
+                else
+                {
+                    var div = $('#error_coupon');
+                    div.html(data.message_error);
+                    div.show();
+                }
+            }
+        });
+    });
+
+    function share_article(id){
+        var course_share_url = "{% url 'eLearning:course_share' %}";
+        var data={'id': id};
+        $.ajax({
+            url:course_share_url,
+            type:'GET',
+            data:data,
+            success:function(response){
+            },
+            error:function(){
+            },
+            complete:function(){
+            },
+            stop:function(e){
+            }
+        })
+    }
+    function window_share(url){
+        var winWidth = 620;
+        var winHeight = 450;
+        var winTop = (screen.height / 2) - (winHeight / 2);
+        var winLeft = (screen.width / 2) - (winWidth / 2);
+        window.open(url, 'sharer', 'top=' + winTop + ', left=' + winLeft + ', toolbar=0, status=0, width=' + winWidth + ', height=' + winHeight)
+    }
+
+     $("#progressAvgValue").text($("#progressAvgValue").text().slice(0, 3));
+
+    $('a.download_resources').click(function(e) {
+        e.preventDefault();
+        {% for part in course.elearning_part_set.all %}
+            {% if part.attached_file %}
+                {% if allow and user.is_authenticated %}
+                    window.open('{{ part.attached_file.url }}');
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    });
+
+</script>
+<script type="text/javascript" src="{% static 'eLearning/js/gallery.js' %}"></script>
+{% endblock %}

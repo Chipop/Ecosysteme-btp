@@ -1,0 +1,220 @@
+{% extends 'eLearning/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+    .sbHolder{
+        display: inline-block;
+    }
+    .sbOptions {
+        top: 40px !important;
+    }
+    .sbToggle, .sbSelector:link, .sbSelector:visited, .sbSelector:hover {
+        top: 9px;
+    }
+
+    div.my-col:nth-child(2) {
+        font-size: 12px;
+    }
+    .thumb_cart img{
+        padding-top: 10px;
+    }
+    .table td, .table th {
+        vertical-align: middle;
+    }
+    .table thead th {
+        font-size: 18px;
+    }
+    .card-body {
+        padding: 15px 10px 0;
+        background: #F5F5F5;
+        border-radius: 0 0 5px 5px;
+    }
+    .card .progress-bar {
+        height: 4px;
+    }
+
+    p.card-text {
+        margin-bottom: 10px;
+        line-height: 1.6em;
+        max-height: 5.2em;
+        overflow: hidden;
+    }
+
+    .card-body b {
+        display: inline-grid;
+        overflow: hidden;
+        max-width: 29px;
+    }
+
+    .card-body span a {
+        font-size: 11px;
+        float: right;
+        padding-top: 3px;
+        color: rebeccapurple;
+    }
+
+    img.card-img-top {
+        height: 147px;
+    }
+
+    .card {
+        border: 2px solid #f5f5f5;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+    .card .progress {
+        background: #BBDEFB;
+    }
+
+    .card-text strong a {
+        color: #000;
+    }
+    .image-container{
+        position: relative;
+    }
+    .image-container:hover .play{display:block} .play{
+        position: absolute;
+        display: none;
+        width: 100%;
+        margin: 0 auto;
+        left: 0px;
+        right: 0px;
+        z-index: 100;
+        background: rgba(224,224,224 ,.5);
+        height: 100%;
+        top: 0;
+        padding-top: 20%;
+        padding-left: 40%;
+    }
+    .image-container .play img{
+        width: 50px;
+    }
+    .progress-bar{
+        background-color: #ea4c0f;
+    }
+    .card-body span a{
+        color: #ea4c0f;
+    }
+
+    #formQuiz p {
+        margin-bottom: 7px;
+    }
+
+    #formQuiz b {
+        font-size: 24px;
+        margin-bottom: 5px;
+        display: inline-block;
+    }
+
+    #formQuiz{
+        width: 100%;
+        font-size: 16px;
+    }
+
+    #formQuiz .fa{
+        font-size: 19px;
+    }
+
+    #formQuiz i.fa.fa-check-circle{
+        color: green !important;
+    }
+
+    #formQuiz u {
+        text-decoration: none;
+        color: #ea4c0f;
+    }
+
+    #formQuiz li b {
+        font-size: 16px;
+    }
+</style>
+<section id="hero_in" class="cart_section">
+    <div class="wrapper">
+        <div class="container">
+            <h1 class="fadeInUp"><span></span>Quiz</h1>
+        </div>
+    </div>
+</section>
+<!--/hero_in-->
+<div class="bg_color_1">
+    <div class="container margin_60_35">
+        <div class="row">
+            <div class="col-md-12">
+                <h1><span style="text-shadow: 2px 0px 4px #ea4c0f; font-size: 55px;">Quiz</span> : {{ quiz.title }}</h1>
+            </div>
+            {% if result %}
+                <div class="col-md-12">
+                    <h1 style="font-size: 28px; padding-left: 148px;">Votre résultat : <span style="font-weight:bold; color: #ea4c0f;">{{ result|floatformat:0 }}%</span></h1>
+                </div>
+            {% elif last_result %}
+                <div class="col-md-12">
+                    <h1 style="font-size: 28px; padding-left: 148px;">Votre dernier résultat : {{ last_result|floatformat:0 }}%</h1>
+                </div>
+            {% endif %}
+
+            <div class="col-md-12">
+                <p>{% autoescape off %}{{ quiz.description }}{% endautoescape %}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container margin_60_35" style="padding-top: 0">
+        <div class="row">
+            <div class="col-md-12">
+                <h2 style="text-shadow: 2px 0px 4px #ea4c0f; font-size: 36px; margin-bottom: 20px">Questions :</h2>
+            </div>
+            <section id="courses" class="col-md-12">
+                <div class="row">
+                    <form method="post" id="formQuiz">
+                        {% csrf_token %}
+                        {% for question in questions %}
+                            <div class="col-md-12">
+                                <b>Question {{ forloop.counter }} : </b>
+                                {% if method == "POST" %}
+                                    {% if question.right_answer %}
+                                        <i class="fa fa-check-circle" style="color: lawngreen"></i>
+                                    {% else %}
+                                        <i class="fa fa-times-circle" style="color: red"></i>
+                                    {% endif %}
+                                {% endif %}
+                                {% autoescape off %}{{ question.el.text }}{% endautoescape %}
+                                <ul>
+                                    {% for choice in question.el.elearning_choice_set.all %}
+                                        <li>
+                                            <input id="choice{{ choice.pk }}" value="{{ choice.pk }}" name="question{{ question.el.pk }}"
+                                               {% if question.el.is_multiple %}type="checkbox" {% else %}type="radio" required{% endif %}
+                                               {% if method == "POST" %}disabled="disabled"{% endif %}
+                                               {% if choice.pk in question.my_answers %}checked{% endif %}>
+                                            <label for="choice{{ choice.pk }}">
+                                                {% if method == "POST" and choice.is_correct %}
+                                                    <b> {{ choice.value }}</b>
+                                                {% else %}
+                                                    {{ choice.value }}
+                                                {% endif %}
+                                            </label>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                                {% if method == "POST" %}
+                                    <b><u>Réponse détaillée : </u></b>
+                                    {% autoescape off %}{{ question.el.explanation }}{% endautoescape %}
+                                {% endif %}
+                            </div>
+                            <hr>
+                        {% endfor %}
+                        <button class="btn btn-primary" type="submit" style="background: #ea4c0f; border-color: #ea4c0f; cursor: pointer;padding: 10px 40px; margin-left: 14px">Valider</button>
+                        <a style="float: right;" href="{% url 'eLearning:course' quiz.part.course.pk %}">Retourner au cours <b>{{ quiz.part.course.name }}</b></a>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+
+</script>
+{% endblock %}

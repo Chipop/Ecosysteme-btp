@@ -1,0 +1,802 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}
+    Vue d'ensemble | Elearning | {{ block.super }}
+{% endblock title %}
+
+{% block stylesheets %}
+    {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+    <div class="row">
+
+            <div class="col-lg-6">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-user-circle-o fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Exposants</span>
+                            <h2 class="font-bold">{{ nb_boutiques }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="widget style1 bg-black">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-building fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Boutiques</span>
+                            <h2 class="font-bold">{{ nb_boutiques }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-4">
+                <div class="widget style1 bg-purple">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-money fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Ventes</span>
+                            <h2 class="font-bold">{{ prix_ventes | stringformat:'d'|intcomma }} DH</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="widget style1 bg-purple">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-shopping-cart fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Commandes</span>
+                            <h2 class="font-bold">{{ commandes.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="widget style1 bg-purple">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-file-text-o fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Demandes de devis</span>
+                            <h2 class="font-bold">{{ demandes_devis }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+
+
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="widget style1 bg-success">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-product-hunt fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Produits</span>
+                            <h2 class="font-bold">{{ nb_produits }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-4">
+                <div class="widget style1 bg-success">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-shopping-basket fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Produits dans le pannier</span>
+                            <h2 class="font-bold">{{ cart }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="widget style1 bg-success">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-heart fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Produits Favoris</span>
+                            <h2 class="font-bold">{{ wish }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Ventes les 12 derniers mois</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="morris-line-chart"
+                             style="position: relative; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="row">
+
+
+            <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:marketplace_products_to_approve' %}"
+                       class="list-group-item list-group-item-action active disabled bg-blue">
+                        Produits à approuver <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for produit in produits %}
+                        <a href="{% url 'dashboard:marketplace_product' id_product=produit.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <div class="row" style="padding-bottom:5px;">
+                                <div class="col-lg-2">
+                                    <img src="{% if produit.image %} {{ produit.image.url }} {% else %} {% static 'dashboard/img/interrogation.jpg' %} {% endif %}"
+                                         alt="{{ produit.name }}"
+                                         class="table-image">
+                                </div>
+
+                                <div class="col-lg-7">
+                                    <h5>{{ produit.name }}</h5>
+                                    <h6><i class="fa fa-th-large"></i> &nbsp; {{ produit.cat.name }}</h6>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <strong>{{ produit.price | intcomma }} DH</strong>
+                                </div>
+                            </div>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun produit.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:marketplace_exposants_requests' %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Exposants à approuver <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for boutique in exposants_requests %}
+                        <a href="{% url 'dashboard:marketplace_shop' id_shop=boutique.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <div class="row" style="padding-bottom:5px;">
+                                <div class="col-lg-2">
+                                    <img src="{% if boutique.image_profile %}{{ boutique.image_profile.url }}{% else %}{% static 'dashboard/img/interrogation.jpg' %}{% endif %}"
+                                         alt="{{ boutique.name }}"
+                                         class="table-image">
+                                </div>
+
+                                <div class="col-lg-9">
+                                    <h5>{{ boutique.name }}</h5>
+                                    <h6><i class="fa fa-user"></i>
+                                        &nbsp; {{ boutique.owner.user.first_name|title }} {{ boutique.owner.user.last_name|title }}
+                                    </h6>
+                                </div>
+
+                            </div>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune demande.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:marketplace_products' %}"
+                       class="list-group-item list-group-item-action active disabled bg-purple">
+                        Dernières commandes <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for commande in commandes.reverse|slice:"7" %}
+                        <a href="{% url 'dashboard:marketplace_order' id_order=commande.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <div class="row" style="padding-bottom:5px;">
+                                <div class="col-lg-2">
+                                    <img src="{% if commande.user.photo_profil.image %} {{ commande.user.photo_profil.image.url }} {% else %} {% static 'dashboard/img/default_profil_m.png' %} {% endif %}"
+                                         alt="Ahmed hamid"
+                                         class="table-image">
+                                </div>
+
+                                <div class="col-lg-7">
+                                    <h5>{{ commande.user.user.first_name | title }} {{ commande.user.user.last_name | title }}</h5>
+                                    <h6><i class="fa fa-envelope"></i> &nbsp; {{ commande.user.user.email }}</h6>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <strong>{{ commande.amount | intcomma }} DH</strong>
+                                </div>
+                            </div>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune commande.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Visites </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="visites-totales-chart-container"></div>
+                        <div id="visites-totales-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+
+            <div class="col-lg-12">
+
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <h3>Pages les plus visitées <span class="pull-right"></span>
+                        </h3>
+
+                        <div id="pages-plus-visites-chart-container"></div>
+                        <div id="pages-plus-visites-view-selector-container" style="display:none;"></div>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title ">
+                        <h5>Source des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content ibox-source-traffic">
+                        <div id="traffic-source-chart-container"></div>
+                        <div id="traffic-source-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <h3>Pages où passe l'utilisateur le plus de temps (secondes) <span class="pull-right"></span>
+                        </h3>
+
+                        <div id="pages-plus-temps-chart-container"></div>
+                        <div id="pages-plus-temps-view-selector-container" style="display:none;"></div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="row">
+
+
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Appareils des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="appareils-chart-container"></div>
+                        <div id="appareils-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Origine des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="origine-chart-container"></div>
+                        <div id="origine-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+    <div class="row">
+
+
+                <div class="col-md-4 mar-b-30">
+                    <div class="list-group">
+                        <a href="{% url 'dashboard:marketplace_products' %}"
+                           class="list-group-item list-group-item-action active disabled bg-blue">
+                            Produits les plus visités <span class="pull-right">Voir tout</span>
+                        </a>
+
+                        {% for produit in produits_plus_visites %}
+                            <a href="{% url 'dashboard:marketplace_product' id_product=produit.id %}"
+                               style=" color: inherit;text-decoration: inherit; "
+                               class="list-group-item list-group-item-action">
+                                <div class="row" style="padding-bottom:5px;">
+                                    <div class="col-lg-2">
+                                        <img src="{% if produit.image %} {{ produit.image.url }} {% else %} {% static 'dashboard/img/interrogation.jpg' %} {% endif %}"
+                                             alt="{{ produit.name }}"
+                                             class="table-image">
+                                    </div>
+
+                                    <div class="col-lg-7">
+                                        <h5>{{ produit.name }}</h5>
+                                        <h6><i class="fa fa-eye"></i> &nbsp; {{ produit.number_views }}</h6>
+                                    </div>
+
+                                    <div class="col-lg-3">
+                                        <strong>{{ produit.price | intcomma }} DH</strong>
+                                    </div>
+                                </div>
+                            </a>
+                        {% empty %}
+
+                            <span
+                                    class="list-group-item list-group-item-action">
+
+                            Aucun produit.
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+    <div class="col-md-4 mar-b-30">
+                    <div class="list-group">
+                        <a href="{% url 'dashboard:marketplace_products' %}"
+                           class="list-group-item list-group-item-action active disabled bg-blue">
+                            Produits les plus recherchés <span class="pull-right">Voir tout</span>
+                        </a>
+
+                        {% for produit in produits_plus_recherches %}
+                            <a href="{% url 'dashboard:marketplace_product' id_product=produit.id %}"
+                               style=" color: inherit;text-decoration: inherit; "
+                               class="list-group-item list-group-item-action">
+                                <div class="row" style="padding-bottom:5px;">
+                                    <div class="col-lg-2">
+                                        <img src="{% if produit.image %} {{ produit.image.url }} {% else %} {% static 'dashboard/img/interrogation.jpg' %} {% endif %}"
+                                             alt="{{ produit.name }}"
+                                             class="table-image">
+                                    </div>
+
+                                    <div class="col-lg-7">
+                                        <h5>{{ produit.name }}</h5>
+                                        <h6><i class="fa fa-search"></i> &nbsp; {{ produit.total_search }}</h6>
+                                    </div>
+
+                                    <div class="col-lg-3">
+                                        <strong>{{ produit.price | intcomma }} DH</strong>
+                                    </div>
+                                </div>
+                            </a>
+                        {% empty %}
+
+                            <span
+                                    class="list-group-item list-group-item-action">
+
+                            Aucun produit.
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-md-4 mar-b-30">
+                    <div class="list-group">
+                        <a href="{% url 'dashboard:marketplace_exposants_requests' %}"
+                           class="list-group-item list-group-item-action active disabled bg-black">
+                            Boutiques les plus visités <span class="pull-right">Voir tout</span>
+                        </a>
+
+                        {% for boutique in boutiques_plus_visites %}
+                            <a href="{% url 'dashboard:marketplace_shop' id_shop=boutique.id %}"
+                               style=" color: inherit;text-decoration: inherit; "
+                               class="list-group-item list-group-item-action">
+                                <div class="row" style="padding-bottom:5px;">
+                                    <div class="col-lg-2">
+                                        <img src="{% if boutique.image_profile %} {{ boutique.image_profile.url }} {% else %} {% static 'dashboard/img/interrogation.jpg' %} {% endif %}"
+                                             alt="{{ boutique.name }}"
+                                             class="table-image">
+                                    </div>
+
+                                    <div class="col-lg-7">
+                                        <h5>{{ boutique.name }}</h5>
+                                        <h6><i class="fa fa-user"></i>
+                                            &nbsp; {{ boutique.owner.user.first_name|title }} {{ boutique.owner.user.last_name|title }}
+                                        </h6>
+                                    </div>
+
+                                <div class="col-lg-3">
+                                        <strong><i class="fa fa-eye"></i> {{ boutique.number_visitors }} </strong>
+                                    </div>
+
+                                </div>
+                            </a>
+                        {% empty %}
+
+                            <span
+                                    class="list-group-item list-group-item-action">
+
+                            Aucune boutique.
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+
+            </div>
+
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock content %}
+
+
+
+
+{% block scripts %}
+
+    {{ block.super }}
+
+    <script>
+        (function (w, d, s, g, js, fs) {
+            g = w.gapi || (w.gapi = {});
+            g.analytics = {
+                q: [], ready: function (f) {
+                    this.q.push(f);
+                }
+            };
+            js = d.createElement(s);
+            fs = d.getElementsByTagName(s)[0];
+            js.src = 'https://apis.google.com/js/platform.js';
+            fs.parentNode.insertBefore(js, fs);
+            js.onload = function () {
+                g.load('analytics');
+            };
+        }(window, document, 'script'));
+    </script>
+
+
+    <script>
+
+        //Visites totales Line Chart Ecommerce
+
+        gapi.analytics.ready(function () {
+
+            /**
+             * Authorize the user with an access token obtained server side.
+             */
+            gapi.analytics.auth.authorize({
+                'serverAuth': {
+                    'access_token': '{{ ACCESS_TOKEN_FROM_GOOGLE_SERVICE_ACCOUNT }}'
+                }
+            });
+
+            /**
+             * Create a new DataChart instance with the given query parameters
+             * and Google chart options. It will be rendered inside an element
+             * with the id "chart-container".
+             */
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:pageviews,ga:uniquePageViews',
+                    dimensions: 'ga:date',
+                    'start-date': '30daysAgo',
+                    'end-date': 'today',
+                    filters: 'ga:pagePath=@/e_commerce/',
+                },
+                chart: {
+                    container: 'visites-totales-chart-container',
+                    type: 'LINE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:pageviews,ga:uniquePageviews,ga:avgTimeOnPage',
+                    dimensions: 'ga:pageTitle,ga:pagePath',
+                    'start-date': '30daysAgo',
+                    'end-date': 'today',
+                    sort: '-ga:pageviews',
+                    filters: 'ga:pagePath=@/e_commerce/',
+                    'max-results': 10,
+                },
+                chart: {
+                    container: 'pages-plus-visites-chart-container',
+                    type: 'TABLE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:users',
+                    dimensions: 'ga:source',
+                    filters: 'ga:pagePath=@/e_commerce/',
+                    'max-results': 8,
+                },
+                chart: {
+                    container: 'traffic-source-chart-container',
+                    type: 'TABLE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:avgTimeOnPage',
+                    dimensions: 'ga:pagePath',
+                    filters: 'ga:pagePath=@/e_commerce/',
+                    'max-results': 10,
+                    'sort': '-ga:avgTimeOnPage'
+                },
+                chart: {
+                    container: 'pages-plus-temps-chart-container',
+                    type: 'TABLE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:users',
+                    dimensions: 'ga:deviceCategory',
+                    filters: 'ga:pagePath=@/e_commerce/',
+                },
+                chart: {
+                    container: 'appareils-chart-container',
+                    type: 'PIE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:users',
+                    dimensions: 'ga:city',
+                    filters: 'ga:pagePath=@/e_commerce/',
+                },
+                chart: {
+                    container: 'origine-chart-container',
+                    type: 'PIE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+        });
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Data picker -->
+    <script src="{% static 'dashboard/js/plugins/datapicker/bootstrap-datepicker.js' %}"></script>
+
+
+    <!-- Date range use moment.js same as full calendar plugin -->
+    <script src="{% static 'dashboard/js/plugins/fullcalendar/moment.min.js' %}"></script>
+
+
+
+    <!-- Date range picker -->
+    <script src="{% static 'dashboard/js/plugins/daterangepicker/daterangepicker.js' %}"></script>
+
+
+
+
+
+
+
+    <script>
+        $('#dashboard_elearning').addClass("active");
+        $('#elearning_general_view').addClass("active");
+
+    </script>
+
+    <script>
+        $(function () {
+
+            // Moris Data
+            Morris.Line({
+                element: 'morris-line-chart',
+                data: [
+                    {% for vente in ventes %}
+                        {months: '{{ vente.month }}', a: '{{vente.total_ventes}}'},
+                    {% empty %}
+                        {months: '1', a: '0'},
+                        {months: '2', a: '0'},
+                        {months: '3', a: '0'},
+                        {months: '4', a: '0'},
+                        {months: '6', a: '0'},
+                        {months: '7', a: '0'},
+                        {months: '8', a: '0'},
+                        {months: '9', a: '0'},
+                        {months: '10', a: '0'},
+                        {months: '11', a: '0'},
+                        {months: '12', a: '0'},
+                    {% endfor %}
+                ],
+                xkey: 'months',
+                ykeys: ['a'],
+                labels: ['Ventes'],
+                hideHover: 'auto',
+                resize: true,
+                lineColors: ['#54cdb4'],
+                parseTime: false,
+                xLabelFormat: function (x) {
+                    return 'Mois ' + x.label
+                }
+            });
+
+        });
+
+    </script>
+
+
+
+
+{% endblock scripts %}

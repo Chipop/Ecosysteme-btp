@@ -1,0 +1,6 @@
+-settings : bdel email
+	PAYPAL_RECEIVER_EMAIL = 'elkhaouakarim-espr@gmail.com'
+-addtocart.js :
+	kayen f ecommerce/static/ecommerce/js/themejs/
+-lakhrin templates baynin w views w signals kaynin f ecommerce
+

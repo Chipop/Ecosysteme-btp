@@ -1,0 +1,551 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+
+
+{% block title %}
+    Vue d'ensemble | Appels d'offres | {{ block.super }}
+{% endblock title %}
+
+
+{% block stylesheets %}
+    {{ block.super }}
+
+    <!-- c3 Charts -->
+    <link href="{% static 'dashboard/css/plugins/c3/c3.min.css' %}" rel="stylesheet">
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-building fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Profils Entreprises</span>
+                            <h2 class="font-bold">{{ nb_profils_entreprises }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="widget style1 bg-success">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-bullhorn fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Appels d'offres</span>
+                            <h2 class="font-bold">{{ nb_appels_offres }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-3">
+                <div class="widget style1 bg-purple">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-briefcase fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span"> Lots </span>
+                            <h2 class="font-bold">{{ nb_lots }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="widget style1 bg-purple">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-file-text-o fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Devis</span>
+                            <h2 class="font-bold">{{ nb_devis }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="widget style1 bg-warning">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-eye fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Vues</span>
+                            <h2 class="font-bold">{{ vues }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="widget style1 bg-purple">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-comment fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Réponses aux Appels d'Offres et Lots</span>
+                            <h2 class="font-bold">{{ nb_contacts }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-lg-12">
+
+                <div class="ibox">
+                    <div class="ibox-content ibox-page-temps-utilisateur">
+                        <h3>Pages où passe l'utilisateur le plus de temps (secondes) <span class="pull-right"></span>
+                        </h3>
+
+                        <div id="pages-plus-temps-chart-container"></div>
+                        <div id="pages-plus-temps-view-selector-container" style="display:none;"></div>
+
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Visites </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="visites-totales-chart-container"></div>
+                        <div id="visites-totales-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Source des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content ibox-source-traffic">
+                        <div id="traffic-source-chart-container"></div>
+                        <div id="traffic-source-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Appareils des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="appareils-chart-container"></div>
+                        <div id="appareils-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Origine des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="origine-chart-container"></div>
+                        <div id="origine-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div class="col-lg-12">
+
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <h3>Pages les plus visitées <span class="pull-right"></span>
+                        </h3>
+
+                        <div id="pages-plus-visites-chart-container"></div>
+                        <div id="pages-plus-visites-view-selector-container" style="display:none;"></div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-6 mar-b-30">
+
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action active ">
+                        Derniers profils entreprises
+                    </a>
+                    {% for profil in profils_entreprises %}
+                        <a href="{% url 'dashboard:ao_profil_entreprise' id=profil.id %}"
+                           class="list-group-item list-group-item-action">
+                            {{ profil.name }}
+                        </a>
+                    {% empty %}
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun profil d'entreprise
+                        </span>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+
+
+        <div class="col-lg-6 mar-b-30">
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action active bg-success">
+                        Dernières  appels d'offres
+                    </a>
+                    {% for ao in appels_offres %}
+                        <a href="{% url 'dashboard:ao_appel_offre' id=ao.id %}"
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ ao.title }}</strong>  Par  <strong>{{ ao.get_company }}</strong>
+                        </a>
+                    {% empty %}
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune appel d'offre
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+        <div class="col-lg-6 mar-b-30">
+
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action active bg-purple">
+                        Derniers lots
+                    </a>
+                    {% for lot in lots %}
+                        <a href="{% url 'dashboard:ao_lot' id=lot.id %}"
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ lot.title }}</strong>, Par <strong>{{ lot.ao.get_company }}</strong>
+                        </a>
+                    {% empty %}
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun lot.
+                        </span>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+        <div class="col-lg-6 mar-b-30">
+
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action active bg-purple">
+                        Derniers devis
+                    </a>
+                    {% for devi in devis %}
+                        <a href="{% url 'dashboard:ao_devis_one' id=devi.id %}"
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ devi.budget }}</strong>, Par <strong>{{ devi.company.name }}</strong>
+                        </a>
+                    {% empty %}
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun devis.
+                        </span>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+
+
+
+
+
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+{% endblock content %}
+
+
+
+
+{% block scripts %}
+
+    {{ block.super }}
+
+
+
+    <!-- Data picker -->
+    <script src="{% static 'dashboard/js/plugins/datapicker/bootstrap-datepicker.js' %}"></script>
+
+
+    <!-- Date range use moment.js same as full calendar plugin -->
+    <script src="{% static 'dashboard/js/plugins/fullcalendar/moment.min.js' %}"></script>
+
+
+
+    <!-- Date range picker -->
+    <script src="{% static 'dashboard/js/plugins/daterangepicker/daterangepicker.js' %}"></script>
+
+
+
+
+
+
+
+    <script>
+        $('#dashboard_ao').addClass("active");
+        $('#ao_vue_generale').addClass("active");
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+        (function (w, d, s, g, js, fs) {
+            g = w.gapi || (w.gapi = {});
+            g.analytics = {
+                q: [], ready: function (f) {
+                    this.q.push(f);
+                }
+            };
+            js = d.createElement(s);
+            fs = d.getElementsByTagName(s)[0];
+            js.src = 'https://apis.google.com/js/platform.js';
+            fs.parentNode.insertBefore(js, fs);
+            js.onload = function () {
+                g.load('analytics');
+            };
+        }(window, document, 'script'));
+    </script>
+
+
+    <script>
+
+        //Visites totales Line Chart Ecommerce
+
+        gapi.analytics.ready(function () {
+
+            /**
+             * Authorize the user with an access token obtained server side.
+             */
+            gapi.analytics.auth.authorize({
+                'serverAuth': {
+                    'access_token': '{{ ACCESS_TOKEN_FROM_GOOGLE_SERVICE_ACCOUNT }}'
+                }
+            });
+
+            /**
+             * Create a new DataChart instance with the given query parameters
+             * and Google chart options. It will be rendered inside an element
+             * with the id "chart-container".
+             */
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:pageviews,ga:uniquePageViews',
+                    dimensions: 'ga:date',
+                    'start-date': '30daysAgo',
+                    'end-date': 'today',
+                    filters: 'ga:pagePath=@/ao/',
+                },
+                chart: {
+                    container: 'visites-totales-chart-container',
+                    type: 'LINE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:pageviews,ga:uniquePageviews,ga:avgTimeOnPage',
+                    dimensions: 'ga:pageTitle,ga:pagePath',
+                    'start-date': '30daysAgo',
+                    'end-date': 'today',
+                    sort: '-ga:pageviews',
+                    filters: 'ga:pagePath=@/ao/',
+                    'max-results': 10,
+                },
+                chart: {
+                    container: 'pages-plus-visites-chart-container',
+                    type: 'TABLE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:users',
+                    dimensions: 'ga:source',
+                    filters: 'ga:pagePath=@/ao/',
+                    'max-results': 8,
+                },
+                chart: {
+                    container: 'traffic-source-chart-container',
+                    type: 'TABLE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:avgTimeOnPage',
+                    dimensions: 'ga:pagePath',
+                    filters: 'ga:pagePath=@/ao/',
+                    'max-results': 10,
+                    'sort':'-ga:avgTimeOnPage'
+                },
+                chart: {
+                    container: 'pages-plus-temps-chart-container',
+                    type: 'TABLE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:users',
+                    dimensions: 'ga:deviceCategory',
+                    filters: 'ga:pagePath=@/ao/',
+                },
+                chart: {
+                    container: 'appareils-chart-container',
+                    type: 'PIE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:users',
+                    dimensions: 'ga:city',
+                    filters: 'ga:pagePath=@/ao/',
+                },
+                chart: {
+                    container: 'origine-chart-container',
+                    type: 'PIE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+        });
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock scripts %}

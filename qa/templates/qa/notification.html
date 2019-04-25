@@ -1,0 +1,185 @@
+{% extends 'qa/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+      <!-- =-=-=-=-=-=-= Main Area =-=-=-=-=-=-= -->
+  <div class="main-content-area">
+
+    <!-- =-=-=-=-=-=-= User Profile =-=-=-=-=-=-= -->
+    <section id="user-profile" class="user-profile parallex">
+      <div class="container">
+        <!-- Row -->
+        <div class="row">
+
+          <div class="col-md-12 col-xs-12 col-sm-12">
+            <div class="profile-sec ">
+              <div class="profile-head">
+                <div class="col-md-9 col-xs-12 col-sm-9 no-padding">
+                  <div class="profile-avatar">
+                    <span>
+                        {% if profile.photo_profil is None %}
+                            <img class="img-responsive img-circle" alt="image" src="{% static 'images/default-profil.jpg' %}">
+                        {% else %}
+                            <img class="img-responsive img-circle" alt="image" src="{{ profile.photo_profil.image.url }}">
+                        {% endif %}
+                    </span>
+                    <div class="profile-name">
+                      <h3>
+                          {{ profile.user.first_name|capfirst }} {{ profile.user.last_name|upper }}
+                          {% if own_profile %}
+                              <a href="{% url 'qa:update_profile' profile.id %}">
+                                  <button class="btn btn-default"
+                                      style="padding: 4px 13px 3px; margin-top: -5px; margin-left: 20px; font-size: 12px;">
+                                      Modifier Profil</button></a>
+                          {% endif %}
+                      </h3>
+                      <i>{{ profile.fonction|upper }}</i>
+                        <p>{{ profile.resume }}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3 col-xs-12 col-sm-3 no-padding">
+                  <ul class="profile-count">
+                    <li>{{ profile.points }}<i>Points</i></li>
+                    <li>{{ profile.answer_set.count }}<i>Réponses</i></li>
+                      {% if qa_profile_pro %}
+                          <li>{{ profile.article_set.count }}<i>Articles</i></li>
+                      {% else %}
+                          <li>{{ profile.question_set.count }}<i>Questions</i></li>
+                      {% endif %}
+                  </ul>
+                  <ul class="social-btns" style="position: absolute; right: 16%; top: 0;">
+                      <li><a href="{{ profile.facebook }}" title="Facebook"><i class="fa fa-facebook"></i></a></li>
+                        <li><a href="{{ profile.linkedin }}" style="background: #0077B5" title="LinkedIn"><i class="fa fa-linkedin"></i></a></li>
+                        <li><a href="{{ profile.twitter }}" title="Twitter"><i class="fa fa-twitter"></i></a></li>
+                          <li><a href="{{ profile.instagram }}" style="background: #cd486b" title="Instagram"><i class="fa fa-instagram"></i></a></li>
+                        <li><a href="{{ profile.youtube }}" style="background: #ff0000" title="Youtube"><i class="fa fa-youtube"></i></a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <!-- Profile Sec -->
+          </div>
+
+        </div>
+        <!-- Row End -->
+      </div>
+      <!-- end container -->
+    </section>
+
+    <!-- =-=-=-=-=-=-= User Profile end =-=-=-=-=-=-= -->
+
+     <!-- =-=-=-=-=-=-= User TimeLine =-=-=-=-=-=-= -->
+
+    <section class="section-padding-40">
+
+      <div class="container">
+        <!-- Row -->
+        <div class="row">
+
+          <div class="col-md-12">
+
+              <h2 style="font-size: 36px; font-weight: 500; margin-bottom: 20px;">
+                  <strong id="countNotification">{{ count }}</strong> Notifications
+                  {% if count > 0 %}
+                        <a href="{% url 'qa:all_notification_open' profile.id %}" class="btn btn-default" style="padding: 5px 20px; margin-top: -4px; font-size: 13px; margin-left: 20px;">
+                          Marquer tous comme lues</a>
+                  {% endif %}
+              </h2>
+
+            <div class="timeline-container">
+              <ul>
+                  {% for notification in notifications %}
+                    <li id="no{{ notification.id }}">
+                      <div class="timeline">
+                        <div class="user-timeline">
+                          <span>
+                              <i class="fa {{ notification.icon }}" style="font-size: 30px; padding: 12px;"></i>
+                          </span>
+                        </div>
+                        <div class="timeline-detail">
+                          <div class="timeline-head" style="background: #F5F5F5 none repeat scroll 0 0">
+                              <h3 style="width: 100%">
+                                  {{ notification.content|safe }}
+                                  <form data-validate-url="{% url 'qa:notification_open' profile.id notification.id %}"
+                                        class="formNotification form-inline">
+                                      <input style="background: none; border: none; position: absolute; right: 15px; top: 14px; font-weight: 700; color: red; font-size: 19px;" type="submit" value="x">
+                                  </form>
+                              </h3>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  {% endfor %}
+              </ul>
+            </div>
+
+            <!-- Pagination View More -->
+            <div class="clearfix">
+                {% if notifications.has_other_pages %}
+                    <div class="col-md-3">
+                        <p class="paginatorIndex" style="color: #000; text-transform: uppercase; font-size: 18px;">
+                            page <b style="font-size: 22px;">{{ notifications.number }}</b>
+                            sur <b style="font-size: 22px;">{{ notifications.paginator.num_pages }}</b></p>
+                    </div>
+                    <div class="col-md-9">
+                        <ul class="pagination">
+                            {% if notifications.has_previous %}
+                                <li><a href="?page={{ notifications.previous_page_number }}">&laquo;</a></li>
+                            {% else %}
+                                <li class="disabled"><span>&laquo;</span></li>
+                            {% endif %}
+                            {% for i in notifications.paginator.page_range %}
+                                {% if notifications.number == i %}
+                                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                                {% else %}
+                                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if notifications.has_next %}
+                                <li><a href="?page={{ notifications.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                                <li class="disabled"><span>&raquo;</span></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+            <!-- Pagination View More End -->
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- =-=-=-=-=-=-= User TimeLine End =-=-=-=-=-=-= -->
+
+  </div>
+  <!-- =-=-=-=-=-=-= Main Area End =-=-=-=-=-=-= -->
+
+{% endblock %}
+
+
+{% block script %}
+    <script>
+        {% if profile.photo_couverture is not None %}
+            $("#user-profile").css("background-image","url({{ profile.photo_couverture.image.url }})");
+        {% else %}
+            $("#user-profile").css("background-image","url({% static 'images/default-cover.jpg' %})");
+        {% endif %}
+
+        $( ".formNotification" ).submit(function( event ) {
+            event.preventDefault();
+            var form = $(this);
+            $.ajax({
+                url: form.attr("data-validate-url"),
+                data: form.serialize(),
+                dataType: 'json',
+                success: function (data) {
+                    $(data.id).html(data.number);
+                    $(data.div).css('display', 'none');
+                }
+            });
+        });
+    </script>
+{% endblock %}

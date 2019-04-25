@@ -1,0 +1,29 @@
+{% load static %}
+{% for profil in likers %}
+
+    <div class="publicateur-infos display-flex ">
+
+        <div>
+            <a href="{% url 'SocialMedia:getProfil'  pk=profil.id %}">
+                <img class="st_photo_profil" src="
+                        {% if profil.photo_profil %}{{ profil.photo_profil.image.url }}{% else %}{% static 'SocialMedia/defaults/default_profil.png' %}{% endif %}"
+                     alt="">
+            </a>
+        </div>
+
+        <div class="st_infos_profil">
+            <h3 class="st_profil_name break-words">
+                <a class="st_publisher"
+                   href="{% url 'SocialMedia:getProfil'  pk=profil.id %}">{{ profil.user.first_name|title }} {{ profil.user.last_name|title }}</a>
+            </h3>
+            <span class="st_job_profil text-muted break-words">{% if profil.resume %}{{ profil.resume }}{% endif %}</span>
+        </div>
+
+
+
+    </div>
+
+    <hr>
+
+
+{% endfor %}

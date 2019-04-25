@@ -3,8 +3,6 @@ from django.contrib import admin
 from .models import Journalist, Category, News, Image, Tag, Newsletter, Video, Comment, Answer, \
     SignalComment, SignalAnswer, CommentFilter, ImageNews, Supervisor, ContactMessage, JoinMessage
 
-admin.site.site_header = "BTP Administration"
-admin.site.site_title = "BTP Administration"
 
 
 @admin.register(Journalist)

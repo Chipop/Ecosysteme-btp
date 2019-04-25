@@ -4,9 +4,9 @@
 {% block title %}{{ groupe.nom }} - Membres{% endblock %}
 {% block contentGroupe %}
                         <!-- Filter Nav Start -->
-                            <div class="filter--nav pb--60 clearfix row">
-                                <div class="filter--options col-md-6">
-                                        <div class="form-group row">
+                            <div class="filter--nav clearfix">
+                                <div class="filter--options text-center">
+                                        <div class="form-group">
                                             <select id="membersfilter" class="form-control">
                                             <option value="all" selected> Tous les membres</option>
                                             <option value="admins"> Adminstrateurs</option>
@@ -106,23 +106,19 @@
                             <!-- Page Count Start -->
                             <div class="page--count pt--30">
                                 <label class="ff--primary fs--14 fw--500 text-darker">
-                                    <span>Viewing</span>
+                                    <span>Voir</span>
                                     {% if members.has_previous %}
                                         <button id="btfirst" href="?page=1" class="btn-link"><i class="fa fa-caret-left"></i><i class="fa fa-caret-left"></i></button>
                                         <button id="btprevious" page="{{ members.previous_page_number }}" class="btn-link"><i class="fa fa-caret-left"></i></button>
-                                    {% else %}
-                                        <button id="btfirst" href="1" class="btn-link"><i class="fa fa-caret-left"></i><i class="fa fa-caret-left"></i></button>
-                                        <button id="btprevious" page="1" class="btn-link"><i class="fa fa-caret-left"></i></button>
                                     {% endif %}
-                                        <input id="RequestsPageNum" type="number" name="page-count" value="{{ members.number }}" class="form-control form-sm">
-                                    {% if demandesAmis.has_next %}
+                                    <span style="background-color: #eeeeee;padding-right: 16px;">
+                                        <input id="RequestsPageNum" style="border: none;" type="number" name="page-count" readonly value="{{ members.number }}" class="form-control form-sm"> /
+                                        <span id="numPages" style=" margin-left: 14px;">{{ members.paginator.num_pages }}</span>
+                                    </soan>
+                                    {% if members.has_next %}
                                         <button id="btnext" page="{{ members.next_page_number }}" class="btn-link"><i class="fa fa-caret-right"></i></button>
                                         <button id="btlast" page="{{ members.paginator.num_pages }}" class="btn-link"><i class="fa fa-caret-right"></i><i class="fa fa-caret-right"></i></button>
-                                    {% else %}
-                                        <button id="btnext" page="{{ members.paginator.num_pages }}" class="btn-link"><i class="fa fa-caret-right"></i></button>
-                                        <button id="btlast" page="{{ members.paginator.num_pages }}" class="btn-link"><i class="fa fa-caret-right"></i><i class="fa fa-caret-right"></i></button>
                                     {% endif %}
-                                        <span id="numPages">{{ members.paginator.num_pages }}</span>
 
                                 </label>
                             </div>
@@ -302,7 +298,7 @@
             },
             complete: function()
             {
-
+                fixForms();
             },
             error: function() { },
             stop: function (e) {  /* 3. WHEN THE UPLOADING PROCESS FINALIZE, HIDE THE MODAL */

@@ -1,0 +1,252 @@
+{% extends 'ao/base_small.html' %}
+
+{% load static %}
+
+{% block style %}
+
+    <style>
+        .simplebar-content{
+            background: #fafafa;
+        }
+    </style>
+
+{% endblock %}
+
+{% block sidebar %}
+    <div class="dashboard-sidebar">
+		<div class="dashboard-sidebar-inner" data-simplebar>
+			<div class="dashboard-nav-container">
+
+				<!-- Responsive Navigation Trigger -->
+				<a href="#" class="dashboard-responsive-nav-trigger">
+					<span class="hamburger hamburger--collapse" >
+						<span class="hamburger-box">
+							<span class="hamburger-inner"></span>
+						</span>
+					</span>
+					<span class="trigger-title">Profil Détails</span>
+				</a>
+
+				<!-- Navigation -->
+				<div class="dashboard-nav">
+					<div class="dashboard-nav-inner">
+
+                        {% if company is None %}
+                            <div id="profile-details">
+                                <div class="header-image">
+                                    <a href="{% url 'ao:profile' profile.id %}">
+                                        {% if profile.photo_profil.image.url is not None %}
+                                            <img src="{{ profile.photo_profil.image.url }}" alt="">
+                                        {% else %}
+                                            <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                        {% endif %}
+                                    </a>
+                                </div>
+
+                                <div class="header-details">
+                                    <h3 style="padding: 25px; text-align: center; padding-bottom: 0;">{{ profile.user.first_name|capfirst }} {{ profile.user.last_name|upper }}</h3>
+                                    <h4 style="text-align: center">{{ profile.fonction }}</h4>
+                                </div>
+                            </div>
+
+                            <ul data-submenu-title="Liens rapides">
+                                <li><a href="{% url 'ao:profile' profile.id %}"><i class="icon-material-outline-assignment"></i> Appels d'offres</a></li>
+                                <li><a href="{% url 'ao:saves' profile.id %}"><i class="icon-material-outline-star-border"></i> Enregistrement</a></li>
+                            </ul>
+                        {% else %}
+                            <div id="profile-details">
+                                <div class="header-image">
+                                    <a href="#">
+                                        {% if company.logo.url is not None %}
+                                            <img src="{{  company.logo.url }}" alt="">
+                                        {% else %}
+                                            <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                        {% endif %}
+                                    </a>
+                                </div>
+
+                                <div class="header-details">
+                                    <h3 style="padding: 25px; text-align: center; padding-bottom: 0;">{{ company.name }}</h3>
+                                    <h4 style="text-align: center">{{ company.activity }}</h4>
+                                </div>
+                            </div>
+
+                            <ul data-submenu-title="Liens rapides">
+                                <li><a href="{% url 'ao:profile' profile.id %}"><i class="icon-material-outline-assignment"></i> Appels d'offres</a></li>
+                                <li><a href="{% url 'ao:saves' profile.id %}"><i class="icon-material-outline-star-border"></i> Enregistrement</a></li>
+                            </ul>
+                        {% endif %}
+					</div>
+				</div>
+				<!-- Navigation / End -->
+
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block content %}
+
+    <!-- Dashboard Headline -->
+			<div class="dashboard-headline">
+				<h3>Ajouter Lot</h3>
+
+				<!-- Breadcrumbs -->
+				<nav id="breadcrumbs" class="dark">
+					<ul>
+						<li><a href="{% url 'ao:home' %}">Acceuil</a></li>
+						<li><a href="#">Profil</a></li>
+						<li><a href="{% url 'ao:ao' ao.id %}">AO</a></li>
+						<li>Ajouter un lot</li>
+					</ul>
+				</nav>
+			</div>
+
+			<!-- Row -->
+			<div class="row">
+                <form method="post" enctype="multipart/form-data" id="form-add-project">
+                {% csrf_token %}
+                <input id="keywords" type="hidden">
+				<!-- Dashboard Box -->
+				<div class="col-xl-12">
+					<div class="dashboard-box margin-top-0">
+
+						<!-- Headline -->
+						<div class="headline">
+							<h3><i class="icon-feather-folder-plus"></i> Formulaire de soumission d'ajout de lot</h3>
+                            <h5>Détail de l'appel offre source :</h5>
+                            <h4><strong>Titre : </strong><a href="{% url 'ao:ao' ao.id %}">{{ ao.title }}</a></h4>
+                            <h4><strong>Catégorie :</strong> {{ ao.category }}</h4>
+                            <h4><strong>Date de fin :</strong>{{ ao.date_limit }}</h4>
+						</div>
+
+						<div class="content with-padding padding-bottom-10">
+							<div class="row">
+								<div class="col-xl-4">
+									<div class="submit-field">
+										<h5>Titre</h5>
+										<input type="text" name="title" required class="with-border" placeholder="ex. Construction d'un terrain...">
+									</div>
+								</div>
+
+								<div class="col-xl-4">
+									<div class="submit-field">
+										<h5>Sous Catégorie</h5>
+										<select class="selectpicker with-border" multiple data-size="7" required title="Selectionner une Catégorie" name="subcategory">
+                                            {% for category in categories %}
+                                                <option value="{{ category.id }}">{{ category }}</option>
+                                            {% endfor %}
+										</select>
+									</div>
+								</div>
+
+								<div class="col-xl-4">
+									<div class="submit-field">
+										<h5>Ville</h5>
+                                        <select class="selectpicker with-border" multiple data-size="7" required title="Selectionner une Ville" name="city">
+                                            {% for city in cities %}
+                                                <option value="{{ city.id }}">{{ city }}</option>
+                                            {% endfor %}
+                                        </select>
+									</div>
+								</div>
+
+								<div class="col-xl-6">
+									<div class="submit-field">
+										<h5>Quel est votre budget estimé?</h5>
+										<div class="row">
+											<div class="col-xl-12">
+												<div class="input-with-icon">
+													<input class="with-border" name="budget" required type="text" placeholder="ex. 100000">
+													<i class="currency">DH</i>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-xl-6">
+									<div class="submit-field">
+										<h5>Keywords de recherche <i class="help-icon" data-tippy-placement="right" title="Permet de trouver votre lot plus rapidement, maximum 5"></i></h5>
+										<div class="keywords-container">
+											<div class="keyword-input-container">
+												<input type="text" class="keyword-input with-border" name="keywords" placeholder="Ajouter Keyword" id="placeKeys"/>
+												<button type="button" class="keyword-input-button ripple-effect">
+                                                    <i class="icon-material-outline-add"></i>
+                                                </button>
+											</div>
+											<div class="keywords-list"><!-- keywords go here --></div>
+											<div class="clearfix"></div>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-xl-12">
+									<div class="submit-field">
+										<h5>Décrivez votre lot</h5>
+										<textarea cols="30" rows="5" name="content" required class="with-border"></textarea>
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <div class="uploadButton margin-top-14">
+                                                        <input class="uploadButton-input" type="file" accept="image/*, application/pdf, application/doc" id="upload" name="files" multiple/>
+                                                        <label class="uploadButton-button ripple-effect" for="upload">Importer des fichiers</label>
+                                                        <span class="uploadButton-file-name">Images ou documents pouvant être utiles pour décrire votre lot</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div style="margin-top: 15px; margin-left: 20px">
+                                                        <script src='https://www.google.com/recaptcha/api.js'></script>
+                                                        <div class="g-recaptcha" style="display: inline-block;" data-sitekey="6LcIOV8UAAAAAO0kQRvjLmlOt7Q08VEubXgfvG6l"></div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-xl-12">
+					<button class="button ripple-effect big margin-top-30" type="submit">
+                        <i class="icon-feather-plus"></i> Poster votre lot
+                    </button>
+				</div>
+                </form>
+
+            </div>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+
+        {% if status %}
+            Snackbar.show({
+                text: 'Lot créé avec succès',
+            });
+        {% endif %}
+        {% if recaptcha %}
+            Snackbar.show({
+                text: 'Veuillez vérifier la recaptcha',
+            });
+        {% endif %}
+
+        $("#form-add-project").submit(function () {
+            var keys = $("#keywords");
+            $(".keywords-list .keyword-text").each(function() {
+                var val = keys.val();
+                val += ',' + $(this).text();
+                keys.val(val);
+            });
+            $("#placeKeys").val(keys.val());
+        });
+
+    </script>
+
+
+{% endblock %}

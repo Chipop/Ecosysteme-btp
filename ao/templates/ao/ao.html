@@ -1,0 +1,664 @@
+{% extends 'ao/base.html' %}
+
+{% load static %}
+
+{% block style %}
+
+    <style>
+        #time-dialog, #devis-dialog, #devis-list-dialog {
+            padding: 0;
+            color: #666;
+            max-width: 540px;
+            box-shadow: 0 0 25px rgba(0,0,0,.25);
+            background: #fff;
+            text-align: left;
+            margin: 40px auto;
+            position: relative;
+            box-sizing: border-box;
+            border-radius: 4px;
+        }
+
+        #time-dialog.dialog-with-tabs .mfp-close, #devis-dialog .mfp-close, #devis-list-dialog .mfp-close {
+            color: #888;
+            background-color: #f8f8f8;
+            border-left: 1px solid #e0e0e0;
+            border-radius: 0 4px 0 0;
+            top: 0;
+            right: 0;
+            width: 62px;
+            height: 61px;
+        }
+
+        #devis-dialog {
+            max-width: 900px;
+        }
+
+        #devis-list-dialog {
+            max-width: 750px;
+        }
+    </style>
+
+{% endblock %}
+
+
+{% block script %}
+
+    <script>
+        {% if status %}
+            Snackbar.show({
+                text: 'Offre envoyé avec succès',
+            });
+        {% endif %}
+        // Snackbar for copy to clipboard button
+        $('.copy-url-button').click(function() {
+            Snackbar.show({
+                text: 'Copié à presse-papiers!',
+            });
+        });
+    </script>
+
+    <!-- Display the countdown timer in an element -->
+    <script>
+    // Set the date we're counting down to
+    var countDownDate = new Date("{{ ao.date_limit }}").getTime();
+
+    // Update the count down every 1 second
+    var x = setInterval(function() {
+
+      // Get todays date and time
+      var now = new Date().getTime();
+
+      // Find the distance between now and the count down date
+      var distance = countDownDate - now;
+
+      // Time calculations for days, hours, minutes and seconds
+      var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      // Display the result in the element with id="demo"
+      document.getElementById("countdown").innerHTML = days + "jours " + hours + "h "
+      + minutes + "m " + seconds + "s ";
+
+      // If the count down is finished, write some text
+      if (distance < 0) {
+        clearInterval(x);
+        document.getElementById("countdown").innerHTML = "EXPIRE";
+      }
+    }, 1000);
+    </script>
+
+    <script>
+        function download_piece_jointe_ao(id_ao){
+            var url = "{% url 'ao:ao_download_document' id=0 %}".replace('0',id_ao);
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function (response) {
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log("ajax error");
+                }
+            });
+        }
+    </script>
+
+{% endblock %}
+
+
+{% block content %}
+
+<!-- Titlebar
+================================================== -->
+<div class="single-page-header" data-background-image="{% static 'ao/images/single-job.jpg'  %}">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="single-page-header-inner">
+					<div class="left-side">
+						<div class="header-image">
+                            {% if ao_company is not None %}
+                                <a href="{% url 'ao:company' ao_company.id %}">
+                            {% else %}
+                                <a href="javascript:void(0);">
+                            {% endif %}
+                                {% if ao.image is not None %}
+                                    <img src="{{ ao.image }}" alt="">
+                                {% else %}
+                                    <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                {% endif %}
+                            </a>
+                        </div>
+						<div class="header-details">
+                            <h3>{{ ao.title }}</h3>
+							<h5>A Prepos de l'appel d'offre</h5>
+							<ul>
+								<li>
+                                    {% if ao_company is not None %}
+                                        <a href="{% url 'ao:company' ao_company.id %}">
+                                    {% else %}
+                                        <a href="javascript:void(0);">
+                                    {% endif %}
+                                        <i class="icon-material-outline-business"></i> {{ ao.company }}
+                                    </a>
+                                </li>
+								<li><i class="icon-material-outline-location-on"></i> {{ ao.cities }}</li>
+                                <li><a href="{% url 'ao:category' ao.category.id %}"><i class="{{ ao.category.icon }}"></i> {{ ao.category }}</a></li>
+							</ul>
+						</div>
+					</div>
+					<div class="right-side">
+						<div class="salary-box">
+							<div class="salary-type">Budget</div>
+							<div class="salary-amount">{{ ao.budget }} Dirhams</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- Page Content
+================================================== -->
+<div class="container">
+	<div class="row">
+
+		<!-- Content -->
+		<div class="col-xl-8 col-lg-8 content-right-offset">
+
+			<div class="single-page-section">
+				<h3 class="margin-bottom-25">Description de l'appel d'offre</h3>
+				{{ ao.description|safe }}
+			</div>
+
+            <!-- Atachments -->
+			<div class="single-page-section">
+				<h3>Pièces jointes</h3>
+				<div class="attachments-container">
+                    {% for file in ao.files.all %}
+                        <a download onclick="download_piece_jointe_ao('{{ ao.id }}');" href="{{ file.file.url }}" class="attachment-box ripple-effect"><span>{{ file.name }}</span><i>{{ file.extension }}</i></a>
+                    {% endfor %}
+				</div>
+			</div>
+
+			<div class="single-page-section">
+				<h3 class="margin-bottom-30">Liste des lots</h3>
+
+                <!-- Listings Container -->
+				<div class="listings-container grid-layout">
+
+                    {% for project in ao.project_set.all %}
+
+                        <!-- Job Listing -->
+						<a href="{% url 'ao:project' ao.id project.id %}" class="job-listing">
+
+							<!-- Job Listing Details -->
+							<div class="job-listing-details">
+								<!-- Details -->
+								<div class="job-listing-description">
+									<h4 class="job-listing-company">{{ project.title }}</h4>
+									<h3 class="job-listing-title">{{ project.categories_s }}</h3>
+								</div>
+							</div>
+
+							<!-- Job Listing Footer -->
+							<div class="job-listing-footer">
+								<ul>
+									<li><i class="icon-material-outline-location-on"></i> {{ project.cities_s }}</li>
+									<li><i class="icon-material-outline-account-balance-wallet"></i> {{ project.budget }} Dh</li>
+									<li><i class="icon-material-outline-access-time"></i> {{ project.creation_date }}</li>
+								</ul>
+							</div>
+						</a>
+
+                    {% endfor %}
+                </div>
+                <!-- Listings Container / End -->
+			</div>
+
+			<div class="single-page-section">
+				<h3 class="margin-bottom-25">Appels d'offres de la méme catégorie</h3>
+
+				<!-- Listings Container -->
+				<div class="listings-container grid-layout">
+                    {% for aor in ao.related_ao %}
+
+                        <!-- Job Listing -->
+						<a href="{% url 'ao:ao' aor.id %}" class="job-listing">
+
+							<!-- Job Listing Details -->
+							<div class="job-listing-details">
+								<!-- Logo -->
+								<div class="job-listing-company-logo">
+									{% if ao.image is not None %}
+                                        <img src="{{ ao.image }}" alt="">
+                                    {% else %}
+                                        <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                    {% endif %}
+								</div>
+
+								<!-- Details -->
+								<div class="job-listing-description">
+									<h4 class="job-listing-company">
+                                        {{ aor.title }}
+                                        {% if aor.type_user != 'particular' %}
+                                            <span class="verified-badge" title="Verified Employer" data-tippy-placement="top"></span>
+                                        {% endif %}
+                                    </h4>
+									<h3 class="job-listing-title">{{ aor.company }}</h3>
+								</div>
+							</div>
+
+							<!-- Job Listing Footer -->
+							<div class="job-listing-footer">
+								<ul>
+									<li><i class="icon-material-outline-location-on"></i> {{ aor.cities }}</li>
+									<li><i class="icon-material-outline-account-balance-wallet"></i> {{ aor.budget }}</li>
+									<li><i class="icon-material-outline-access-time"></i> {{ aor.creation_date }}</li>
+								</ul>
+							</div>
+						</a>
+
+                    {% endfor %}
+
+                </div>
+				<!-- Listings Container / End -->
+
+            </div>
+		</div>
+
+
+		<!-- Sidebar -->
+		<div class="col-xl-4 col-lg-4">
+			<div class="sidebar-container">
+
+                {% if profile_id is not ao.user.id %}
+                    {% if profile_id is not None %}
+                        {% if is_company and devis_already and not already %}
+                            <a href="javascript:void(0);" class="apply-now-button popup-with-zoom-anim">
+                                Vous avez déja envoyer un devis pour cette appel d'offre
+                            </a>
+                        {% elif is_company and not already and not devis_already %}
+                            <a href="#small-dialog" class="apply-now-button popup-with-zoom-anim" style="margin-bottom: 10px">
+                                Postuler maintenant
+                                <i class="icon-material-outline-arrow-right-alt"></i>
+                            </a>
+                            <a href="#devis-dialog" class="apply-now-button popup-with-zoom-anim">
+                                Ajouter un devis
+                                <i class="icon-material-outline-arrow-right-alt"></i>
+                            </a>
+                        {% elif already %}
+                            <a href="javascript:void(0);" class="apply-now-button popup-with-zoom-anim">
+                                Vous avez déja postuler pour cette appel d'offre
+                            </a>
+                        {% elif not is_company %}
+                            <a href="javascript:void(0);" class="apply-now-button popup-with-zoom-anim">
+                                Vous devez avoir une entreprise pour postuler
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'ao:add_project' ao.id %}" class="apply-now-button" style="margin-bottom: 10px; background-color: #404040;">
+                        Ajouter Lot à l'appel d'offre
+                        <i class="icon-feather-plus-square"></i>
+                    </a>
+                    <a href="{% url 'ao:delete_ao' ao.id %}" class="apply-now-button" style="margin-bottom: 10px"
+                        onclick="return confirm('Voulez-vous vraiment supprimer l\'appel d\'offre ?')">
+                        Supprimer appel d'offre
+                        <i class="icon-material-outline-delete"></i>
+                    </a>
+                    <a href="{% url 'ao:edit_ao' ao.id %}" class="apply-now-button" style="margin-bottom: 10px; background-color: #689F38;">
+                        Modifier appel d'offre
+                        <i class="icon-feather-edit"></i>
+                    </a>
+                    <a href="#time-dialog" class="apply-now-button popup-with-zoom-anim" style="background-color: #689F38;margin-bottom: 10px">
+                        Modifier date de fin
+                        <i class="icon-feather-edit"></i>
+                    </a>
+                    <a href="#devis-list-dialog" class="apply-now-button popup-with-zoom-anim">
+                        Devis reçus<i class="icon-feather-send"></i>
+                    </a>
+                {% endif %}
+
+                <div class="countdown green margin-bottom-35" title="Temps restant avant l'expiration de l'appel d'offre">
+                    <p style="margin-bottom: 0">Temps restants</p>
+                    <p id="countdown" style="margin-bottom: 0; font-weight: 600; font-size: 18px;"></p>
+                </div>
+
+				<!-- Sidebar Widget -->
+				<div class="sidebar-widget">
+					<div class="job-overview">
+						<div class="job-overview-headline">Résumé de l'appel d'offre</div>
+						<div class="job-overview-inner">
+							<ul>
+								<li>
+									<i class="icon-material-outline-location-on"></i>
+									<span>Emplacement</span>
+									<h5>{{ ao.cities }}</h5>
+								</li>
+								<li>
+									<i class="icon-material-outline-business-center"></i>
+									<span>Annonceur</span>
+									<h5>{{ ao.company }}</h5>
+								</li>
+								<li>
+									<i class="icon-material-outline-local-atm"></i>
+									<span>Budget</span>
+									<h5>{{ ao.budget }}Dh</h5>
+								</li>
+								<li>
+									<i class="icon-material-outline-access-time"></i>
+									<span>Date d'ajout</span>
+									<h5>{{ ao.creation_date }}</h5>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+
+				<!-- Sidebar Widget -->
+				<div class="sidebar-widget">
+					<!-- Bookmark Button -->
+                    {% if profile_id is not None %}
+                        <h3>Enregistrer ou Partager</h3>
+                        <form style="display: inline" data-url="{% url 'ao:add_save' profile_id ao.id %}?type=ao" id="form_save">
+                            <button class="bookmark-button margin-bottom-25" type=submit>
+                                <span class="bookmark-icon"></span>
+                                <span class="bookmark-text">Enregistrer</span>
+                                <span class="bookmarked-text">Enregistré</span>
+                            </button>
+                        </form>
+                    {% else %}
+                        <h3>Partager</h3>
+                    {% endif %}
+
+					<!-- Copy URL -->
+					<div class="copy-url">
+						<input id="copy-url" type="text" value="" class="with-border">
+						<button class="copy-url-button ripple-effect" data-clipboard-target="#copy-url" title="Copier à Presse-papiers" data-tippy-placement="top"><i class="icon-material-outline-file-copy"></i></button>
+					</div>
+
+					<!-- Share Buttons -->
+					<div class="share-buttons margin-top-25">
+						<div class="share-buttons-trigger"><i class="icon-feather-share-2"></i></div>
+						<div class="share-buttons-content">
+							<span>Intéressant ? <strong>Partagez-le !</strong></span>
+							<ul class="share-buttons-icons">
+								<li><a href="#" data-button-color="#3b5998" title="Share on Facebook" data-tippy-placement="top"><i class="icon-brand-facebook-f"></i></a></li>
+								<li><a href="#" data-button-color="#1da1f2" title="Share on Twitter" data-tippy-placement="top"><i class="icon-brand-twitter"></i></a></li>
+								<li><a href="#" data-button-color="#dd4b39" title="Share on Google Plus" data-tippy-placement="top"><i class="icon-brand-google-plus-g"></i></a></li>
+								<li><a href="#" data-button-color="#0077b5" title="Share on LinkedIn" data-tippy-placement="top"><i class="icon-brand-linkedin-in"></i></a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+</div>
+
+
+<!-- Apply for a job popup
+================================================== -->
+<div id="small-dialog" class="zoom-anim-dialog mfp-hide dialog-with-tabs">
+
+	<!--Tabs -->
+	<div class="sign-in-form">
+
+		<ul class="popup-tabs-nav">
+			<li><a href="#tab">Envoyer une offre</a></li>
+		</ul>
+
+		<div class="popup-tabs-container">
+
+			<!-- Tab -->
+			<div class="popup-tab-content" id="tab">
+
+				<!-- Welcome Text -->
+				<div class="welcome-text">
+					<h3>Remplis les informations de votre offre</h3>
+				</div>
+
+				<!-- Form -->
+				<form method="post" id="apply-now-form" enctype="multipart/form-data">
+
+                    {% csrf_token %}
+					<div class="input-with-icon-left">
+						<i class="icon-material-outline-access-time"></i>
+						<input type="number" class="input-text with-border" name="number" id="number" placeholder="Nombre de jours de réalisation" required/>
+					</div>
+
+					<div class="input-with-icon-left">
+						<i class="icon-material-outline-money"></i>
+						<input type="text" class="input-text with-border" name="money" id="money" placeholder="Estimation de budget nécessaire" required/>
+					</div>
+
+					<div class="input-with-icon-left">
+                        <textarea name="message" id="message" cols="3" rows="4" placeholder="Message"></textarea>
+					</div>
+
+					<div class="uploadButton">
+                        {{ form.upload_cv }}
+						<label class="uploadButton-button ripple-effect" for="id_upload_cv">Selectionner un fichier</label>
+						<span class="uploadButton-file-name">Ajouté un fichier à votre offre. <br> Taille maximal: 50 MB.</span>
+					</div>
+
+                    <div style="text-align: center; margin-top: 15px">
+                        <script src='https://www.google.com/recaptcha/api.js'></script>
+                        <div class="g-recaptcha" style="display: inline-block;" data-sitekey="6LcIOV8UAAAAAO0kQRvjLmlOt7Q08VEubXgfvG6l"></div>
+                    </div>
+
+				</form>
+
+				<!-- Button -->
+				<button class="button margin-top-5 full-width button-sliding-icon ripple-effect" type="submit" form="apply-now-form">
+                    Envoyer Maintenant <i class="icon-material-outline-arrow-right-alt"></i></button>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+<!-- Apply for a job popup / End -->
+
+
+
+<!-- Time end edit popup
+================================================== -->
+<div id="time-dialog" class="zoom-anim-dialog mfp-hide dialog-with-tabs">
+
+	<!--Tabs -->
+	<div class="sign-in-form">
+
+		<ul class="popup-tabs-nav">
+			<li><a href="#tab">Modifier date de fin</a></li>
+		</ul>
+
+		<div class="popup-tabs-container">
+
+			<!-- Tab -->
+			<div class="popup-tab-content" id="tab">
+
+				<!-- Welcome Text -->
+				<div class="welcome-text">
+					<h3>Entrer la nouvelle date de fin de l'appel d'offre</h3>
+				</div>
+
+				<!-- Form -->
+				<form method="post" action="{% url 'ao:edit_ao_date' ao.id %}" id="form-date">
+
+                    {% csrf_token %}
+					<div class="input-with-icon-left">
+						<i class="icon-material-outline-access-time"></i>
+						<input type="datetime-local" value="{{ ao.simple_date_limit }}" class="input-text with-border" name="date_limit" id="date_limit" placeholder="Date de fin de lot" required/>
+					</div>
+
+
+                    <div style="text-align: center; margin-top: 15px">
+                        <script src='https://www.google.com/recaptcha/api.js'></script>
+                        <div class="g-recaptcha" style="display: inline-block;" data-sitekey="6LcIOV8UAAAAAO0kQRvjLmlOt7Q08VEubXgfvG6l"></div>
+                    </div>
+
+				</form>
+
+				<!-- Button -->
+				<button class="button margin-top-5 full-width button-sliding-icon ripple-effect" type="submit" form="form-date">
+                    Modifier Maintenant <i class="icon-material-outline-arrow-right-alt"></i></button>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+<!-- Time edit popup / End -->
+
+{% if is_company and not devis_already and not already %}
+<!-- Devis popup
+================================================== -->
+<div id="devis-dialog" class="zoom-anim-dialog mfp-hide dialog-with-tabs">
+
+	<!--Tabs -->
+	<div class="sign-in-form">
+
+		<ul class="popup-tabs-nav">
+			<li><a href="#tab">Envoyer un devis</a></li>
+		</ul>
+
+		<div class="popup-tabs-container">
+
+			<!-- Tab -->
+			<div class="popup-tab-content" id="tab">
+
+				<!-- Welcome Text -->
+				<div class="welcome-text">
+					<h3>Remplis les informations de votre devis</h3>
+				</div>
+
+				<!-- Form -->
+				<form method="post" action="{% url 'ao:send_quotation' ao.id %}" id="devis-form" enctype="multipart/form-data">
+
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="input-with-icon-left">
+                                <i class="icon-material-outline-access-time"></i>
+                                <input type="number" class="input-text with-border" name="numberD" id="numberD" placeholder="Nombre de jours de réalisation" required/>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-with-icon-left">
+                                <i class="icon-material-outline-money"></i>
+                                <input type="text" class="input-text with-border" name="moneyD" id="moneyD" placeholder="Estimation de budget nécessaire" required/>
+                            </div>
+                        </div>
+                    </div>
+
+					<div class="input-with-icon-left">
+                        <textarea name="message" style="min-height: 100px;" id="messageD" cols="3" rows="1" placeholder="Message"></textarea>
+					</div>
+
+					<div>
+					    <table>
+					        <tr>
+					            <th colspan="3" style="padding-bottom: 10px; padding-left: 9px;">Détails du devis
+					                <span style="font-weight: 500;font-size: 13px;">(Nombre d'insertion maximal: {{ quotation_nb_lignes }})</span>
+					            </th>
+					            <th style="text-align: right; padding-right: 12px">TVA :</th>
+					            <th>
+					                <select name="tva" id="tva" style="padding: 2px; margin-bottom: 0; height: 27px;">
+                                        {% for tva in tvas %}
+                                             <option value="{{ tva.tva }}">{{ tva.tva }}%</option>
+                                        {% empty %}
+                                            <option value="0">0%</option>
+                                            <option value="10">10%</option>
+                                            <option value="14">14%</option>
+                                            <option value="20">20%</option>
+                                        {% endfor %}
+                                    </select>
+                                </th>
+                            </tr>
+                            {% for n in lines_number %}
+                                <tr>
+                                    <td><input type="text" disabled placeholder="N° de prix" name="np{{n}}" id="prix{{n}}" value="N° de prix {{ n|add:1 }}"></td>
+                                    <td><input type="text" placeholder="Désignation" name="design{{n}}" id="design{{n}}"></td>
+                                    <td><input type="text" placeholder="Unité" name="unite{{n}}" id="unite{{n}}"></td>
+                                    <td><input type="number" placeholder="Prix unitaire Dh" name="price{{n}}" id="price{{n}}"></td>
+                                    <td><input type="number" placeholder="Quantité" name="qte{{n}}" id="qte{{n}}"></td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    <div style="/*text-align: center; margin-top: 15px*/">
+                        <script src='https://www.google.com/recaptcha/api.js'></script>
+                        <div class="g-recaptcha" style="display: inline-block;" data-sitekey="6LcIOV8UAAAAAO0kQRvjLmlOt7Q08VEubXgfvG6l"></div>
+                    </div>
+
+				</form>
+
+				<!-- Button -->
+				<button class="button margin-top-5 full-width button-sliding-icon ripple-effect" type="submit" form="devis-form">
+                    Envoyer Maintenant <i class="icon-material-outline-arrow-right-alt"></i></button>
+			</div>
+
+		</div>
+	</div>
+</div>
+<!-- Devis popup / End -->
+{% endif %}
+
+{% if profile_id == ao.user.id %}
+<!-- List devis popup
+================================================== -->
+<div id="devis-list-dialog" class="zoom-anim-dialog mfp-hide dialog-with-tabs">
+
+	<!--Tabs -->
+	<div class="sign-in-form">
+
+		<ul class="popup-tabs-nav">
+			<li><a href="#tab">Devid reçus</a></li>
+		</ul>
+
+		<div class="popup-tabs-container">
+
+			<!-- Tab -->
+			<div class="popup-tab-content" id="tab">
+
+				<!-- Welcome Text -->
+				<div class="welcome-text">
+					<h3>Liste des entreprises qui ont envoyé un devis pour cette appel d'offre</h3>
+				</div>
+
+				<div class="col-xl-12">
+                    <div class="companies-list">
+                        {% for q in quotations %}
+                            <a href="{% url 'ao:devis' ao.id q.id %}" class="company">
+                                <div class="company-inner-alignment">
+                                    <span class="company-logo">
+                                        {% if q.company.logo.url is not None %}
+                                            <img src="{{ q.company.logo.url }}" alt="">
+                                        {% else %}
+                                            <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                        {% endif %}
+                                    </span>
+                                    <h4>{{ q.company }}</h4>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+		        </div>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+<!-- list devis popup / End -->
+{% endif %}
+
+{% endblock %}

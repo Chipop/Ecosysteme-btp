@@ -1,0 +1,73 @@
+{% extends 'qa/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+    <!-- =-=-=-=-=-=-= Page Breadcrumb =-=-=-=-=-=-= -->
+    <section class="page-title">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6 col-sm-7 co-xs-12 text-left">
+            <h1>Comment ça marche</h1>
+          </div>
+          <!-- end col -->
+          <div class="col-md-6 col-sm-5 co-xs-12 text-right">
+            <div class="bread">
+              <ol class="breadcrumb" style="margin-top: 15px">
+                <li><a href="{% url 'qa:home' %}">Acceuil</a></li>
+                <li class="active">Comment ça marche</li>
+              </ol>
+            </div>
+            <!-- end bread -->
+          </div>
+          <!-- end col -->
+        </div>
+        <!-- end row -->
+      </div>
+      <!-- end container -->
+    </section>
+    <!-- =-=-=-=-=-=-= Page Breadcrumb End =-=-=-=-=-=-= -->
+
+    <!-- =-=-=-=-=-=-= Blog & News =-=-=-=-=-=-= -->
+    <section id="blog" class="custom-padding white">
+      <div class="container">
+        <!-- Row -->
+
+        <div class="row">
+          <div class="col-sm-4 col-md-4 col-xs-12  center-responsive"> <img src="{% static 'images/step1.png' %}" class="img-responsive" alt="">
+            <h4><a href="/signup"> Créer Un Compte</a></h4>
+          </div>
+          <div class="col-sm-4 col-md-4 col-xs-12 center-responsive get-arrow"> <img src="{% static 'images/step2.png' %}" class="img-responsive" alt="">
+            <h4><a href="{% url 'qa:add_question' %}"> Publiez votre question</a></h4>
+          </div>
+          <div class="col-sm-4 col-md-4 col-xs-12 center-responsive get-arrow"> <img src="{% static 'images/step3.png' %}" class="img-responsive" alt="">
+            <h4><a href="{% url 'qa:all_questions' %}"> Trouvez votre solution</a></h4>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+
+        <!-- Row End -->
+      </div>
+      <!-- end container -->
+    </section>
+    <!-- =-=-=-=-=-=-= Blog & News end =-=-=-=-=-=-= -->
+
+    <!-- =-=-=-=-=-=-= Search Bar =-=-=-=-=-=-= -->
+  <div class="full-section search-section-listing">
+    <div class="search-area container">
+      <h3 class="search-title">AVEZ-VOUS UNE QUESTION ?</h3>
+      <p class="search-tag-line">Si vous avez des questions, vous pouvez demander ci-dessous ou entrez ce que vous cherchez !</p>
+      <form autocomplete="off" method="get" class="search-form clearfix" id="search-form">
+          <div class="autocomplete" style="display: inline;">
+             <input type="text" title="* Veuillez entrer un terme de recherche!" id="input-search-auto_c"
+                    placeholder="Veuillez entrer un terme de recherche" name="search"
+                    class="search-term " autocomplete="off">
+          </div>
+          <input type="submit" value="Rechercher" class="search-btn">
+      </form>
+    </div>
+  </div>
+  <!-- =-=-=-=-=-=-= Search Bar END =-=-=-=-=-=-= -->
+
+{% endblock %}

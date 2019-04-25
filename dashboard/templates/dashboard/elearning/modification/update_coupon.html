@@ -1,0 +1,250 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+
+{% block title %}
+    Modifier un coupon | Elearning | {{ block.super }}
+{% endblock title %}
+
+{% block stylesheets %}
+
+    {{ block.super }}
+
+    <!-- Toastr style -->
+    <link href="{% static 'dashboard/css/plugins/toastr/toastr.min.css' %}" rel="stylesheet">
+
+
+    <!-- Multi Select -->
+    <link href="{% static 'dashboard/multi-select/jquery.dropdown.min.css' %}" rel="stylesheet">
+
+
+
+{% endblock stylesheets %}
+
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script>
+        $('#dashboard_elearning').addClass("active");
+        $('#elearning_coupons').addClass("active");
+    </script>
+
+
+    <!-- Multi Select -->
+    <script src="{% static 'dashboard/multi-select/jquery.dropdown.min.js' %}"></script>
+
+    <!-- Toastr script -->
+    <script src="{% static 'dashboard/js/plugins/toastr/toastr.min.js' %}"></script>
+
+    <script>
+        {% if messages %}
+            {% for msg in messages %}
+                {% if msg.tags == "success" %}
+                    toastr.options = {
+                        "closeButton": true,
+                        "debug": false,
+                        "progressBar": true,
+                        "preventDuplicates": false,
+                        "positionClass": "toast-top-right",
+                        "onclick": null,
+                        "showDuration": "400",
+                        "hideDuration": "1000",
+                        "timeOut": "7000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+
+                    Command: toastr["success"]("{{ msg }}")
+
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+
+
+
+
+
+{% endblock scripts %}
+
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class=" float-left">
+                    <a href="{% url 'dashboard:elearning_coupons' %}">
+                        <button class="btn btn-primary dim">
+                            <i class="fa fa-arrow-left"></i> Coupons
+                        </button>
+                    </a>
+                </div>
+
+                    <div class="float-right">
+                        <a href="{% url 'dashboard:elearning_delete_coupon' id=coupon.id %}">
+                            <button class="btn btn-danger dim">
+                                <i class="fa fa-trash"></i> Supprimer
+                            </button>
+                        </a>
+                    </div>
+
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="tabs-container">
+
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li><a class="nav-link active show" data-toggle="tab" href="#tab-1"> Informations</a></li>
+                    </ul>
+
+                    <div class="tab-content">
+
+
+                        <div role="tabpanel" id="tab-1" class="tab-pane active show">
+                            <div class="panel-body">
+
+                                <div class="">
+
+                                    <h2>
+                                        Modification du coupon de <strong> {{ coupon.value }}</strong>
+                                    </h2>
+                                    <div class="mail-tools tooltip-demo m-t-md error_color"
+                                         style="padding:5px 50px 0px 50px;">
+
+                                        {% for field in form %}
+                                            {{ field.errors }}
+                                        {% endfor %}
+
+
+                                    </div>
+                                </div>
+                                <div class="" style="padding:5px 50px 25px 50px;">
+
+
+                                    <form action=""
+                                          method="POST" >
+
+                                        {% csrf_token %}
+                                        {{ form.media }}
+
+
+                                        <div class="form-group row"><label class="col-sm-2 col-form-label"></label>
+
+                                            <div class="col-sm-10">
+                                                <div class="row">
+
+                                                    <div class="col-md-12">
+                                                        <label for="id_title">Valeur *</label>
+                                                    </div>
+
+                                                    <div class="col-md-12">
+                                                        {% render_field form.value class="form-control" %}
+                                                    </div>
+
+
+                                                    <br><br><br>
+
+                                                    <div class="col-md-12">
+                                                        <label for="id_title">Pourcentage *</label>
+                                                    </div>
+
+                                                    <div class="col-md-12">
+                                                        {% render_field form.percentage class="form-control" %}
+                                                    </div>
+
+
+
+                                                    <br><br><br>
+
+                                                    <div class="col-md-12">
+                                                        <label for="{{ form.used.id_for_label }}" >Utilisé </label>
+                                                        {% render_field form.used  %}
+                                                    </div>
+
+
+                                                    <br><br><br>
+
+                                                    <div class="col-md-12">
+                                                        <label for="{{ form.is_multiple.id_for_label }}" >Multiple </label>
+                                                        {% render_field form.is_multiple  %}
+                                                    </div>
+
+
+
+                                                    <br><br><br>
+
+                                                    <div class="col-md-12">
+                                                        <label for="{{ form.is_general.id_for_label }}" >Général </label>
+                                                        {% render_field form.is_general  %}
+                                                    </div>
+
+                                                    <div class="col-md-12">
+                                                    </div>
+
+
+                                                    <br><br><br>
+
+                                                    <div class="col-md-12">
+                                                        <label for="id_title" >Cours associé </label>
+                                                    </div>
+
+                                                    <div class="col-md-12">
+                                                        {% render_field form.course class="form-control" %}
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class=" row">
+
+                                            <div class="col-lg-12">
+                                                <div class="float-right">
+
+                                                    <input value="Modifier" type="submit" class="btn btn-success"
+                                                           style="width:100px;">
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </form>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+{% endblock content %}
+
+

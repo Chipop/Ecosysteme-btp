@@ -29,7 +29,7 @@ $(function () {
                     "<button class=\"btn btn-danger\" type=\"submit\"> " +
                     "<i class=\"fa fa-trash-o\"></i> </button> </form>" +
                     "</td></tr>"
-                )
+                );
             }
         }
     });

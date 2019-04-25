@@ -1,0 +1,1318 @@
+{% load  static %}
+
+
+<div class="wrapper">
+
+    <main>
+
+        <div class="col-left">
+
+            <div class="chatbox_header">
+                <div class="chatbox_header_details">
+                    Messagerie
+                </div>
+
+
+                <div class="chatbox_header_buttons">
+
+                    <div class="chatbox_header_button chatbox_messagerie_buttons"
+                         onclick="stop_click_propagation(); open_search_container();">
+                        <i class="fa fa-search"></i>
+                    </div>
+
+                    <div class="chatbox_header_button chatbox_messagerie_buttons"
+                         onclick="stop_click_propagation(); show_messagerie_options();">
+                        <i class="fa fa-cog"></i>
+                    </div>
+
+                    <div class="chat_messagerie_options hidden" onclick="stop_click_propagation(); ">
+                        <input type="checkbox" id="cbox_chatbox_messagerie_sons" onclick="toggle_sound(this);"> <label
+                            style="display:inline;cursor:pointer;    font-weight: bolder;  font-size: 14px;"
+                            for="cbox_chatbox_messagerie_sons">Sons</label>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="chatbox_content  chatbox_friends_list_content">
+                <div id="chatbox_search_container" style="display:none;">
+                    <input id="chatbox_search_input" type="text" placeholder="Rechercher..."
+                           onkeyup="chatbox_search_keyup(this);">
+                </div>
+
+
+                <div class="col-content">
+
+                    <div class="chatbox_search_friends_result" style="display:none;">
+                        <i class="fa fa-spinner chatbox_friends_list_search_loading"></i>
+                    </div>
+
+
+                    <div class="chatbox_loading_search hidden">
+                        <div class="chatbox_loading_spinner_container">
+                            <i class="fa fa-spinner chatbox_friends_list_loading"></i>
+                        </div>
+
+
+                    </div>
+
+                    <div class="messages">
+                        <div class="chatbox_spinner_container">
+                            <i class="fa fa-spinner chatbox_friends_list_loading"></i>
+                        </div>
+
+                        <div id="chatbox_no_conversations" style="    text-align: center; padding: 49px 28px;">
+                            <i class="fa fa-user-plus" style="    font-size: 50px; margin: 24px;"></i>
+                            <h5>Rester en contact avec votre réseau</h5>
+                            <p>Lancez une conversation avec vos relations ou trouvez des personnes pour développer votre
+                                réseau.</p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="chatbox_friends_list_error_container">
+                    <p>Impossible de se connecter au chat... </p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="chat_bubbles">
+
+        </div>
+
+    </main>
+</div>
+
+<script src="{% static 'pusher_chat_app/js/moment.min.js' %}"></script>
+<script src="{% static 'pusher_chat_app/js/moment-timezone.min.js' %}"></script>
+
+<script>
+
+    let chat = {
+        rooms: [],
+        roommessages: [],
+        messages: [],
+        users_states: [],
+        other_users: [],
+        currentUserId: undefined,
+        currentUser: undefined,
+        search_friends_rooms_list: [],
+    };
+
+
+    function chatbox_search_keyup(input, typing = true) {
+        let val = $(input).val();
+        $('.chatbox_search_friends_result').html("")
+
+        if (val === "") {
+            $('.col-content .messages').show();
+            $('.chatbox_search_friends_result').hide();
+            return;
+        }
+
+        let other_users_ids = [];
+        let utilisateurs_trouves = 0;
+
+
+        chat.search_friends_rooms_list.forEach((room) => {
+            let room_user_ids = room.userIds;
+            console.log(room_user_ids);
+
+            var index = room_user_ids.indexOf("{{ request.user.id }}");
+            if (index > -1) {
+                room_user_ids.splice(index, 1);
+            }
+
+            room_user_ids.forEach((id) => {
+
+                if (chat.other_users[id] === undefined) {
+                    $.ajax({
+
+                        url: "{% url 'pusher_chat_app:ajax_get_user_infos' userid=0 %}".replace("0", id),
+                        type: 'GET',
+                        async: false,
+
+                        success: function (response) {
+                            let other_user_full_name = response.name;
+                            let other_user_image = response.image;
+                            let other_user = {
+                                id: id,
+                                name: other_user_full_name,
+                                image: other_user_image,
+                                state: ""
+                            };
+                            chat.other_users[id] = other_user;
+
+                        },
+
+                        error: function (response) {
+                        },
+
+                        complete: function (response) {
+                        },
+
+                    });
+                }
+
+
+                if (chat.other_users[id] !== undefined && chat.other_users[id].name.toLowerCase().indexOf(val) != -1) {
+                    utilisateurs_trouves++;
+
+                    //${other_user.name}
+                    let friend_element = `<li class="" onclick="friends_list_click(this);" data-user="${id}" data-room="${room.id}">
+                                    <div class="avatar">
+                                        <div class="avatar-image">
+                                            <div class="status offline"></div>
+                                            <img class="chatbox_user_avatar" data-id="${room.id}" src="${chat.other_users[id].image}">
+                                        </div>
+                                    </div>
+                                    <h3 class="chatbox_user_full_name" data-id="${room.id}">${chat.other_users[id].name}</h3>
+                                    <p></p>
+                                </li>`
+
+                    $('.chatbox_search_friends_result').append($(friend_element));
+
+                    $('.col-content .messages').hide();
+                    $('.chatbox_search_friends_result').show();
+                } else {
+                    //console.log("pas d'utulisateur trouvé")
+                }
+
+
+            })
+
+        });
+
+        if (utilisateurs_trouves === 0) {
+            $('.chatbox_search_friends_result').append("Aucun utilisateur trouvé.");
+            $('.col-content .messages').hide();
+            $('.chatbox_search_friends_result').show();
+        }
+
+    }
+
+
+    const smileys_smileys = `<span class="chat_smiley_icon" onclick="copy_to_message(this);">😀</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😂</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤣</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😃</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😄</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😆</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😉</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😊</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😋</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😎</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😍</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😘</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😗</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😙</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😚</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🙂</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤗</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤩</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤔</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤨</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😐</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😑</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😶</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🙄</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😏</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😣</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😥</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😮</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤐</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😯</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😫</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😴</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😌</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😛</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😜</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😝</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤤</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😒</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😓</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😔</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😕</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🙃</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤑</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😲</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">☹</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🙁</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😖</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😞</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😟</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😤</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😢</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😭</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😦</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😧</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😨</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😩</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤯</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😬</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😰</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😱</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😳</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤪</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😵</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😡</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😠</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤬</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😷</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤒</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤕</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤢</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤮</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤧</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😇</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤠</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤡</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤥</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤫</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤭</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🧐</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤓</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">😈</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">👿</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">👹</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">👺</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">💀</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">👻</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">👽</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">🤖</span>
+<span class="chat_smiley_icon" onclick="copy_to_message(this);">💩</span>`
+
+    const chat_bubble = `<div class="col-right chatbox_bubble">
+            <div class="chatbox_header  ">
+                <div class="chatbox_header_details ">
+                    <a href="www.google.com" target="_blank" class="chatbubble_user_full_name">Abdelaziz Chiboub</a>
+                </div>
+                <div class="chatbox_header_buttons">
+                    <div class="chatbox_header_button chatbox_header_button_close" >
+                        <i class="fa fa-times"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="chatbox_content chatbox_opened" onclick="set_read_cursor(this);"  >
+                <div class="col-content" onscroll="messagebubble_scroll_top(this);">
+                    <section class="message">
+                        <div class="grid-message">
+
+                        </div>
+                    </section>
+                </div>
+                <div class="typing_indicator">
+                    <span class="typing_indicator_name"></span> est entrain d'écrire...
+                </div>
+                <div class="chatbubble_files_preview_container">
+
+                    <div class="chatbubble_files_preview_loading" >
+                        <i class="fa fa-spinner "></i>
+                    </div>
+
+                   <div class="chatbubble_files_preview_close" onclick="chatbubble_close_files_preview(this);">
+                        <i class="fa fa-times "></i>
+                    </div>
+                    <div class="chatbubble_files_preview">
+
+                    </div>
+                </div>
+                <div class="col-foot">
+                    <div class="compose">
+                        <textarea class="message_textarea"  placeholder="Ecrire  un message..." onkeyup="on_typing(this);on_send_message_input(this,event);" onkeypress="disable_enter(this,event);"></textarea>
+                        <div class="compose-dock">
+                            <label>
+                                <i class="fa fa-paperclip "></i>
+                                <form>
+                                    <input class="message_files" onchange="chat_files_preview(this);" type="file" name="document" accept=".docx, .pdf, .xls,.png,  .jpg, .gif, .jpeg, .ppt" style="display: none;" required="">
+                                </form>
+                            </label>
+                            <i class="fa fa-smile-o" onclick="show_smileys(this);"></i>
+                            <i class="fa fa-paper-plane" onclick="on_send_message_button(this);"></i>
+
+                            <div  class="smileys_container hidden">
+
+                                <div class="tab-content">
+                                  <div id="smileys_smileys" class="tab-pane fade in active chat_smiley_tab">
+                                    ${smileys_smileys}
+                                  </div>
+                                  <div id="menu1" class="tab-pane fade chat_smiley_tab">
+                                    <h3>Menu 1</h3>
+                                    <p>Some content in menu 1.</p>
+                                  </div>
+                                  <div id="menu2" class="tab-pane fade chat_smiley_tab">
+                                    <h3>Menu 2</h3>
+                                    <p>Some content in menu 2.</p>
+                                  </div>
+                                </div>
+
+                                <ul class="nav nav-tabs" style=" position: absolute; bottom: 0;">
+                                  <li class="active"><a data-toggle="tab" href="#smileys_smileys" title="Home">😀</a></li>
+                                  {% comment %}
+                                  <li><a data-toggle="tab" href="#menu1">👦</a></li>
+                                  <li><a data-toggle="tab" href="#menu2">🐻</a></li>
+                                  <li><a data-toggle="tab" href="#menu2">🌹</a></li>
+                                  <li><a data-toggle="tab" href="#menu2">🌍</a></li>
+                                  {% endcomment %}
+                                </ul>
+
+                            </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>`;
+
+    let message_template_sent = `<div class="col-message-sent">
+                                <div class="message-sent message_read_cursor">
+                                    <p class="message_text"></p>
+                                </div>
+                            </div>`
+
+    let message_template_received = `<div class="col-message-received">
+                                <div class="message-received message_read_cursor">
+                                    <p class="message_text"></p>
+                                </div>
+                            </div>`
+
+    function open_search_container() {
+        $('#chatbox_search_container').slideToggle("fast");
+
+    }
+
+    function show_messagerie_options() {
+        $('.chat_messagerie_options').toggleClass('hidden')
+    }
+
+    function stop_click_propagation() {
+        if (!e) var e = window.event;
+        e.cancelBubble = true;
+        if (e.stopPropagation) e.stopPropagation();
+    }
+
+
+    function disable_enter(input, event) {
+        if (event.keyCode === 13 && !event.shiftKey) {
+            event.preventDefault();
+        }
+    }
+
+    function copy_to_message(element) {
+        let emoticon = $(element).text();
+        let textarea = $(element).closest('.compose').find("textarea");
+        let text = textarea.val();
+
+        textarea.val(text + emoticon);
+    }
+
+    function show_smileys(element) {
+        $(element).siblings(".smileys_container").toggleClass("hidden")
+    }
+
+
+    $('.chatbox_header').on('click', function () {
+        $(this).parent().find('.chatbox_content').toggle();
+        $(this).toggleClass("opened");
+    });
+
+    let LIMIT_MESSAGES = 10;
+    let opened_rooms = [];
+
+    let ROOM = '.chatbox_bubble';
+    let ROOM_MESSAGES_BOX = '.grid-message';
+    let COMPOSE_MESSAGE_CONTAINER = ".compose";
+    let ROOM_MESSAGE_READ = '.message_read_cursor';
+    let ROOM_MESSAGE_READ_CLASS = 'read_message_chatbubble';
+
+    let FRIENDS_LIST = '.chatbox_friends_list_content .messages';
+    let FRIENDS_LIST_ITEM = '.chatbox_friends_list_content .messages li';
+
+    let UNREAD_CLASS = "unread_message_flist";
+
+    let ROOM_MESSAGE_INPUT = ".message_textarea";
+    let ROOM_FILES_INPUT = ".message_files";
+
+
+    function message_is_read_by_me(message) {
+        const cursor = chat.currentUser.readCursor({
+            roomId: message.room.id
+        });
+
+        if (cursor === undefined) {
+            return false;
+        }
+
+        else if (cursor.position >= message.id) {
+            return true;
+        }
+
+        return false;
+    }
+
+    function set_read_cursor_on_room(cursor) {
+
+        let data_room = cursor.room.id;
+        let data_message = cursor.position;
+
+        $(`${ROOM}[data-room=${data_room}] ${ROOM_MESSAGE_READ}`).removeClass(ROOM_MESSAGE_READ_CLASS);
+        $(`${ROOM_MESSAGE_READ}[data-message=${data_message}]`).addClass(ROOM_MESSAGE_READ_CLASS);
+
+
+    }
+
+    async function message_is_read_by_other(message, userid) {
+        let cursor = await chat.currentUser.readCursor({
+            roomId: message.room.id,
+            userId: userid
+        });
+
+        if (message.senderId === userid) {
+            return false;
+        }
+
+        if (cursor === undefined) {
+            return false;
+        }
+
+        else if (cursor.position >= message.id) {
+            return true;
+        }
+
+        return false;
+    }
+
+    async function last_message_is_read_by_other(message, userid) {
+        let cursor = await chat.currentUser.readCursor({
+            roomId: message.room.id,
+            userId: userid
+        });
+
+        if (cursor === undefined) {
+            return undefined;
+        }
+        else if (cursor.position >= message.id) {
+            return cursor.position;
+        }
+        return undefined;
+    }
+
+    function set_read_cursor(element) {
+        let data_room = $(element).closest(ROOM).attr("data-room");
+        let last_position = Math.max(...chat.roommessages[data_room].map(m => m.id));
+
+        chat.currentUser.setReadCursor({
+            roomId: data_room,
+            position: last_position
+        });
+
+        $(`${FRIENDS_LIST_ITEM}[data-room=${data_room}] p`).removeClass(UNREAD_CLASS);
+
+
+        // deColor The room if i read the message
+        $(`${ROOM}[data-room=${data_room}]`).find(".chatbox_header").removeClass("chatbox_header_new_message");
+    }
+
+
+    function on_typing(element) {
+        let data_room = $(element).closest(ROOM).attr("data-room");
+        chat.currentUser.isTypingIn({roomId: data_room})
+            .then(() => {
+                console.log('Success!')
+            })
+            .catch(err => {
+                console.log(`Error sending typing indicator: ${err}`)
+            })
+    }
+
+    async function messagebubble_scroll_top(element) {
+
+
+        let data_room = $(element).closest(ROOM).attr("data-room");
+
+        if ($(element).scrollTop() === 0) {
+            const oldestMessageIdReceived = Math.min(...chat.roommessages[data_room].map(m => m.id));
+
+            let old_height = $(element)[0].scrollHeight;
+
+
+            await fetch_messages(data_room, initialId = oldestMessageIdReceived).then(msgs => {
+                append_messages_to_bubble(data_room, msgs);
+                chat.roommessages[data_room].push(...msgs);
+            });
+
+            let new_height = $(element)[0].scrollHeight;
+
+            $(element).scrollTop(new_height - old_height);
+
+        }
+    }
+
+    async function fetch_messages(data_room, initialId = null) {
+        let r_messages = null;
+        if (initialId !== null) {
+            await chat.currentUser.fetchMultipartMessages({
+                roomId: data_room,
+                direction: 'older',
+                initialId: initialId,
+                limit: LIMIT_MESSAGES,
+            })
+                .then(messages => {
+                    r_messages = messages.reverse()
+                })
+                .catch(err => {
+                    console.log(`Error fetching messages: ${err}`)
+                })
+        } else {
+            await chat.currentUser.fetchMultipartMessages({
+                roomId: data_room,
+                direction: 'older',
+                limit: LIMIT_MESSAGES,
+            })
+                .then(messages => {
+                    r_messages = messages.reverse()
+                })
+                .catch(err => {
+                    console.log(`Error fetching messages: ${err}`)
+                })
+        }
+        return r_messages;
+    }
+
+    function is_my_message(message) {
+        if (message.senderId === chat.currentUserId)
+            return true;
+        return false;
+    }
+
+
+    function scroll_room_to_bottom(data_room) {
+        let room_message_grid = $(ROOM).filter(`[data-room=${data_room}]`).find(ROOM_MESSAGES_BOX);
+        $(room_message_grid).closest('.col-content').scrollTop($(room_message_grid).closest('.col-content')[0].scrollHeight);
+    }
+
+    function scroll_room_to_bottom_new_message(data_room) {
+        let room_message_grid = $(ROOM).filter(`[data-room=${data_room}]`).find(ROOM_MESSAGES_BOX);
+
+        $(room_message_grid).closest('.col-content').scrollTop($(room_message_grid).closest('.col-content')[0].scrollHeight);
+    }
+
+    function append_messages_to_bubble(data_room, messages, new_message = false) {
+
+        let room_message_grid = $(ROOM).filter(`[data-room=${data_room}]`).find(ROOM_MESSAGES_BOX);
+
+        messages.forEach(message => {
+            let msg = "";
+
+            if (is_my_message(message)) {
+                msg = $(message_template_sent);
+                $(msg).find('p').attr("data-time", moment.tz(message.createdAt, moment.tz.guess()).format("HH:mm"))
+                $(msg).attr("title", moment.tz(message.createdAt, moment.tz.guess()).format("DD/MM/YYYY HH:mm"));
+                //$(msg).attr("title",moment.tz.guess())
+                $(msg).find('p').text(message.parts[0]["payload"]["content"]);
+
+
+                if (message.parts[1] !== undefined) {
+                    let attachement = message.parts[1]["payload"];
+                    attachement.url().then((url) => {
+                        let attachement_text = ""
+                        if (attachement['type'].includes("image/")) {
+                            attachement_text = `<p class=""><a href="${url}" target="_blank" ><img style="width:100px;" src="${url}" alt="${ attachement['name'] }" > </a></p>`;
+                        } else {
+                            attachement_text = `<p class=""><a href="${url}" target="_blank" ><i class=" fa fa-paperclip"></i> ${ attachement['name'] } </a></p>`;
+                        }
+
+                        $(msg).find('p').append(attachement_text)
+                    });
+                }
+
+
+                $(msg).find(ROOM_MESSAGE_READ).attr("data-message", message.id);
+            }
+            else {
+                msg = $(message_template_received);
+                $(msg).find('p').attr("data-time", moment.tz(message.createdAt, moment.tz.guess()).format("HH:mm"))
+                $(msg).attr("title", moment.tz(message.createdAt, moment.tz.guess()).format("DD/MM/YYYY HH:mm"))
+                $(msg).find('p').text(message.parts[0]["payload"]["content"]);
+                if (message.parts[1] !== undefined) {
+                    let attachement = message.parts[1]["payload"];
+                    attachement.url().then((url) => {
+                        let attachement_text = ""
+                        if (attachement['type'].includes("image/")) {
+                            attachement_text = `<p class=""><a href="${url}" target="_blank" ><img style="width:100px;" src="${url}" alt="${ attachement['name'] }" > </a></p>`;
+                        } else {
+                            attachement_text = `<p class=""><a href="${url}" target="_blank" ><i class=" fa fa-paperclip"></i> ${ attachement['name'] } </a></p>`;
+                        }
+
+                        $(msg).find('p').append(attachement_text)
+                    });
+
+                }
+
+
+                $(msg).find(ROOM_MESSAGE_READ).attr("data-message", message.id);
+            }
+
+            let userid = get_other_users_id(message.room.users);
+            let last_position = last_message_is_read_by_other(message, userid).then(
+                last_position => {
+                    if (last_position !== undefined) {
+                        if (message.id === last_position) {
+                            $(msg).find('.message_read_cursor').addClass(ROOM_MESSAGE_READ_CLASS);
+                        }
+                    }
+                }
+            );
+            if (new_message) {
+                room_message_grid.append(msg)
+            }
+            else if (!new_message) {
+                room_message_grid.prepend(msg)
+            }
+        });
+
+    }
+
+    async function create_chatbubble(data_room, data_user = null) {
+
+        if (opened_rooms[data_room] === undefined) { {#   First time click on friend #}
+            if (chat.other_users[data_user] === undefined) {
+                $.ajax({
+
+                    url: "{% url 'pusher_chat_app:ajax_get_user_infos' userid=0 %}".replace("0", user.id),
+                    type: 'GET',
+                    async: false,
+
+                    success: function (response) {
+                        let other_user_full_name = response.name;
+                        let other_user_image = response.image;
+                        let other_user = {
+                            id: user.id,
+                            name: other_user_full_name,
+                            image: other_user_image,
+                            state: ""
+                        };
+                        chat.other_users[user.id] = other_user;
+
+                    },
+
+                    error: function (response) {
+                    },
+
+                    complete: function (response) {
+                    },
+
+                });
+            }
+
+            let avatar = chat.other_users[data_user].image;
+            let full_name = chat.other_users[data_user].name;
+
+            let new_chat_bubble = $(chat_bubble);
+            //new_chat_bubble.find('.chatbubble_user_avatar').html(avatar);
+            new_chat_bubble.find('.chatbubble_user_full_name').text(full_name);
+
+            let status = $(`.friends_list_user[data-room=${data_room}] .status`).hasClass("online") ? "user_online" : "user_offline";
+            let contre_status = $(`.friends_list_user[data-room=${data_room}] .status`).hasClass("online") ? "user_offline" : "user_online";
+
+            $(new_chat_bubble).attr('data-user', data_user);
+            $(new_chat_bubble).attr('data-room', data_room);
+            $(new_chat_bubble).find('.chatbox_header_details').removeClass(contre_status);
+            $(new_chat_bubble).find('.chatbox_header_details').addClass(status);
+
+
+            $('.chat_bubbles').prepend(new_chat_bubble);
+
+            $(new_chat_bubble).find('.chatbox_header').on('click', function () {
+                $(this).parent().find('.chatbox_content').toggle();
+                $(this).toggleClass("opened");
+            });
+
+            $('.chatbox_header_button_close').on('click', function () {
+                $(this).closest(".chatbox_bubble").hide();
+            });
+
+            opened_rooms[data_room] = data_room;
+
+            scroll_room_to_bottom(data_room);
+
+        }
+        else { {# FriendsList  click : Chatbubble already  exists #}
+            let room = $(`.chatbox_bubble[data-room=${data_room}]`);
+
+            let status = $(`.friends_list_user[data-room=${data_room}] .status`).hasClass("online") ? "user_online" : "user_offline";
+            let contre_status = $(`.friends_list_user[data-room=${data_room}] .status`).hasClass("online") ? "user_offline" : "user_online";
+            $(room).find('.chatbox_header_details').addClass(status);
+            $(room).find('.chatbox_header_details').removeClass(contre_status);
+
+            $(room).find('.chatbox_content').show();
+            $(room).show();
+            $('.chat_bubbles').prepend(room);
+
+            scroll_room_to_bottom(data_room);
+
+        }
+
+        if (chat.roommessages[data_room]) {
+            // Soit  On va prendre depuis le dernier  message
+            // Soit on va prendre depuis un message  exemple  le 5eme message au 10eme
+        }
+        else {
+            // Sinon  aucun message entregistré pour la chatbubble
+            await fetch_messages(data_room).then(msgs => {
+
+                if (msgs !== null) {
+                    append_messages_to_bubble(data_room, msgs);
+                    chat.roommessages[data_room] = msgs;
+                }
+
+            })
+
+
+            scroll_room_to_bottom(data_room);
+
+        }
+
+    }
+
+    function friends_list_click(element) { {# FriendsList  click  #}
+        let data_user = $(element).attr("data-user");
+        let data_room = $(element).attr("data-room");
+        create_chatbubble(data_room, data_user);
+        $("#chatbox_search_input").val("");
+        $('.chatbox_search_friends_result').hide();
+        $('.col-content .messages').show();
+        $('#chatbox_search_container').hide();
+    }
+
+    function get_other_users_index(users) {
+        let id = "{{ request.user.id }}";
+
+        for (let i = 0; i <= users.length - 1; i++) {
+            if (users[i] != id) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    function get_other_users_id(users) {
+        let id = "{{ request.user.id }}";
+
+        for (let i = 0; i <= users.length - 1; i++) {
+            if (users[i].id != id) {
+                return users[i].id;
+            }
+        }
+        return 0;
+    }
+
+
+</script>
+
+<script src="https://unpkg.com/@pusher/chatkit-client@1/dist/web/chatkit.js"></script>
+
+
+<script>
+
+
+    const tokenProvider = new Chatkit.TokenProvider({
+        url: "{%  url 'pusher_chat_app:ajax_jwtkey' userid=request.user.id %}"
+    });
+
+    let PUSHER_INSTANCE_LOCATOR = '{{ PUSHER_INSTANCE_LOCATOR }}';
+
+    const chatManager = new Chatkit.ChatManager({
+        instanceLocator: PUSHER_INSTANCE_LOCATOR,
+        userId: '{{ request.user.id }}',
+        tokenProvider: tokenProvider,
+    });
+
+    function set_user_state(state, userid) {
+        if (state === "online") {
+
+            let user_chatbubble = $(`.chatbox_bubble[data-user="${userid}"] .chatbox_header_details`);
+            let user_state_div = $(`.friends_list_user[data-user=${userid}]`).find(".status");
+            user_state_div.removeClass("offline");
+            user_state_div.addClass("online");
+
+            user_chatbubble.removeClass("user_offline");
+            user_chatbubble.addClass("user_online");
+        }
+        else {
+            let user_chatbubble = $(`.chatbox_bubble[data-user="${userid}"] .chatbox_header_details`);
+            let user_state_div = $(`.friends_list_user[data-user=${userid}]`).find(".status");
+            user_state_div.removeClass("online");
+            user_state_div.addClass("offline");
+
+
+            user_chatbubble.removeClass("user_online");
+            user_chatbubble.addClass("user_offline");
+        }
+    }
+
+    const CHAT_FILES_PREVIEW_DIV = ".chatbubble_files_preview";
+
+    function chatbubble_close_files_preview(element) {
+        let room = $(element).closest(ROOM);
+        let file_input_form = room.find(ROOM_FILES_INPUT).closest("form");
+        file_input_form.get(0).reset();
+        room.find(CHAT_FILES_PREVIEW_DIV).parent().hide();
+    }
+
+    function chat_files_preview(input) {
+        let room = $(input).closest(ROOM);
+        let data_room = room.attr("data-room");
+        let place_to_insert = room.find(CHAT_FILES_PREVIEW_DIV);
+
+        place_to_insert.text("");
+
+        if (input.files.length > 1) {
+            let file_input_form = $(input).closest("form");
+            file_input_form.get(0).reset();
+            place_to_insert.parent().hide();
+            alert("Un seul fichier est autorisé.");
+            return;
+        }
+
+
+        if (input.files) {
+            var filesAmount = input.files.length;
+
+            for (i = 0; i < filesAmount; i++) {
+                var reader = new FileReader();
+
+                place_to_insert.append('<p class="chatbubble_files_preview_file"><i class="st_publier_fichier_icon fa fa-paperclip"></i> ' + input.files[i].name + '</p>');
+                reader.readAsDataURL(input.files[i]);
+            }
+
+            place_to_insert.parent().show();
+
+        }
+
+    };
+
+    function on_send_message_input(element, event) {
+        let data_room = $(element).closest(ROOM).attr("data-room");
+        let files_number = $(ROOM).find(ROOM_FILES_INPUT).get(0).files.length;
+        let message = $(element).val().trim();
+
+        if (event.keyCode === 13 && !event.shiftKey) {
+            if (message !== "" || files_number !== 0) {
+                send_message(data_room);
+            }
+        }
+
+    }
+
+    function on_send_message_button(element) {
+        let data_room = $(element).closest(ROOM).attr("data-room");
+
+        let room = $(`${ROOM}[data-room='${data_room}']`);
+        let textarea = room.find(ROOM_MESSAGE_INPUT);
+
+        let files_number = $(ROOM).find(ROOM_FILES_INPUT).get(0).files.length;
+
+        let message = $(element).closest(COMPOSE_MESSAGE_CONTAINER).find("textarea").val().trim();
+
+        if (message !== "" || files_number !== 0) {
+            send_message(data_room);
+        }
+    }
+
+    function send_message(data_room) {
+        let room = $(`${ROOM}[data-room='${data_room}']`);
+        let textarea = room.find(ROOM_MESSAGE_INPUT);
+        let message = textarea.val().trim();
+        let files_input = room.find(ROOM_FILES_INPUT).get(0);
+        let files = files_input.files;
+
+        message = (message === "") ? " " : message;
+
+        if (files.length > 0) {
+
+            $(room).find(".chatbubble_files_preview_loading").show();
+            chat.currentUser.sendMultipartMessage({
+                roomId: data_room,
+                parts: [
+                    {
+                        type: "text/plain",
+                        content: message
+                    },
+                    {
+                        file: files[0],
+                    }
+                ],
+            })
+                .then(messageId => {
+                    console.log(`Added message to ${messageId}`)
+                    textarea.val("");
+                    textarea.focus();
+                    chatbubble_close_files_preview(files_input)
+                    $(room).find(".chatbubble_files_preview_loading").hide();
+
+                    chat.currentUser.setReadCursor({
+                        roomId: data_room,
+                        position: messageId
+                    });
+                })
+                .catch(err => {
+                    console.log(`Error adding message to ${data_room}: ${err}`);
+                    $(room).find(".chatbubble_files_preview_loading").hide();
+                })
+        }
+        else {
+
+            chat.currentUser.sendMultipartMessage({
+                roomId: data_room,
+                parts: [
+                    {
+                        type: "text/plain",
+                        content: message
+                    },
+                ],
+            })
+                .then(messageId => {
+                    console.log(`Added message to ${messageId}`);
+                    textarea.val("");
+                    textarea.focus();
+
+                    chat.currentUser.setReadCursor({
+                        roomId: data_room,
+                        position: messageId
+                    });
+                })
+                .catch(err => {
+                    console.log(`Error adding message to ${data_room}: ${err}`)
+                })
+        }
+
+    }
+
+
+    async function load_chat_manager() {
+        chatManager.connect({
+            onPresenceChanged: (state, user) => {
+                //console.log(`User ${user.name} is ${state.current}`);
+
+                setTimeout(function () {
+                    chat.users_states[user.id] = state.current;
+
+                    set_user_state(state.current, user.id)
+
+
+                    if (!chat.other_users[user.id]) {
+                        $.ajax({
+
+                            url: "{% url 'pusher_chat_app:ajax_get_user_infos' userid=0 %}".replace("0", user.id),
+                            type: 'GET',
+                            async: false,
+
+                            success: function (response) {
+                                let other_user_full_name = response.name;
+                                let other_user_image = response.image;
+                                let other_user = {
+                                    id: user.id,
+                                    name: other_user_full_name,
+                                    image: other_user_image,
+                                    state: ""
+                                };
+                                chat.other_users[user.id] = other_user;
+
+                            },
+
+                            error: function (response) {
+                            },
+
+                            complete: function (response) {
+                            },
+
+                        });
+                    }
+                }, 3000) // 3 secs
+
+
+            },
+            onUserStartedTyping: (room, user) => {
+                let data_room = room.id;
+                let full_name = "";
+
+                if (chat.other_users[user.id]) {
+                    full_name = chat.other_users[user.id].name
+                }
+                else {
+                    full_name = user.name;
+                }
+
+                $(ROOM).filter(`[data-room=${data_room}]`).find('.typing_indicator .typing_indicator_name').text(full_name);
+                $(ROOM).filter(`[data-room=${data_room}]`).find('.typing_indicator').show();
+
+            },
+            onUserStoppedTyping: (room, user) => {
+                let data_room = room.id;
+                $(ROOM).filter(`[data-room=${data_room}]`).find('.typing_indicator').hide();
+
+            }
+        }).then(user => {
+
+            chat.currentUser = user;
+            chat.currentUserId = user.id;
+
+
+            user.rooms.forEach(async useroom => {
+
+                chat.rooms[useroom.id] = useroom;
+                chat.search_friends_rooms_list = chat.search_friends_rooms_list.concat((useroom))
+                console.log(useroom)
+                console.log(chat.search_friends_rooms_list)
+
+
+                await user.subscribeToRoomMultipart({
+                    roomId: useroom.id,
+                    hooks: {
+                        onNewReadCursor: (cursor) => {
+                            set_read_cursor_on_room(cursor);
+
+                        },
+                        onMessage: (message) => {
+
+                            create_chatbubble(message.roomId, get_other_users_id(message.room.users));
+
+
+                            if (chat.roommessages[message.room.id]) {
+                                chat.roommessages[message.room.id].push(message);
+                                append_messages_to_bubble(message.roomId, [message], new_message = true);
+                            }
+                            else {
+                                chat.roommessages[message.room.id] = [];
+                                chat.roommessages[message.room.id].push(message);
+
+                            }
+
+                            if (message.senderId !== chat.currentUserId) {
+                                // Color The room
+                                $(`${ROOM}[data-room=${message.room.id}]`).find(".chatbox_header").addClass("chatbox_header_new_message");
+                                //  Play Sound
+                                if (get_soun_c() === true) {
+                                    let notification_sound = new Audio('{% static 'SocialMedia/media/notification.mp3' %}');
+                                    notification_sound.play();
+                                }
+                            }
+
+                            scroll_room_to_bottom(message.room.id);
+
+
+                            let other_user_index = get_other_users_index(message.room.userIds);
+                            let other_user_id = message.room.userIds[other_user_index];
+
+                            let message_text = ""
+
+                            if (message.parts[1] !== undefined) {
+                                message_text = "<i class='fa fa-paperclip'></i> Pièce jointe";
+                            }
+                            else {
+                                message_text = message.parts[0]["payload"]["content"];
+                            }
+
+                            let message_read_class = (is_my_message(message) === true) ? "" : "unread_message_flist";
+                            let last_message_sender = (message.senderId === chat.currentUserId) ? "Vous" : chat.other_users[other_user_id].name;
+
+
+                            let friend_element = $(`.friends_list_user[data-room=${message.room.id}]`);
+                            {#  si le friend et moi ayons jamais echangé de msg on créer une friend list  #}
+                            if (friend_element.length === 0) {
+                                friend_element = `<li class="friends_list_user" onclick="friends_list_click(this);" data-user="${other_user_id}" data-room="${message.room.id}">
+                                    <div class="avatar">
+                                        <div class="avatar-image">
+                                            <div class="status offline"></div>
+                                            <img class="chatbox_user_avatar" data-id="${message.room.id}" src="${chat.other_users[other_user_id].image}">
+                                        </div>
+                                    </div>
+                                    <h3 class="chatbox_user_full_name" data-id="${message.room.id}">${chat.other_users[other_user_id].name}</h3>
+                                    <p class="${message_read_class}"><span class="chatbox_last_message" data-id="${message.room.id}">${last_message_sender} :</span> <span class="chatbox_last_message" data-id="${message.room.id}">${message_text}</span> </p>
+
+                                </li>`
+                            }
+                            else {
+                                $(friend_element).find('p').html(`<span class="chatbox_last_message" data-id="${message.room.id}">${last_message_sender} :</span> <span class="chatbox_last_message" data-id="${message.room.id}">${message_text}</span>`);
+                                $(friend_element).find('p').removeClass("unread_message_flist");
+                                $(friend_element).find('p').addClass(`${message_read_class}`);
+                            }
+
+                            $('.chatbox_friends_list_content .col-content  .messages').prepend($(friend_element));
+                        },
+                    },
+                    messageLimit: 0,
+                });
+                await user.fetchMultipartMessages({
+                    roomId: useroom.id,
+                    direction: 'older',
+                    limit: 1,
+                })
+                    .then((messages) => {
+
+                        messages.forEach(message => {
+
+                            let message_text = ""
+
+                            if (message.parts[1] !== undefined) {
+                                message_text = "<i class='fa fa-paperclip'></i> Pièce jointe";
+                            }
+                            else {
+                                message_text = message.parts[0]["payload"]["content"];
+                            }
+
+                            let other_user_index = get_other_users_index(message.room.userIds);
+                            let other_user_id = message.room.userIds[other_user_index];
+
+                            let other_user_full_name = "";
+                            let other_user_image = "";
+
+                            let read = message_is_read_by_me(message);
+
+                            let message_read_class = (message_is_read_by_me(message) === true) ? "" : "unread_message_flist";
+
+                            $.ajax({
+                                url: "{% url 'pusher_chat_app:ajax_get_user_infos' userid=0 %}".replace("0", other_user_id),
+                                type: 'GET',
+                                async: false,
+
+                                success: function (response) {
+                                    other_user_full_name = response.name;
+                                    other_user_image = response.image;
+                                    let other_user = {
+                                        id: other_user_id,
+                                        name: other_user_full_name,
+                                        image: other_user_image,
+                                        state: ""
+                                    };
+                                    chat.other_users[other_user_id] = other_user;
+
+                                    let last_message_sender = (message.senderId === chat.currentUserId) ? "Vous" : chat.other_users[other_user_id].name;
+
+                                    //${other_user.name}
+                                    let friend_element = `<li class="friends_list_user" onclick="friends_list_click(this);" data-user="${other_user_id}" data-room="${message.room.id}">
+                                    <div class="avatar">
+                                        <div class="avatar-image">
+                                            <div class="status offline"></div>
+                                            <img class="chatbox_user_avatar" data-id="${message.room.id}" src="${chat.other_users[other_user_id].image}">
+                                        </div>
+                                    </div>
+                                    <h3 class="chatbox_user_full_name" data-id="${message.room.id}">${chat.other_users[other_user_id].name}</h3>
+                                    <p class="${message_read_class}"><span class="chatbox_last_message" data-id="${message.room.id}">${last_message_sender} :</span> <span class="chatbox_last_message" data-id="${message.room.id}">${message_text}</span> </p>
+                                </li>`
+
+                                    $('.chatbox_friends_list_content .col-content  .messages').append($(friend_element));
+                                },
+
+                                error: function (response) {
+                                },
+
+                                complete: function (response) {
+                                },
+
+                            });
+
+                        });
+
+                        $('#chatbox_no_conversations').hide();
+                    })
+                    .catch(err => {
+                        console.log(`Error fetching messages: ${err}`)
+                    })
+
+
+            });
+
+
+            $(CHAT_FRIENDLIST_CONNECTION_SPINNER).hide();
+            $(CHAT_FRIENDLIST_CONNECTION_ERROR).hide();
+
+
+        }).catch(err => {
+            console.log('Error on connection', err)
+            $(CHAT_FRIENDLIST_CONNECTION_ERROR).show();
+            //load_chat_manager();
+        });
+
+
+    }
+
+    let CHAT_FRIENDLIST_CONNECTION_SPINNER = ".chatbox_spinner_container";
+    let CHAT_FRIENDLIST_CONNECTION_ERROR = ".chatbox_friends_list_error_container";
+
+
+    load_chat_manager();
+
+
+</script>
+
+<script>
+    function c_createCookie(name, value, days) {
+        var expires;
+
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toGMTString();
+        } else {
+            expires = "";
+        }
+        document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + expires + "; path=/";
+    }
+
+    function c_readCookie(name) {
+        var nameEQ = encodeURIComponent(name) + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) === ' ')
+                c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) === 0)
+                return decodeURIComponent(c.substring(nameEQ.length, c.length));
+        }
+        return null;
+    }
+
+    function c_eraseCookie(name) {
+        c_createCookie(name, "", -1);
+    }
+
+    function create_sound_c(value = true) {
+        c_createCookie("pcksound", value, 365);
+    }
+
+    function erase_sound_c() {
+        c_eraseCookie("pcksound")
+    }
+
+    function get_soun_c() {
+        if (c_readCookie("pcksound") === "true")
+            return true;
+        return c_readCookie("pcksound")
+    }
+
+    function toggle_sound(checkbox) {
+        if (checkbox.checked)
+            create_sound_c();
+        else
+            create_sound_c(false);
+    }
+
+    if (c_readCookie("pcksound") !== "true" && c_readCookie("pcksound") !== "false") {
+        c_createCookie("pcksound", true, 365);
+    }
+
+    $(document).ready(function () {
+        console.log(get_soun_c())
+        if (get_soun_c() === true) {
+            $('#cbox_chatbox_messagerie_sons').prop("checked", "checked");
+        }
+    });
+
+
+</script>

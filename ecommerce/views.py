@@ -5,8 +5,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.views.decorators.http import require_POST
+from tracking_analyzer.models import Tracker
 
 from ecommerce.forms import *
+from main_app.SendMailBackend import get_custom_connection
 from .models import *
 from django.db.models import Max, Avg, Sum, Q, Count
 from django.db.models.functions import Lower
@@ -15,6 +17,9 @@ from decimal import Decimal, Inexact
 from paypal.standard.forms import PayPalPaymentsForm
 from django.views.decorators.csrf import csrf_exempt
 import datetime
+
+import json
+import urllib
 
 
 def index(request):
@@ -282,6 +287,7 @@ def search(request):
                     el['image'] = None
 
                 el['sold'] = el['first_quantity'] - el['quantity']
+                ResultSearch.objects.create(key_word=word, product=product)
 
             paginator = Paginator(products_results, number_elements)
             try:
@@ -361,6 +367,7 @@ def products(request, type_search="all", id_search="0"):
             products_results = Product.objects.filter(tags__id__exact=id_search, active=True, approved=True)
             message = "Achetez par: {}".format(tags_s[0].name)
             name = tags_s[0].name
+            Tracker.objects.create_from_request(request, tags_s[0], tags_s[0]._meta.verbose_name)
         else:
             found = False
     elif type_search == "brand":
@@ -369,6 +376,7 @@ def products(request, type_search="all", id_search="0"):
             products_results = Product.objects.filter(brand_id__exact=id_search, active=True, approved=True)
             message = "Achetez par : {}".format(brands_s[0].name)
             name = brands_s[0].name
+            Tracker.objects.create_from_request(request, brands_s[0], brands_s[0]._meta.verbose_name)
         else:
             found = False
     elif type_search == "sub_category":
@@ -752,12 +760,16 @@ def update_order(request):
                             stock = stock_results[0]
                             stock.quantity = stock.quantity - el.quantity
                             stock.save()
+
+
                 message = "<p>Salut,</p><p>Votre Commande <b>#{}</b> :</p>" \
                           "<p>Montant : <b>{}</b></p>" \
                           "<p>Date : <b>{}</b></p>" \
                           "<p>Méthode de Paiement : <b>{}</b></p>" \
                           "<p>Méthode de Livraison : <b>{}</b></p>" \
                           "<p>a été expédiée, votre Track Number : <b>{}</b>.</p><p>Merci.</p>".format(order.pk, order.amount, order.date, order.payment_method, order.delivery_method, track_number)
+
+
                 send_mail(
                     'Commande #{}'.format(order.pk),
                     message,
@@ -765,7 +777,11 @@ def update_order(request):
                     [order.user.user.email],
                     fail_silently=False,
                     html_message=message,
+        connection=get_custom_connection()
                 )
+
+
+
                 return HttpResponseRedirect(reverse('e_commerce:processing_orders'))
             else:
                 return HttpResponseRedirect(reverse('e_commerce:index'))
@@ -971,6 +987,7 @@ def display_product(request, id_product="0", message_success=None):
     if not Product.objects.filter(pk=id_product).exists():
         return HttpResponseRedirect('/e_commerce')
     product = Product.objects.get(pk=id_product)
+    Tracker.objects.create_from_request(request, product, product._meta.verbose_name)
     product.number_views += 1
     product.save()
     # ----------- Ratting
@@ -1006,6 +1023,7 @@ def display_product(request, id_product="0", message_success=None):
     else:
         percent = (quantity * 100) / first_quantity
     sold = first_quantity - quantity
+
     # ----------- Accessories
     accessories = product.accessories.all()
     accessories = accessories.values('id').annotate(ratting=Avg('commerceratting__value'))
@@ -1110,6 +1128,7 @@ def quick_view(request, id_product="0"):
         percent = (quantity * 100) / first_quantity
     sold = first_quantity - quantity
 
+
     context = {
         'product': product,
         'ratting': ratting,
@@ -1178,9 +1197,9 @@ def compare(request):
         if el.product.stock_set.exists():
             stock = el.product.stock_set.aggregate(quantity=Sum('quantity'))['quantity']
             if stock > 0:
-                ob['stock'] = 'Rn Stock'
+                ob['stock'] = 'En Stock'
             else:
-                ob['stock'] = "Ruptude de Stock"
+                ob['stock'] = "Rupture de Stock"
         else:
             ob['stock'] = 'Précommande'
 
@@ -1242,7 +1261,7 @@ def my_account(request):
                 if new_password == confirm_password:
                     user.password = new_password
                 else:
-                    message_error = "Confirmation Incorrect"
+                    message_error = "Confirmation Incorrecte"
             else:
                 message_error = "Password Incorrect"
         elif old_password or new_password or confirm_password:
@@ -1343,7 +1362,7 @@ def my_account(request):
             user.profil.billingaddress.save()
             user.profil.save()
             user.save()
-            message_success = "Your account is up to date"
+            message_success = "Votre profil a été mis a jour avec succès"
 
     context = {
         'newsletter_on': newsletter_on,
@@ -1354,15 +1373,33 @@ def my_account(request):
     return render(request, 'ecommerce/my-account.html', context)
 
 
+
 def contact_us(request):
     # ---------------- message
     message_success = None
     if request.method == "POST":
-        name = request.POST.get("name")
-        email = request.POST.get("email")
-        message = request.POST.get("message")
-        Message.objects.create(name=name, email=email, message=message)
-        message_success = "Votre message a été envoyé"
+        ''' Begin reCAPTCHA validation '''
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        url = 'https://www.google.com/recaptcha/api/siteverify'
+        values = {
+            'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        data = urllib.parse.urlencode(values).encode()
+        req = urllib.request.Request(url, data=data)
+        response = urllib.request.urlopen(req)
+        result = json.loads(response.read().decode())
+        ''' End reCAPTCHA validation '''
+
+        if result['success']:
+            name = request.POST.get("name")
+            email = request.POST.get("email")
+            message = request.POST.get("message")
+            Message.objects.create(name=name, email=email, message=message)
+            message_success = "Votre message a été envoyé"
+
+        else :
+            message_success = "Le reCaptcha est invalide. Merci de réessayer."
 
     context = {
         'message_success': message_success,
@@ -1379,26 +1416,47 @@ def contact_supplier(request, id_product="None"):
             product = products_list[0]
     # ---------------- message
     if request.method == "POST":
-        name = request.POST.get("name")
-        email = request.POST.get("email")
-        tel = request.POST.get("tel")
-        quantity = request.POST.get('quantity')
-        message = request.POST.get("message")
-        supplier = product.supplier
-        message = "Salut Mr {} {},<br/>Mr. {} vous contacte à propos de {} {} de {} code : #{} , Voici son message : \n{}" \
-            .format(supplier.owner.user.last_name, supplier.owner.user.first_name, name, quantity, product.unit, product.name, product.pk,
-                    message)
-        MessageSupplier.objects.create(name=name, email=email, tel=tel, message=message, supplier=product.supplier)
-        send_mail(
-            'ESPR Order',
-            message,
-            'admin@socifly.com',
-            [product.supplier.owner.user.email],
-            fail_silently=False,
-            html_message=message,
-        )
-        print('sent')
-        message_successs = 'Votre message a été envoyé'
+        ''' Begin reCAPTCHA validation '''
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        url = 'https://www.google.com/recaptcha/api/siteverify'
+        values = {
+            'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        data = urllib.parse.urlencode(values).encode()
+        req = urllib.request.Request(url, data=data)
+        response = urllib.request.urlopen(req)
+        result = json.loads(response.read().decode())
+        ''' End reCAPTCHA validation '''
+
+        if result['success']:
+            name = request.POST.get("name")
+            email = request.POST.get("email")
+            tel = request.POST.get("tel")
+            quantity = request.POST.get('quantity')
+            message = request.POST.get("message")
+            supplier = product.supplier
+            message = "Salut Mr {} {},<br/>Mr. {} vous contacte à propos de {} {} de {} code : #{} , Voici son message : \n{}" \
+                .format(supplier.owner.user.last_name, supplier.owner.user.first_name, name, quantity, product.unit, product.name, product.pk,
+                        message)
+            MessageSupplier.objects.create(name=name, email=email, tel=tel, message=message, supplier=product.supplier)
+
+
+            send_mail(
+                'ESPR Order',
+                message,
+                'admin@socifly.com',
+                [product.supplier.owner.user.email],
+                fail_silently=False,
+                html_message=message,
+        connection=get_custom_connection()
+            )
+
+
+            print('sent')
+            message_successs = 'Votre message a été envoyé'
+        else :
+            message_successs = 'Le reCaptcha est invalide. Merci de réessayer.'
     context = {
         'product': product,
         'message_success': message_successs
@@ -1467,6 +1525,9 @@ def checkout(request):
         order.pk, order.amount)
     message = "<p>Bonjour,</p><p>Votre Commande a été confirmée avec succés. Commande numéro <b>#{}</b>. Montant : <b>{} Dh</b></p>".format(
         order.pk, order.amount)
+
+
+
     send_mail(
         'Commande #{}'.format(order.pk),
         message,
@@ -1474,7 +1535,11 @@ def checkout(request):
         [order.user.user.email],
         fail_silently=False,
         html_message=message,
+        connection=get_custom_connection()
     )
+
+
+
     context = {
         'message_success': message_success,
         'order': order
@@ -1600,6 +1665,7 @@ def display_supplier(request, id_supplier="0"):
 
     # ------------- supplier
     supplier = get_object_or_404(Shop, pk=id_supplier, approved=True)
+    Tracker.objects.create_from_request(request, supplier, supplier._meta.verbose_name)
     supplier.number_visitors = supplier.number_visitors + 1
     supplier.save()
     ratting = supplier.product_set.aggregate(rating=Avg('commerceratting__value'))['rating']
@@ -1750,7 +1816,7 @@ def add_to_wish(request):
                     wish_list_result = WishList.objects.filter(user=user.profil)
                     number_products_in_wish_list = wish_list_result.count()
                 else:
-                    message_error = "Produit existe Déjà dans Votre liste des Souhaits"
+                    message_error = "Produit existe Déjà dans votre liste des Souhaits"
             else:
                 message_error = "Produit n'existe pas"
         else:
@@ -1783,7 +1849,7 @@ def add_to_compare(request):
                     compare_result = Compare.objects.filter(user=user.profil)
                     number_products_in_compare = compare_result.count()
                 else:
-                    message_error = "Produit existe Déjà dans Votre liste de Comparaison"
+                    message_error = "Produit existe Déjà dans votre liste de Comparaison"
             else:
                 message_error = "Produit n'existe pas"
         else:
@@ -1842,9 +1908,9 @@ def add_to_cart(request):
                             total_price_in_cart += (el.product.price * el.quantity)
                             print('hello')
                     else:
-                        message_error = "Produit existe Déjà dans Votre liste de Comparaison"
+                        message_error = "Produit existe Déjà dans votre Chariot"
                 else:
-                    message_error = "Produit en rupture stock"
+                    message_error = "Produit en rupture de stock"
             else:
                 message_error = "Produit n'existe pas"
     else:
@@ -1969,11 +2035,11 @@ def add_from_wish(request):
                                                color=stock[0].color).exists():
                         Cart.objects.create(user=user.profil, product=products_wish[0], color=stock[0].color)
                     else:
-                        message_error = "Produit existe déjà dans votre chariot"
+                        message_error = "Produit existe déjà dans votre liste des Souhaits"
                 else:
                     message_error = "Produit en rupture de stock"
             else:
-                message_error = "Produit n'existe pas dans votre List des Souhaits"
+                message_error = "Produit n'existe pas dans votre Liste des Souhaits"
         else:
             message_error = "Produit n'existe pas"
         if message_error:
@@ -2036,11 +2102,11 @@ def add_from_compare(request):
                                                color=stock[0].color).exists():
                         Cart.objects.create(user=user.profil, product=products_compare[0], color=stock[0].color)
                     else:
-                        message_error = "Produit existe déjà dans votre chariot"
+                        message_error = "Produit existe déjà dans votre liste de Comparaison"
                 else:
                     message_error = "Produit en rupture de stock"
             else:
-                message_error = "Produit n'existe pas dans votre liste de comparaison"
+                message_error = "Produit n'existe pas dans votre liste de Comparaison"
         else:
             message_error = "Produit n'existe pas"
         if message_error:
@@ -2164,14 +2230,15 @@ def test(request, id_request):
 def paypal_process(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse('main_app:log_in'))
+    if 'order_id' not in request.session:
+        return HttpResponseRedirect(reverse('e_commerce:index'))
     order_id = request.session.get('order_id', "")
     order = get_object_or_404(Order, id=order_id)
     paypal_dict = {
         "business": settings.PAYPAL_RECEIVER_EMAIL,
-        "amount": str(order.amount),
+        "amount": str(order.amount/10),
         "item_name": "Commande #{}".format(order.id),
         "invoice": str(order.id),
-        "currency_code": "USD",
         "notify_url": request.build_absolute_uri(reverse('paypal-ipn')),
         "return": request.build_absolute_uri(reverse('e_commerce:paypal_done')),
         "cancel_return": request.build_absolute_uri(reverse('e_commerce:paypal_cancel')),
@@ -2194,12 +2261,14 @@ def paypal_done(request):
     Cart.objects.filter(user=user.profil).delete()
     message_success = "Votre Paiement a été effectué. plus de détails vous serons communiquer très prochainement."
     order = get_object_or_404(Order, pk=request.session['order_id'])
+    total = order.orderline_set.all().aggregate(total=Sum('total'))['total']
     del request.session['order_id']
     context = {
         'message_success': message_success,
-        'order': order
+        'order': order,
+        'total': total
     }
-    return render(request, 'ecommerce/order-history.html', context)
+    return render(request, 'ecommerce/order-information.html', context)
 
 
 @csrf_exempt
@@ -2210,6 +2279,7 @@ def paypal_cancel(request):
     message_error = None
     if 'order_id' in request.session:
         message_error = "Votre Paiement a été annulé."
+        del request.session['order_id']
     context = {
         'message_error': message_error
     }
@@ -2460,8 +2530,6 @@ def product_add_tag(request):
             return JsonResponse(data)
     return redirect('e_commerce:add_product')
 
-
-# ## UPDATE PRODUCT VIEW ## #
 def update_product(request, product_id):
     if request.user.is_authenticated:
         user = request.user.profil

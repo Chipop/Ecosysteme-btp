@@ -63,8 +63,8 @@ def show_me_the_money(sender, **kwargs):
     print('Address Name : {}'.format(ipn_obj.address_name))
     order = get_object_or_404(Order, pk=1)
     if ipn_obj.payment_status == ST_PP_COMPLETED:
-        if ipn_obj.receiver_email == "karimelkhaoua_espr@gmail.com":
-            if Decimal(ipn_obj.mc_gross) == Decimal(order.amount):
+        if ipn_obj.receiver_email == "elkhaouakarim-espr@gmail.com":
+            if Decimal(ipn_obj.mc_gross) == Decimal(order.amount/10):
                 if ipn_obj.mc_currency == 'USD':
                     order_line = OrderLine.objects.filter(order=order)
                     for el in order_line:

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load django_markdown %}
+
 {% load static %}
 {% load crispy_forms_tags %}
 {% load widget_tweaks %}
@@ -30,7 +30,7 @@
   		<div class="col-sm-10"><h1>{{ user.username }}</h1></div>
     	<div class="col-sm-2"><a href="/qa/users" class="pull-right">
         <!-- <img title="profile image" class="img-circle img-responsive" src="http://www.gravatar.com/avatar/28fd20ccec6865e2d5f0e1f4446eb7bf?s=100"> -->
-        <a href="/qa"> <h3><img src='{% static "qa/img/pict.png" %}' width="100px" height="70px">Simple Q&A</h3>
+        <a href="/qa"> <h3><img src='{% static "img/pict.png" %}' width="100px" height="70px">Simple Q&A</h3>
       </a></div>
     </div>
     <div class="row">

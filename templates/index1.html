@@ -1,399 +1,665 @@
 {% extends 'base_ESPR.html' %}
 {% load staticfiles %}
 {% load widget_tweaks %}
-{% block stylesheet %}{{ block.super }}{% endblock %}
+{% block stylesheet %}
+    {{ block.super }}
+    <style>
+        .description_modal {
+            background-color: #f4f4f4;;
+        }
+
+        @media only screen and (min-width: 1200px) {
+            #img_reseausocial {
+                width: 25% !important;
+                left: 0!important;
+                top: 0!important;
+            }
+
+            #img_ecommerce {
+                width: 25%!important;
+                left: 25%!important;
+                top: 0!important;
+            }
+
+            #img_journal {
+                width: 25%!important;
+                left: 50%!important;
+                top: 0!important;
+            }
+
+            #img_appeloffre {
+                width: 50%!important;
+                left: 0!important;
+                top: 50%!important;
+            }
+
+            #img_elearning {
+                width: 25%!important;
+                left: 75%!important;
+                top: 0!important;
+            }
+
+            #img_qa {
+                width: 25%!important;
+                left: 75%!important;
+                top: 50%!important; 
+            }
+
+        }
+
+    </style>
+{% endblock %}
 {% block title %}{{ block.super }}{% endblock %}
 {% block header %}{{ block.super }}{% endblock %}
 {% block content %}
 
-    <section id="home" class="slider-reg">
-            <!-- Swiper -->
-            <div class="swiper-container swiper-fullwidth">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide">
-                        <img src="{% static 'main_app/img/bg-1.jpg' %}" alt="" class="img-fluid">
-                        <div class="swiper-overlay">
-                            <div class="container text-center">
-                                <div class="row">
-                                    <div class="col-lg-8 slider-text col-md-10 col-12 mr-auto ml-auto">
-                                        <h4 class="swiper-title">
-                                            Easy customization theme
-                                        </h4>
-                                        <p>
-                                            Bizwrap theme built with modern and easy to use frameworks
-                                        </p>
-                                        <a href="#!" class="btn btn-white btn-lg">Purchase Now</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <img src="{% static 'main_app/img/bg-2.jpg' %}" alt="" class="img-fluid">
-                        <div class="swiper-overlay">
-                            <div class="container text-center">
-                                <div class="row">
-                                    <div class="col-lg-10 slider-text col-md-10 col-12 mr-auto ml-auto">
-                                        <h4 class="swiper-title">
-                                            Perfect for Small Projects
-                                        </h4>
-                                        <p>
-                                            Bizwrap theme built with modern and easy to use frameworks
-                                        </p>
-                                        <a href="#!" class="btn btn-white btn-lg">Purchase Now</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <img src="{% static 'main_app/img/bg-3.jpg' %}" alt="" class="img-fluid">
-                        <div class="swiper-overlay">
-                            <div class="container text-center">
-                                <div class="row">
-                                    <div class="col-lg-8 slider-text col-md-10 col-12 mr-auto ml-auto">
-                                        <h4 class="swiper-title">
-                                            Easy customization theme
-                                        </h4>
-                                        <p>
-                                            Bizwrap theme built with modern and easy to use frameworks
-                                        </p>
-                                        <a href="#!" class="btn btn-white btn-lg">Purchase Now</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
+    <!-- Modals -->
+    <!-- Modal Reseau social -->
+    <div class="modal fade" id="modalReseauSocial" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 650px;">
+            <div class="modal-content" style="border-radius: 0px;">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="exampleModalLongTitle" style="border-bottom: 3px solid #c80000;">Réseau
+                        social métier</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <!-- Add Arrows -->
-                <div class="swiper-button-next"></div>
-                <div class="swiper-button-prev"></div>
-            </div>
-
-        </section><!--main flex slider end-->
-
-        <section class="padd-section" id="about">
-            <div class="container">
-                <div class="row intro-row">
-                    <div class="col-md-12 text-center wow animated fadeInUp">
-                        <h2>Bizwrap built for Minimal business Projects</h2>
-                        <h3 class="subtitle">With Clean and Modern Design</h3>
-                    </div>
-                    <div class="space-70"></div>
-                    <div class=" col-md-4">
-                        <div class="services-box">
-                            <i class="ion-laptop"></i>
-                            <h4>Responsive design</h4>
-                            <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque nisl risus, porta sit amet dui eget...
-                            </p>
-                        </div>
-                    </div><!--services box-->
-                    <div class=" col-md-4">
-                        <div class="services-box">
-                            <i class="ion-ios-color-wand-outline"></i>
-                            <h4>Creative ideas</h4>
-                            <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque nisl risus, porta sit amet dui eget...
-                            </p>
-                        </div>
-                    </div><!--services box-->
-                    <div class="col-md-4">
-                        <div class="services-box">
-                            <i class="ion-social-twitter-outline"></i>
-                            <h4>Bootstrap4</h4>
-                            <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque nisl risus, porta sit amet dui eget...
-                            </p>
-                        </div>
-                    </div><!--services box-->
-                </div><!--row end-->
-            </div><!--intro with services end-->
-        </section><!--about section end-->
-
-        <section id="work" class="padd-section">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h3 class="heading-sec">Nos applications</h3>
-                    </div>
-                </div><!--row-->
-            </div>
-
-            <div id="js-grid-mosaic-flat" class="cbp cbp-l-grid-mosaic-flat">
-                <div class="row">
-                        <div class="cbp-item web-design graphic">
-                                <a href="/reseausocial" target="_blank" class="cbp-caption" >
-                                    <div class="cbp-caption-defaultWrap">
-                                        <img src="{% static 'main_app/img/social-network-1-810x452.jpg' %}" alt="">
-                                    </div>
-                                    <div class="cbp-caption-activeWrap">
-                                        <div class="cbp-l-caption-alignCenter">
-                                            <div class="cbp-l-caption-body">
-                                                <div class="cbp-l-caption-title">ESPR Reseau Social</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                        <div class="cbp-item print motion">
-                            <a href="/e_commerce" target="_blank" class="cbp-caption">
-                                <div class="cbp-caption-defaultWrap">
-                                    <img src="{% static 'main_app/img/magento-2-multi-vendor-marketplace.jpg' %}" alt="">
-                                </div>
-                                <div class="cbp-caption-activeWrap">
-                                    <div class="cbp-l-caption-alignCenter">
-                                        <div class="cbp-l-caption-body">
-                                            <div class="cbp-l-caption-title">ESPR E-commerce</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="cbp-item print motion">
-                        <a href="/journal" target="_blank" class="cbp-caption">
-                            <div class="cbp-caption-defaultWrap">
-                                <img src="{% static 'main_app/img/1494861031751.png' %}" alt="">
-                            </div>
-                            <div class="cbp-caption-activeWrap">
-                                <div class="cbp-l-caption-alignCenter">
-                                    <div class="cbp-l-caption-body">
-                                        <div class="cbp-l-caption-title">ESPR News</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                        <div class="cbp-item motion graphic">
-                            <a target="_blank" href="/appelsOffres" class="cbp-caption">
-                                <div class="cbp-caption-defaultWrap">
-                                    <img src="{% static 'main_app/img/appel_offre-01.png' %}" alt="">
-                                </div>
-                                <div class="cbp-caption-activeWrap">
-                                    <div class="cbp-l-caption-alignCenter">
-                                        <div class="cbp-l-caption-body">
-                                            <div class="cbp-l-caption-title">ESPR Appels d'offres</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="cbp-item web-design print">
-                            <a href="/qa" target="_blank" class="cbp-caption">
-                                <div class="cbp-caption-defaultWrap">
-                                    <img src="{% static 'main_app/img/qa.png' %}" alt="">
-                                </div>
-                                <div class="cbp-caption-activeWrap">
-                                    <div class="cbp-l-caption-alignCenter">
-                                        <div class="cbp-l-caption-body">
-                                            <div class="cbp-l-caption-title">ESPR Q&A</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="cbp-item print motion">
-                        <a href="#e-learning" target="_blank" class="cbp-caption">
-                            <div class="cbp-caption-defaultWrap">
-                                <img src="{% static 'main_app/img/work/mosaic-hor3.jpg' %}" alt="">
-                            </div>
-                            <div class="cbp-caption-activeWrap">
-                                <div class="cbp-l-caption-alignCenter">
-                                    <div class="cbp-l-caption-body">
-                                        <div class="cbp-l-caption-title">ESPR E-learning</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-
-
-        </section>
-
-        <div class="clearfix"></div>
-
-        <div class="padd-section" id="services">
-            <section id="content-region-1" class="padding-40">
-                <div class="container">
+                <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-7 features text-xs-center">
-                            <h3>Our services</h3>
+                        <div class="col-6">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+                                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                                ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+                                reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                                sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
+                                est laborum.</p>
+
                             <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ut ipsum mauris. Fusce condimentum mollis eros vitae facilisis. Praesent gravida dignissim felis, id sagittis mauris rutrum non. Nullam pretium id sem ut hendrerit.
+                                <a href="/reseausocial" class="cbp-caption" target="_blank"
+                                   style="color:#c80000;text-decoration: underline;">Accéder au site</a>
                             </p>
-                            <div class="space-30"></div>
-                            <div class="row">
-                                <div class="col-md-3 services-icon">
-                                    <i class="ion-laptop"></i>
-                                </div>
-                                <div class="col-md-9 services-text">
-                                    <h4 class="heading-mini">100% Responsive layout</h4>
-                                    <p>
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ut ipsum mauris. Fusce condimentum mollis eros vitae facilisis.
-                                    </p>
-                                </div>
-                            </div><!--services list-->
-                            <div class="space-30"></div>
-                            <div class="row">
-                                <div class="col-md-3 services-icon">
-                                    <i class="ion-ios-barcode-outline"></i>
-                                </div>
-                                <div class="col-md-9 services-text">
-                                    <h4 class="heading-mini">Clean code</h4>
-                                    <p>
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ut ipsum mauris. Fusce condimentum mollis eros vitae facilisis.
-                                    </p>
-                                </div>
-                            </div><!--services list-->
-                            <div class="space-30"></div>
-                            <div class="row">
-                                <div class="col-md-3 services-icon">
-                                    <i class="ion-compose"></i>
-                                </div>
-                                <div class="col-md-9 services-text">
-                                    <h4 class="heading-mini">Easy customization</h4>
-                                    <p>
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ut ipsum mauris. Fusce condimentum mollis eros vitae facilisis.
-                                    </p>
-                                </div>
-                            </div><!--services list-->
-
-
                         </div>
-                        <div class="col-md-5">
-                            <img src="{% static 'main_app/img/ipad.png' %}" class="img-fluid" alt="">
+                        <div class="col-6">
+                            <img src="{% static '/main_app/img/reseausocial.jpeg' %}" alt="" width="280">
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--  End Modal Reseau social -->
 
-                </div><!--container-->
-            </section><!--features end-->
+    <!-- Modal Appels offres -->
+    <div class="modal fade" id="modalAppelOffre" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 650px;">
+            <div class="modal-content" style="border-radius: 0px;">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="exampleModalLongTitle" style="border-bottom: 3px solid #c80000;">Appels
+                        d'offres</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+                                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                                ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+                                reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                                sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
+                                est laborum.</p>
+                            <p>
+                                <a href="/appelsOffres" class="cbp-caption" target="_blank"
+                                   style="color:#c80000;text-decoration: underline;">Accéder au site</a>
+                            </p>
+                        </div>
+                        <div class="col-6">
+                            <img src="{% static '/main_app/img/appels-Offres.jpg' %}" alt="" width="280"
+                                 style="height:280px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--  End Modal Reseau social -->
+
+
+    <!-- Modal Q and A -->
+    <div class="modal fade" id="modalQA" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 650px;">
+            <div class="modal-content" style="border-radius: 0px;">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="exampleModalLongTitle" style="border-bottom: 3px solid #c80000;">Q &
+                        A</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+                                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                                ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+                                reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                                sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
+                                est laborum.</p>
+
+                            <p>
+                                <a href="/qa" class="cbp-caption" target="_blank"
+                                   style="color:#c80000;text-decoration: underline;">Accéder au site</a>
+                            </p>
+                        </div>
+                        <div class="col-6">
+                            <img src="{% static '/main_app/img/Q&A.jpg' %}" alt="" width="280">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--  End Modal Reseau social -->
+
+
+    <!-- Modal Reseau social -->
+    <div class="modal fade" id="modalCommerce" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 650px;">
+            <div class="modal-content" style="border-radius: 0px;">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="exampleModalLongTitle" style="border-bottom: 3px solid #c80000;">
+                        E-commerce</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+                                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                                ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+                                reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                                sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
+                                est laborum.</p>
+
+                            <p>
+                                <a href="/e_commerce" class="cbp-caption" target="_blank"
+                                   style="color:#c80000;text-decoration: underline;">Accéder au site</a>
+                            </p>
+                        </div>
+                        <div class="col-6">
+                            <img src="{% static '/main_app/img/e-commerce.jpg' %}" alt="" width="280">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--  End Modal Reseau social -->
+
+
+    <!-- Modal Reseau social -->
+    <div class="modal fade" id="modalJournal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 650px;">
+            <div class="modal-content" style="border-radius: 0px;">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="exampleModalLongTitle" style="border-bottom: 3px solid #c80000;">
+                        Journal</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+                                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                                ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+                                reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                                sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
+                                est laborum.</p>
+
+                            <p>
+                                <a href="/journal" class="cbp-caption" target="_blank"
+                                   style="color:#c80000;text-decoration: underline;">Accéder au site</a>
+                            </p>
+                        </div>
+                        <div class="col-6">
+                            <img src="{% static '/main_app/img/news.jpeg' %}" alt="" width="280" style="height:280px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--  End Modal Reseau social -->
+
+
+    <!-- Modal Reseau social -->
+    <div class="modal fade" id="modalElearning" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 650px;">
+            <div class="modal-content" style="border-radius: 0px;">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="exampleModalLongTitle" style="border-bottom: 3px solid #c80000;">
+                        E-learning</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+                                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                                ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+                                reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                                sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
+                                est laborum.</p>
+
+                            <p>
+                                <a href="/E-Learning" class="cbp-caption" target="_blank"
+                                   style="color:#c80000;text-decoration: underline;">Accéder au site</a>
+                            </p>
+                        </div>
+                        <div class="col-6">
+                            <img src="{% static '/main_app/img/e-learning.jpg' %}" alt="" width="280">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--  End Modal Reseau social -->
+
+    <!-- End  Modals -->
+
+
+    <section id="home" class="slider-reg">
+        <!-- Swiper -->
+        <div class="swiper-container swiper-fullwidth">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <img width="1920" src="{% static 'main_app/slider/slider1.jpg' %}" alt="" class="img-fluid">
+                    <div class="swiper-overlay">
+                        <div class="container text-center">
+                            <div class="row">
+                                <div class="col-lg-8 slider-text col-md-10 col-12 mr-auto ml-auto">
+                                    <h4 class="swiper-title">
+                                        Ecosystème Digital de la Construction
+                                    </h4>
+                                    <p>
+                                        Première plateforme « All-in-one » du secteur du Bâtiment et des Travaux Publics
+                                    </p>
+                                    <a href="/signup/" class="btn btn-white btn-lg">Inscrivez-vous</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <img width="1920" src="{% static 'main_app/slider/slider2.jpg' %}" alt="" class="img-fluid">
+                    <div class="swiper-overlay">
+                        <div class="container text-center">
+                            <div class="row">
+                                <div class="col-lg-10 slider-text col-md-10 col-12 mr-auto ml-auto">
+                                    <h4 class="swiper-title">
+                                        Univers des Hommes de l’Art
+                                    </h4>
+                                    <p>
+                                        Lien d’échange, de partage et développement des affaires entre professionnels
+                                    </p>
+                                    <a href="#nos_applications" class="btn btn-white btn-lg">Découvrir</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <img width="1920" src="{% static 'main_app/slider/slider3.jpg' %}" alt="" class="img-fluid">
+                    <div class="swiper-overlay">
+                        <div class="container text-center">
+                            <div class="row">
+                                <div class="col-lg-8 slider-text col-md-10 col-12 mr-auto ml-auto">
+                                    <h4 class="swiper-title">
+                                        Intelligence industrielle et innovation sectorielle
+                                    </h4>
+                                    <p>
+                                        Un foyer de l’information sectorielle qualifiée et actualisée en temps réel
+                                    </p>
+                                    <a href="#nos_applications" class="btn btn-white btn-lg">Découvrir</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Add Arrows -->
+            <div class="swiper-button-next">
+                <i class="ion-ios-arrow-forward mr-2"></i>
+            </div>
+            <div class="swiper-button-prev">
+                <i class="ion-ios-arrow-back   mr-2"></i>
+            </div>
         </div>
 
-        <section id="content-region-2" class="slider-testimonials ">
+    </section><!--main flex slider end-->
 
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-8 mr-auto ml-auto text-center">
-                        <i class="ion-quote display-4 margin-btm-40 text-primary"></i>
-                        <div class="swiper-container swiper-text">
-                            <div class="swiper-wrapper">
-                                <div class="swiper-slide">
-                                    <p class="lead">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ut ipsum mauris. Fusce condimentum mollis eros vitae facilisis.
-                                    </p>
-                                    <img src="{% static 'main_app/img/team/team-1.jpg' %}" alt="" class="img-fluid rounded-circle" width="60">
-                                    <h6>John Doe - <small>Bizwrap User</small></h6>
-                                </div>
-                                <div class="swiper-slide">
-                                    <p class="lead">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ut ipsum mauris. Fusce condimentum mollis eros vitae facilisis.
-                                    </p>
-                                    <img src="{% static 'main_app/img/team/team-2.jpg' %}" alt="" class="img-fluid rounded-circle" width="60">
-                                    <h6>John Doe - <small>Bizwrap User</small></h6>
-                                </div>
-                                <div class="swiper-slide">
-                                    <p class="lead">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ut ipsum mauris. Fusce condimentum mollis eros vitae facilisis.
-                                    </p>
-                                    <img src="{% static 'main_app/img/team/team-3.jpg' %}" alt="" class="img-fluid rounded-circle" width="60">
-                                    <h6>John Doe - <small>Bizwrap User</small></h6>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <section class="padd-section" id="about">
+        <div class="container">
+            <div class="row intro-row">
+                <div class="col-md-12 text-center wow animated fadeInUp">
+                    <h2>Ecosystème Digital du secteur du Bâtiment et des Travaux Publics</h2>
+                    <h3 class="subtitle">Plateforme Inclusive au service de l’Acte de Construire</h3>
                 </div>
-            </div>
-        </section> <!--testimonials section end here-->
-        <div class="newsletter-section">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-8 ml-auto mr-auto">
-                        <h3>Get latest news from us</h3>
+                <div class="space-70"></div>
+                <div class=" col-md-4">
+                    <div class="services-box">
+                        <i class="fa fa-database"></i>
+                        <h4>Big Data</h4>
                         <p>
-                            Subscribe to our newsletter
+                            Une source inépuisable d’information actualisée en temps réel se rapportant à tous les
+                            domaines du secteur du BTP
                         </p>
                     </div>
-                </div><!--row-->
-
-                <div class="row">
-                    <div class="col-md-4 ml-auto mr-auto text-center">
-                        <form method="post" action="#" class="form-subscribe">
-                            <input type="text" name="email" placeholder="Email Id..." class="form-control">
-                            <button type="submit" name="submit" class="btn theme-btn-color btn-block">Subscribe Now</button>
-                        </form>
+                </div><!--services box-->
+                <div class=" col-md-4">
+                    <div class="services-box">
+                        <i class="fa fa-pie-chart"></i>
+                        <h4>Industrial Intelligence</h4>
+                        <p>
+                            Un outil digital d’accompagnement des écosystèmes physiques pour une meilleure gouvernance
+                            sectorielle
+                        </p>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="cta-bg">
-            <div class="container text-center">
-                <h3>Simple and Minimal Design
-                    <a href="#" class="btn btn-lg btn-white btn-radius">Purchase Now</a>
-                </h3>
-            </div>
-        </div>
-        <div class="space-70"></div>
+                </div><!--services box-->
+                <div class="col-md-4">
+                    <div class="services-box">
+                        <i class="fa fa-briefcase"></i>
+                        <h4>Business Development</h4>
+                        <p>
+                            Une plateforme d’échange, de partage, d’expertise et de mise en relation qualifiée entre
+                            professionnels du secteur
+                        </p>
+                    </div>
+                </div><!--services box-->
+            </div><!--row end-->
+        </div><!--intro with services end-->
+    </section><!--about section end-->
+
+    <section id="nos_applications" class="padd-section">
+
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h3 class="heading-sec">Latest news</h3>
+                    <h3 class="heading-sec">Nos applications</h3>
                 </div>
             </div><!--row-->
+        </div>
+
+
+        <div id="js-grid-mosaic-flat" class="cbp cbp-l-grid-mosaic-flat">
+            <div class="cbp-item web-design graphic" data-toggle="modal" data-target="#modalReseauSocial"
+                 id="img_reseausocial" style="width: 25%;left: 0;top: 0;">
+                <a class="cbp-caption" target="_blank" href="" onclick="return false;">
+                    <div class="cbp-caption-defaultWrap">
+                        <img src="{% static "main_app/img/reseausocial.jpeg" %}" alt="">
+                    </div>
+                    <div class="cbp-caption-activeWrap">
+                        <div class="cbp-l-caption-alignCenter">
+                            <div class="cbp-l-caption-body">
+                                <div class="cbp-l-caption-title">ESPR RESEAU SOCIAL</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="cbp-item print motion" data-toggle="modal" data-target="#modalCommerce" id="img_ecommerce"
+                 style="width: 25%;left: 25%;top: 0;">
+                <a href="" class="cbp-caption" target="_blank" onclick="return false;">
+                    <div class="cbp-caption-defaultWrap">
+                        <img src="{% static "main_app/img/e-commerce.jpg" %}" alt="">
+                    </div>
+                    <div class="cbp-caption-activeWrap">
+                        <div class="cbp-l-caption-alignCenter">
+                            <div class="cbp-l-caption-body">
+                                <div class="cbp-l-caption-title">ESPR E-COMMERCE</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="cbp-item print motion" data-toggle="modal" data-target="#modalJournal" id="img_journal"
+                 style="width: 25%;left: 50%;top: 0;">
+                <a href="" class="cbp-caption" target="_blank" onclick="return false;">
+                    <div class="cbp-caption-defaultWrap">
+                        <img src="{% static "main_app/img/news.jpeg" %}" alt="">
+                    </div>
+                    <div class="cbp-caption-activeWrap">
+                        <div class="cbp-l-caption-alignCenter">
+                            <div class="cbp-l-caption-body">
+                                <div class="cbp-l-caption-title">ESPR NEWS</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="cbp-item motion graphic" data-toggle="modal" data-target="#modalAppelOffre" id="img_appeloffre"
+                 style="width: 50%;left: 0;top: 50%;">
+                <a href="" onclick="return false;" class="cbp-caption" target="_blank">
+                    <div class="cbp-caption-defaultWrap">
+                        <img src="{% static "main_app/img/appels-Offres.jpg" %}" alt="">
+                    </div>
+                    <div class="cbp-caption-activeWrap">
+                        <div class="cbp-l-caption-alignCenter">
+                            <div class="cbp-l-caption-body">
+                                <div class="cbp-l-caption-title">ESPR APPELS OFFRES</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="cbp-item web-design print" data-toggle="modal" data-target="#modalElearning" id="img_elearning"
+                 style="width: 25%;left: 75%;top: 0;">
+                <div class="cbp-item-wrapper">
+                    <a href="" class="cbp-caption" target="_blank" onclick="return false;">
+                        <div class="cbp-caption-defaultWrap">
+                            <img src="{% static "main_app/img/e-learning.jpg" %}" alt="">
+                        </div>
+                        <div class="cbp-caption-activeWrap">
+                            <div class="cbp-l-caption-alignCenter">
+                                <div class="cbp-l-caption-body">
+                                    <div class="cbp-l-caption-title">E-LEARNING</div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="cbp-item print motion" data-toggle="modal" data-target="#modalQA" id="img_qa"
+                 style="width: 25%;left: 75%;top: 50%;">
+                <div class="cbp-item-wrapper">
+                    <a href="" class="cbp-caption" target="_blank" onclick="return false;">
+                        <div class="cbp-caption-defaultWrap">
+                            <img src="{% static 'main_app/img/Q&A.jpg' %}" alt="">
+                        </div>
+                        <div class="cbp-caption-activeWrap">
+                            <div class="cbp-l-caption-alignCenter">
+                                <div class="cbp-l-caption-body">
+                                    <div class="cbp-l-caption-title">QA</div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+    <div class="clearfix"></div>
+
+    <div class="padd-section" id="services">
+        <section id="content-region-1" class="padding-40">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-7 features text-xs-center">
+                        <h3>Nos services</h3>
+                        <p>
+                            La plateforme UNIVERS-BTP est l’initiative de la société ELECTRONIC SERVICE PROVIDERS
+                            (ESPR), acteur incontesté de la transformation digitale du secteur du BTP et du mouvement
+                            d’ubérisation des salons professionnels.
+                        </p>
+                        <div class="space-30"></div>
+                        <div class="row">
+                            <div class="col-md-3 services-icon">
+                                <i class="fa fa-users"></i>
+                            </div>
+                            <div class="col-md-9 services-text">
+                                <h4 class="heading-mini">Evénements et Salons virtuels </h4>
+                                <p>
+                                    Une nouvelle forme de « face à face » 100% dématérialisée pour des échanges réels
+                                    dans un cadre virtuel.
+                                </p>
+                            </div>
+                        </div><!--services list-->
+                        <div class="space-30"></div>
+                        <div class="row">
+                            <div class="col-md-3 services-icon">
+                                <i>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
+                                         style="height: 44px;margin-top: 19px;">
+                                        <defs>
+                                            <style>.cls-nintendo {
+                                                fill: white;
+                                            }
+                                            </style>
+                                        </defs>
+                                        <path class="cls-nintendo"
+                                              d="M95.9 33.5c-44.6 8-80.5 41-91.8 84.4C0 133.6-.3 142.8.2 264.4.4 376 .5 378.6 2.4 387.3c10.3 46.5 43.3 79.6 90.3 90.5 6.1 1.4 13.9 1.7 64.1 1.9 51.9.4 57.3.3 58.7-1.1 1.4-1.4 1.5-19.3 1.5-222.2 0-150.5-.3-221.3-.9-222.6-.9-1.7-2.5-1.8-56.9-1.7-44.2.1-57.5.4-63.3 1.4zm83.9 222.6V444l-37.8-.5c-34.8-.4-38.5-.6-45.5-2.3-29.9-7.7-52-30.7-58.3-60.7-2-9.4-2-240.1-.1-249.3 5.6-26.1 23.7-47.7 48-57.4 12.2-4.9 17.9-5.5 57.6-5.6l35.9-.1v188zm-75.9-131.2c-5.8 1.1-14.7 5.6-19.5 9.7-9.7 8.4-14.6 20.4-13.8 34.5.4 7.3.8 9.3 3.8 15.2 4.4 9 10.9 15.6 19.9 20 6.2 3.1 7.8 3.4 15.9 3.7 7.3.3 9.9 0 14.8-1.7 20.1-6.8 32.3-26.3 28.8-46.4-3.9-23.7-26.6-39.7-49.9-35zm158.2-92.3c-.4.3-.6 100.8-.6 223.5 0 202.3.1 222.8 1.5 223.4 2.5.9 74.5.6 83.4-.4 37.7-4.3 71-27.2 89-61.2 2.3-4.4 5.4-11.7 7-16.2 5.8-17.4 5.7-12.8 5.7-146.1 0-106.4-.2-122.3-1.5-129-9.2-48.3-46.1-84.8-94.5-93.1-6.5-1.1-16.5-1.4-48.8-1.4-22.4-.1-40.9.2-41.2.5zm99.1 202.1c14.5 3.8 26.3 14.8 31.2 28.9 3.1 8.7 3 21.5-.1 29.5-5.7 14.7-16.8 25-31.1 28.8-23.2 6-47.9-8-54.6-31-2-7-1.9-18.9.4-26.2 6.9-22.7 31-36.1 54.2-30z"/>
+                                    </svg>
+                                </i>
+                            </div>
+                            <div class="col-md-9 services-text">
+                                <h4 class="heading-mini">Réalité augmentée et réalité virtuelle</h4>
+                                <p>
+                                    Nous vous accompagnons dans le développement de vos applications totalement
+                                    immersives et hybrides.
+                                </p>
+                            </div>
+                        </div><!--services list-->
+                        <div class="space-30"></div>
+                        <div class="row">
+                            <div class="col-md-3 services-icon">
+                                <i class="fa fa-line-chart"></i>
+                            </div>
+                            <div class="col-md-9 services-text">
+                                <h4 class="heading-mini">Growth hacking et transformation digitale</h4>
+                                <p>
+                                    Nous définissons et implémentons votre stratégie « Out of the Box » pour le Growth
+                                    Marketing de vos solutions innovantes.
+                                </p>
+                            </div>
+                        </div><!--services list-->
+
+
+                    </div>
+                    <div class="col-md-5">
+                        <img src="{% static 'main_app/slider/tablette_espr.png' %}" class="img-fluid" alt="">
+                    </div>
+                </div>
+
+            </div><!--container-->
+        </section><!--features end-->
+    </div>
+
+    <div class="newsletter-section" id="newsletter">
+        <div class="container">
             <div class="row">
+                <div class="col-md-8 ml-auto mr-auto">
+                    <h3>Je souhaite rester informé</h3>
+                    <p>
+                        Inscrivez-vous à notre newsletter
+                    </p>
+                    {% if request.GET.newsletter %}
+                        {% include "messages.html" %}
+                    {% endif %}
+                </div>
+            </div><!--row-->
+
+            <div class="row" id="#newsletter">
+                <div class="col-md-4 ml-auto mr-auto text-center">
+                    <form method="post" action="/newsletter/" class="form-subscribe">
+                        {% csrf_token %}
+                        <input type="email" name="newsletter_email" placeholder="Entrer votre E-mail"
+                               class="form-control">
+                        <div style="margin-left: 26px;width: 350px; height: 93px;" class="g-recaptcha"
+                             data-sitekey="6LcIOV8UAAAAAO0kQRvjLmlOt7Q08VEubXgfvG6l"></div>
+                        <button type="submit" name="submit" class="btn theme-btn-color btn-block">Inscrivez-vous
+                            maintenant
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="space-70"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h3 class="heading-sec">Derniers articles</h3>
+            </div>
+        </div><!--row-->
+        <div class="row">
+            {% for article in last_articles|slice:":3" %}
                 <div class="col-md-4 col-sm-6 margin-btm-20">
-                    <div class="news-sec">
+                    <div class="news-sec" style="min-height: 453px;">
                         <div class="news-thumnail">
-                            <a href="blog-post.html">
-                                <img src="{% static 'main_app/img/blog/blog-1.jpg' %}" class="img-fluid" alt="">
+                            <a href="/journal/{{ article.category.name }}/{{ article.id }}" target="_blank">
+                                <img style="min-height: 228px;" class="img-fluid"
+                                     src="{{ article.primary_image.image.url }}"
+                                     alt="{{ article.primary_image.description }}">
                             </a>
                         </div>
                         <div class="news-desc">
-                            <h3 class="blog-post-title"><a href="blog-post.html" class="hover-color">Lorem ipsum dollor sit amet</a></h3>
-                            <span class="news-post-cat">On 26 may 2014 | sports</span>
+                            <h3 class="blog-post-title"><a href="/journal/{{ article.category.name }}/{{ article.id }}"
+                                                           target="_blank"
+                                                           class="hover-color">{{ article.small_title|truncatechars:62 }}</a>
+                            </h3>
+                            <span class="news-post-cat">{{ article.date_publication }} | <a
+                                    href="/journal/{{ article.category.name }}">{{ article.category.name }}</a></span>
                             <p>
-                                aliqua.adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna..
+                                {{ article.resume|truncatechars:155 }}
                             </p>
                         </div>
                     </div>
                 </div><!--latest news items-->
-                <div class="col-md-4 col-sm-6 margin-btm-20">
-                    <div class="news-sec">
-                        <div class="news-thumnail">
-                            <a href="blog-post.html">
-                                <img src="{% static 'main_app/img/blog/blog-2.jpg' %}" class="img-fluid" alt="">
-                            </a>
-                        </div>
-                        <div class="news-desc">
-                            <h3 class="blog-post-title"><a href="blog-post.html" class="hover-color">Lorem ipsum dollor sit amet</a></h3>
-                            <span class="news-post-cat">On 26 may 2014 | sports</span>
-                            <p>
-                                aliqua.adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna..
-                            </p>
-                        </div>
-                    </div>
-                </div><!--latest news items-->
-                <div class="col-md-4 col-sm-6 margin-btm-20">
-                    <div class="news-sec">
-                        <div class="news-thumnail">
-                            <a href="blog-post.html">
-                                <img src="{% static 'main_app/img/blog/blog-4.jpg' %}" class="img-fluid" alt="">
-                            </a>
-                        </div>
-                        <div class="news-desc">
-                            <h3 class="blog-post-title"><a href="blog-post.html" class="hover-color">Lorem ipsum dollor sit amet</a></h3>
-                            <span class="news-post-cat">On 26 may 2014 | sports</span>
-                            <p>
-                                aliqua.adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna..
-                            </p>
-                        </div>
-                    </div>
-                </div><!--latest news items-->
-            </div><!--row end-->
-        </div><!--container recent news end-->
+            {% endfor %}
+
+        </div><!--row end-->
+    </div><!--container recent news end-->
 {% endblock %}
 {% block scripts %}
     {{ block.super }}
+
+    <script>
+    </script>
 {% endblock %}

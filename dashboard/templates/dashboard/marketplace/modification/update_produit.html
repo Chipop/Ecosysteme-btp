@@ -1,0 +1,462 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+
+{% block stylesheets %}
+
+    {{ block.super }}
+
+
+    <!-- Toastr style -->
+    <link href="{% static 'dashboard/css/plugins/toastr/toastr.min.css' %}" rel="stylesheet">
+
+
+    <!-- Multi Select -->
+    <link href="{% static 'dashboard/multi-select/jquery.dropdown.min.css' %}" rel="stylesheet">
+
+
+    <!-- Upload images -->
+    <link href="{% static 'dashboard/css/upload_images_ajax.css' %}" rel="stylesheet">
+
+{% endblock stylesheets %}
+
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script>
+        $('#dashboard_marketplace').addClass("active");
+        $('#marketplace_products').addClass("active");
+
+    </script>
+
+
+
+    <!-- Toastr script -->
+    <script src="{% static 'dashboard/js/plugins/toastr/toastr.min.js' %}"></script>
+
+    <script>
+        {% if messages %}
+            {% for msg in messages %}
+                {% if msg.tags == "success" %}
+                    toastr.options = {
+                        "closeButton": true,
+                        "debug": false,
+                        "progressBar": true,
+                        "preventDuplicates": false,
+                        "positionClass": "toast-top-right",
+                        "onclick": null,
+                        "showDuration": "400",
+                        "hideDuration": "1000",
+                        "timeOut": "7000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+
+                    Command: toastr["success"]("{{ msg }}")
+
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+
+
+    <!-- Multi Select -->
+    <script src="{% static 'dashboard/multi-select/jquery.dropdown.min.js' %}"></script>
+
+    <script>
+
+        $('.multi_select_demo').dropdown({
+
+            searchNoData: '<li style="color:#333">Aucun résultat</li>',
+            input: '<input type="text" maxLength="20" placeholder="Recherche...">',
+
+
+        });
+
+    </script>
+
+
+    <script src="{% static 'journal/js/journalist/jquery.iframe-transport.js' %}"></script>
+    <script src="{% static 'journal/js/journalist/jquery.fileupload.js' %}"></script>
+
+    {# PHOTOS PAGE SCRIPTS #}
+    <script src="{% static 'journal/js/journalist/basic-upload.js' %}"></script>
+
+    <script src="{% static 'journal/js/journalist/article_create.js' %}"></script>
+
+
+{% endblock scripts %}
+
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class=" float-left">
+                    <a href="{% url 'dashboard:marketplace_product' id_product=produit.id %}">
+                        <button id="btn_lancer_compagne" class="btn btn-primary dim">
+                            <i class="fa fa-arrow-left"></i> Produit #{{ produit.id }}
+                        </button>
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="tabs-container">
+
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li><a class="nav-link active show" data-toggle="tab" href="#tab-1"> Informations</a></li>
+                    </ul>
+
+
+                    <div class="tab-content">
+
+
+                        <div role="tabpanel" id="tab-1" class="tab-pane active show">
+                            <div class="panel-body">
+
+                                <div class="">
+
+                                    <h2>
+                                        Modification d'un produit
+                                    </h2>
+                                    <div class="mail-tools tooltip-demo m-t-md error_color"
+                                         style="padding:5px 50px 0px 50px;">
+
+                                        {% for field in form %}
+                                            {{ field.errors }}
+                                        {% endfor %}
+
+
+                                    </div>
+                                </div>
+                                <div class="" style="padding:5px 50px 25px 50px;">
+
+                                    <h3>Informations <span class="error_color">*</span></h3>
+
+
+                                    <form action="{% url 'dashboard:update_product' id_product=produit.id %}"
+                                          method="POST">
+
+                                        {% csrf_token %}
+                                        {{ form_produit.media }}
+
+                                        <div class="form-group row"><label class="col-sm-2 col-form-label"></label>
+
+                                            <div class="col-sm-10">
+                                                <div class="row">
+
+
+                                                    <div class="col-md-2">
+                                                        <label for="id_tag">Nom</label>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        {% render_field form_produit.name class="form-control" %}
+                                                    </div>
+
+
+                                                    <br><br><br>
+
+
+                                                    <div class="col-md-2">
+                                                        <label for="id_tag">Marque</label>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        {% render_field form_produit.brand class="form-control" %}
+                                                    </div>
+
+
+                                                    <br><br><br>
+
+                                                    <div class="col-md-2">
+                                                        <label for="id_category">Catégorie</label>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        {% render_field form_produit.cat class="form-control" %}
+                                                    </div>
+
+
+                                                    <br><br><br>
+
+                                                    <div class="col-md-2">
+                                                        <label for="id_tag">Tags</label>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        <div class="multi_select_demo">
+                                                            {% render_field form_produit.tags class="form-control" style="display:none;" %}
+                                                        </div>
+                                                    </div>
+
+
+                                                    <br><br><br>
+
+
+                                                    <div class="col-md-2">
+                                                        <label for="id_tag">Détails d'emballage</label>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        {% render_field form_produit.packaging_detail class="form-control" %}
+                                                    </div>
+
+
+                                                    <br><br><br>
+
+                                                    <div class="col-md-2">
+                                                        <label for="id_tag">Temps de livraison</label>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        {% render_field form_produit.delivery_time class="form-control" %}
+                                                    </div>
+
+
+                                                    <br><br><br>
+
+                                                    <div class="col-md-12">
+                                                        <label for="id_tag">Description</label>
+                                                    </div>
+
+                                                    <div class="col-md-12">
+                                                        {% render_field form_produit.content %}
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <h3>Informations de paiement <span class="error_color">*</span></h3>
+
+                                        <div class="form-group row"><label class="col-sm-2 col-form-label"></label>
+
+                                            <div class="col-sm-10">
+                                                <div class="row">
+
+
+                                                    <div class="col-md-1">
+                                                        {% render_field form_produit.price_from class="form-control" %}
+                                                    </div>
+
+                                                    <div class="col-md-5">
+                                                        <label for="id_tag">Prix à partir de</label>
+                                                    </div>
+
+
+                                                    <br><br><br>
+
+                                                    <div class="col-md-2">
+                                                        <label for="id_tag">Unité</label>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        {% render_field form_produit.unit class="form-control" %}
+                                                    </div>
+
+
+                                                    <br><br><br>
+
+                                                    <div class="col-md-2">
+                                                        <label for="id_tag">Prix</label>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        {% render_field form_produit.price class="form-control" %}
+                                                    </div>
+
+
+                                                    <br><br><br>
+
+
+                                                    <div class="col-md-2">
+                                                        <label for="id_tag">Ancien prix (Promotion)</label>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        {% render_field form_produit.old_price class="form-control" %}
+                                                    </div>
+
+
+                                                    <br><br><br>
+
+                                                    <div class="col-md-2">
+                                                        <label for="id_tag">Quantité minimum</label>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        {% render_field form_produit.quantity_min class="form-control" %}
+                                                    </div>
+
+
+                                                    <br><br><br>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <h3>Images <span class="error_color">*</span></h3>
+
+                                        <div class="form-group row"><label class="col-sm-2 col-form-label"></label>
+
+                                            <div class="col-sm-10">
+                                                <div class="row">
+
+                                                    <div class="col-md-2">
+                                                        <label for="id_tag">Image principale</label>
+                                                    </div>
+
+                                                    <div class="col-md-10">
+                                                        {% render_field form_produit.image %}
+                                                    </div>
+
+                                                    <div class="col-md-12">
+                                                        <label for="id_tag">Images secondaires</label>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <!-- DIV IMPORT MULTIPLE IMAGE -->
+                                                            <div class="well text-muted text-center"
+                                                                 style="padding-top: 4rem; margin-bottom: 0;"
+                                                                 id="drop-zone-multiple">
+                                                                <span class="glyphicon glyphicon-arrow-down"
+                                                                      style="font-size: 4rem;"></span>
+                                                                <h3>Glisser vos images secondaires ici pour les
+                                                                    importer</h3>
+                                                            </div>
+
+                                                            {# 1. BUTTON TO TRIGGER THE ACTION #}
+                                                            <button type="button" class="btn btn-dark js-upload-photos"
+                                                                    style="width: 100%; margin-bottom: 15px">
+                                                                <span class="glyphicon glyphicon-cloud-upload"></span>
+                                                                Importer images
+                                                            </button>
+
+                                                            {# 2. FILE INPUT TO BE USED BY THE PLUG-IN #}
+                                                            <input id="fileupload" type="file" name="image" multiple
+                                                                   style="display: none;" accept="image/*"
+                                                                   data-url="{% url 'dashboard:up_product_upload_image' produit.id %}"
+                                                                   data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'>
+
+                                                        </div>
+                                                        <div class="col-md-6" style="height: 190px; overflow-y: auto;">
+                                                            {# 3. TABLE TO DISPLAY THE UPLOADED PHOTOS #}
+                                                            <table id="gallery"
+                                                                   class="table table-bordered table-responsive col-md-6">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th>Images</th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                {% for image in images %}
+                                                                    <tr id="tr{{ image.id }}">
+                                                                        <td>
+                                                                            <a href="{{ image.image.url }}">{{ image.image.name }}</a>
+                                                                            <form action="" class="form-delete-image"
+                                                                                  style="display: inline;"
+                                                                                  data-submit-url="{% url 'dashboard:up_product_delete_image' image.id %}">
+                                                                                <button type="submit"
+                                                                                        class="btn btn-danger pull-right"
+                                                                                        style="padding: 0px 12px;height: 20px;">
+                                                                                    <i class="fa fa-trash-o"></i>
+                                                                                </button>
+                                                                            </form>
+                                                                        </td>
+                                                                    </tr>
+                                                                {% endfor %}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class=" row">
+
+                                            <div class="col-lg-12">
+                                                <div class="float-right">
+
+                                                    <input value="Modifier" type="submit" class="btn btn-success"
+                                                           style="width:100px;">
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </form>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+
+
+                        <div role="tabpanel" id="tab-2" class="tab-pane">
+                            <div class="panel-body">
+                                <div class="form-group row"><label class="col-sm-2 col-form-label"></label>
+
+
+                                    <div class="col-sm-12">
+
+                                        <h3>Photo de profil</h3>
+
+                                        <div class="form-group row"><label class="col-sm-2 col-form-label"></label>
+
+                                            <div class="col-sm-10">
+                                                <div class="row" style="padding-left: 15px;width: 811px;">
+
+                                                    <div class=" col-lg-7">
+                                                        {% render_field form.photo_couverture class="" %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+{% endblock content %}
+
+

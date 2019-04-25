@@ -1,0 +1,275 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+
+{% block title %}
+    Réseaux et bannières | Journal | {{ block.super }}
+{% endblock title %}
+
+{% block stylesheets %}
+
+    {{ block.super }}
+
+    <link href="{% static 'dashboard/css/plugins/summernote/summernote-bs4.css' %}" rel="stylesheet">
+
+
+{% endblock stylesheets %}
+
+
+{% block content %}
+
+    <div class="wrapper wrapper-content animated fadeInRight" style="width:1200px;">
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Bannière haut </h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h5>Emplacement</h5>
+
+                                <img src="{% static 'dashboard/img/custom/banniere_haut_728x90.png' %}"
+                                     alt="emplacement bannière haut" style="width:100%">
+
+                                <h5>Bannière actuelle</h5>
+
+                                <img src="{% static 'dashboard/img/custom/banniere_haut.jpg' %}"
+                                     alt="emplacement bannière haut" style="width:100%">
+
+                                <label title="Télécharger une image" for="inputImage" class="btn btn-primary"
+                                       style="margin-top:15px;float:right;">
+                                    <input type="file" accept="image/*" name="file" id="inputImage" class="hide">
+                                    Télécharger une image
+                                </label>
+
+                                <div class="clearfix"></div>
+
+                                <input type="submit" value="Valider" class="btn btn-primary" style="float:right;">
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                        </div>
+
+                        <div class="row">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Réseaux sociaux</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <form>
+
+                            <div class="input-group m-b news-social-links-input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-addon"><i class="fa fa-facebook"
+                                                                       style="padding-right:5px;"></i></span>
+                                </div>
+                                <input type="text" value="www.facebook.com/Abdelaziz" class="form-control">
+                            </div>
+
+                            <div class="input-group m-b news-social-links-input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-addon"><i class="fa fa-twitter"></i></span>
+                                </div>
+                                <input type="text" value="www.twitter.com/Abdelaziz" class="form-control">
+                            </div>
+
+                            <div class="input-group m-b news-social-links-input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-addon"><i class="fa fa-google-plus"
+                                                                       style="margin-right:-5px;"></i></span>
+                                </div>
+                                <input type="text" value="www.google.com/Abdelaziz" class="form-control">
+                            </div>
+
+                            <div class="input-group m-b news-social-links-input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-addon"><i class="fa fa-instagram"></i></span>
+                                </div>
+                                <input type="text" value="www.instagram.com/Abdelaziz" class="form-control">
+                            </div>
+
+                            <div class="input-group m-b news-social-links-input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-addon"><i class="fa fa-youtube"></i></span>
+                                </div>
+                                <input type="text" value="www.youtube.com/Abdelaziz" class="form-control">
+                            </div>
+
+
+                                <input type="submit" value="Valider" class="btn btn-primary" style=";">
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Bannière milieu </h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h5>Emplacement</h5>
+
+                                <img src="{% static 'dashboard/img/custom/banniere_milieu_300x580.png' %}"
+                                     alt="emplacement bannière haut" style="width:100%">
+
+                                <h5>Bannière actuelle</h5>
+
+                                <img src="{% static 'dashboard/img/custom/banniere_milieu.jpg' %}"
+                                     alt="emplacement bannière haut" style="width:100%">
+
+                                <label title="Télécharger une image" for="inputImage" class="btn btn-primary"
+                                       style="margin-top:15px;float:right;">
+                                    <input type="file" accept="image/*" name="file" id="inputImage" class="hide">
+                                    Télécharger une image
+                                </label>
+
+                                <div class="clearfix"></div>
+
+                                <input type="submit" value="Valider" class="btn btn-primary" style="float:right;">
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                        </div>
+
+                        <div class="row">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Bannière bas </h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h5>Emplacement</h5>
+
+                                <img src="{% static 'dashboard/img/custom/banniere_bas_970x90.png' %}"
+                                     alt="emplacement bannière haut" style="width:100%">
+
+                                <h5>Bannière actuelle</h5>
+
+                                <img src="{% static 'dashboard/img/custom/banniere_bas.jpg' %}"
+                                     alt="emplacement bannière haut" style="width:100%">
+
+                                <label title="Télécharger une image" for="inputImage" class="btn btn-primary"
+                                       style="margin-top:15px;float:right;">
+                                    <input type="file" accept="image/*" name="file" id="inputImage" class="hide">
+                                    Télécharger une image
+                                </label>
+
+                                <div class="clearfix"></div>
+
+                                <input type="submit" value="Valider" class="btn btn-primary" style="float:right;">
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                        </div>
+
+                        <div class="row">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script>
+        $('#dashboard_news').addClass("active");
+        $('#news_reseaux_sociaux_banniere').addClass("active");
+    </script>
+
+    <!-- blueimp gallery -->
+    <script src="{% static 'dashboard/js/plugins/blueimp/jquery.blueimp-gallery.min.js' %}"></script>
+
+
+
+
+
+    <!-- Sparkline -->
+    <script src="{% static 'dashboard/js/plugins/sparkline/jquery.sparkline.min.js' %}"></script>
+
+    <script>
+        $(document).ready(function () {
+
+
+            $("#sparkline1").sparkline([34, 43, 43, 35, 44, 32, 44, 48], {
+                type: 'line',
+                width: '100%',
+                height: '50',
+                lineColor: '#1ab394',
+                fillColor: "transparent"
+            });
+
+
+        });
+    </script>
+
+
+
+
+
+{% endblock scripts %}
+

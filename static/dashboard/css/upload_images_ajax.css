@@ -1,0 +1,117 @@
+
+.js-upload-primary_image, .js-upload-photos {
+    width: 100%;
+    margin-bottom: 3px;
+}
+
+.js-upload-primary_image {
+    margin-top: 10px;
+    background-color: #f46320;
+    border-color: #f46320;
+    transition: .3s all;
+}
+
+#primary_image_url {
+    margin-top: 2px;
+    text-align: center;
+    overflow: hidden;
+}
+
+#primary_image_url a {
+    color: #f46320;
+}
+
+.form-group {
+    position: relative;
+}
+
+.form-share {
+    margin-top: 55px;
+    margin-bottom: 60px;
+}
+
+.form-group label {
+    padding-left: 2px;
+}
+
+.ending-button .btn {
+    width: 20%;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 6px;
+    transition: .3s all;
+}
+
+.ending-button .btn:first-child {
+    background-color: #e57373;
+    border-color: #e57373;
+}
+
+.ending-button .btn:first-child:hover {
+    color: #e57373;
+    background: #FFF;
+}
+
+.ending-button .btn:last-child:hover, .js-upload-primary_image:hover {
+    color: #f46320;
+    background: #FFF;
+}
+
+.ending-button .btn:last-child {
+    width: 79.7%;
+    background-color: #f46320;
+    border-color: #f46320;
+    color: #FFF;
+}
+
+.form-delete-image {
+    display: inline-block;
+}
+
+.form-delete-image .btn-danger {
+    padding: 0 10px;
+}
+
+.btn-copy {
+    padding: 0px 10px;
+    margin-right: 2px;
+    margin-top: 1px;
+}
+
+.modal-body {
+    padding: 15px 0;
+}
+
+#btn-modal {
+    margin-left: 4px;
+    margin-top: -3px;
+    padding: 0;
+    background: transparent;
+    color: #f46320;
+    border: 0;
+    transition: .3s all;
+}
+
+#btn-modal:hover {
+    color: #333;
+    margin-left: 10px;
+}
+
+#modal-submit {
+    background: #f46320;
+    color: #FFF;
+}
+
+.modal .alert {
+    border-radius: 0;
+}
+
+.modal-footer button {
+    transition: .3s all;
+}
+
+.modal-footer button:hover {
+    padding-right: 30px;
+    padding-left: 30px;
+}

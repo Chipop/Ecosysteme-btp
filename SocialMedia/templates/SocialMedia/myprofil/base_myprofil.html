@@ -3,6 +3,7 @@
 {% load widget_tweaks %}
 {% block title %}{{ user.username }}{% endblock %}
 {% block content %}
+    {{ block.super }}
 
     {% block modals %}
 
@@ -234,6 +235,8 @@
 {% block scripts %}
     {{ block.super }}
 
+
+
     <!-- Script settings crsf token with ajax-->
     <script>
         function getCookie(name) {
@@ -393,6 +396,7 @@
                     swal("L'image de couverture a été changée avec succès.", "{{ user.username }}", "success");
                     $("#coverpic").css("background-image", "url(" + data.url + ")");
                     document.getElementById("coverpic").style.backgroundImage = "url(" + data.url + ")";
+                    fixForms();
                 },
                 error: function () {
                 },
@@ -451,6 +455,7 @@
                     swal("Photo De Profil A Ete Changée Avec Succé", "{{ user.username }}", "success");
                     $("#profilpic").attr("src", data.url);
                     document.getElementById("profilpic").src = data.url;
+                    fixForms();
                 },
                 error: function () {
                 },

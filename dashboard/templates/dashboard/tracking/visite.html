@@ -1,0 +1,304 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load humanize %}
+{% load dashboard_tags %}
+{% load l10n %}
+
+{% block title %}
+    Détails de la visite | Tracking | {{ block.super }}
+{% endblock title %}
+
+{% block stylesheets %}
+
+    {{ block.super }}
+    <!-- Sweet Alert -->
+    <link href="{% static 'dashboard/css/plugins/sweetalert/sweetalert.css' %}" rel="stylesheet">
+    <!-- Toastr style -->
+    <link href="{% static 'dashboard/css/plugins/toastr/toastr.min.css' %}" rel="stylesheet">
+    <link href="{% static 'dashboard/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css' %}"
+          rel="stylesheet">
+
+    <style>
+        #tracking_details th {
+            text-align: right;
+        }
+
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+            height:   285px;;
+        }
+    </style>
+
+
+
+
+{% endblock stylesheets %}
+
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+
+        <div class="row">
+
+
+            <div id="window_liste_emails" class="col-lg-12 animated fadeInRight">
+                <div class="mail-box-header">
+
+                    <h2>
+                        Détails de la visite
+                    </h2>
+
+                    <div class="mail-tools tooltip-demo m-t-md">
+
+
+                    </div>
+                </div>
+                <div class="mail-box">
+
+                    <div class="row">
+                        <div class="col-lg-8">
+
+
+                            <table id="tracking_details" class="table table-striped table-bordered"
+                                   style="width:85%; margin:30px;">
+                                <tbody>
+                                <tr>
+                                    <th>Visiteur :</th>
+                                    <td>
+                                        {% if not tracking.user %}
+                                            Visiteur non connecté
+                                        {% else %}
+                                            <a href="{% url 'dashboard:user_infos' id_user=tracking.user.profil.id %}">{{ tracking.user.first_name|title }} {{ tracking.user.last_name|title }}</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th>Date de la visite :</th>
+                                    <td>{{ tracking.timestamp }}</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Page :</th>
+                                    <td>{{ tracking.content_object |verbose_name }} :
+                                        {% if  tracking.content_object.tracking_get_admin_url != "" %}
+                                            <a href="{{ tracking.content_object.tracking_get_admin_url }}">{% endif %}{{ tracking.content_object.tracking_get_description }}
+                                        {% if tracking.content_object.tracking_get_admin_url != "" %}</a>{% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Url :</th>
+                                    <td>{{ tracking.content_object.tracking_get_absolute_url }}</td>
+                                </tr>
+
+
+                                <tr>
+                                    <th>Date de la visite :</th>
+                                    <td>{{ tracking.timestamp }}</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Page référente :</th>
+                                    <td>{{ tracking.referrer }}</td>
+                                </tr>
+
+
+                                <tr>
+                                    <th>Type de l'appareil :</th>
+                                    <td>{{ tracking.device_type }}</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Appareil :</th>
+                                    <td>{{ tracking.device }}</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Navigateur :</th>
+                                    <td>{{ tracking.browser }}</td>
+                                </tr>
+
+
+                                <tr>
+                                    <th>Version du navigateur :</th>
+                                    <td>{{ tracking.browser_version }}</td>
+                                </tr>
+
+
+                                <tr>
+                                    <th>Système d'exploitation :</th>
+                                    <td>{{ tracking.system }}</td>
+                                </tr>
+
+
+                                <tr>
+                                    <th>Version du système d'exploitation :</th>
+                                    <td>{{ tracking.system_version }}</td>
+                                </tr>
+
+
+                                </tbody>
+                            </table>
+
+
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="row">
+                                <div class="col-lg-12" style="    padding-top: 29px;">
+
+                                    <div id="map"></div>
+
+                                </div>
+
+                                <div class="col-lg-12">
+                                    <table id="tracking_details" class="table table-striped table-bordered"
+                                           style="width:85%; margin:30px;">
+                                        <tbody>
+
+                                        <tr>
+                                            <th>IP :</th>
+                                            <td>{{ tracking.ip_address }}</td>
+                                        </tr>
+
+                                        <tr>
+                                            <th>Ville :</th>
+                                            <td>{{ tracking.ip_city }}</td>
+                                        </tr>
+
+                                        <tr>
+                                            <th>Pays :</th>
+                                            <td>{{ tracking.ip_country }}</td>
+                                        </tr>
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="row" style="padding:30px;">
+                        <div class="col-lg-12">
+                            <h3>Dernières actions de ce visiteur</h3>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <table id="example" class="table table-striped table-bordered" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th>Visiteur</th>
+                                    <th>Page</th>
+                                    <th>Url</th>
+                                    <th>Date visite</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                {% for tracking in tracking_list_user %}
+                                    <tr>
+                                        <td>
+                                            {% if not tracking.user %}
+                                                Visiteur non connecté
+                                            {% else %}
+                                                <a href="{% url 'dashboard:user_infos' id_user=tracking.user.profil.id %}">{{ tracking.user.first_name|title }} {{ tracking.user.last_name|title }}</a>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ tracking.content_object |verbose_name }} :
+                                            {% if  tracking.content_object.tracking_get_admin_url != "" %}
+                                                <a href="{{ tracking.content_object.tracking_get_admin_url }}">{% endif %}{{ tracking.content_object.tracking_get_description }}
+                                            {% if tracking.content_object.tracking_get_admin_url != "" %}</a>{% endif %}
+                                        </td>
+                                        <td>{{ tracking.content_object.tracking_get_absolute_url }}</td>
+                                        <td>{{ tracking.timestamp }}</td>
+                                        <td>
+                                            <a href="{{ tracking.content_object.tracking_get_absolute_url }}">
+                                                <button class="btn btn-success btn-xs">Visiter</button>
+                                            </a>
+
+                                            <a href="{% url 'dashboard:tracking_visite' id_visite=tracking.id %}">
+                                                <button class="btn btn-primary btn-xs">Voir plus</button>
+                                            </a>
+
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td valign="top" colspan="5" class="dataTables_empty text-center">Aucun élément
+                                            à afficher
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+
+
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script>
+        $('#dashboard_tracking_visites').addClass("active");
+    </script>
+
+
+    <script>
+        var map;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: {{ city.latitude|unlocalize }} , lng: {{ city.longitude|unlocalize }} },
+                zoom: 8
+            });
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCMXwIur1UGFQOTiCRWjfs00lLC5LNPX8c&callback=initMap"
+            async defer></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock scripts %}
+

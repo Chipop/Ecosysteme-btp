@@ -57,7 +57,8 @@
                                     <span>Contacter Exposant</span>
                                 </h3>
                                 <form action="{% url 'e_commerce:contact_supplier' product.pk %}" method="post">
-                                {% csrf_token %}
+
+                                    {% csrf_token %}
                                     <div class="row">
                                         <div class="col-sm-3" style="margin-bottom: 10px">
                                             <i class="fa fa-user"></i>&nbsp;&nbsp;<b>{{ product.supplier.owner.user.last_name }} {{ product.supplier.owner.user.first_name }} </b>
@@ -67,15 +68,18 @@
                                         <div class="col-sm-1">
                                             <img width="70px" class="" src="{{ product.image.url }}" alt="Image {{ product.name }}" />
                                         </div>
-                                        <div class="col-sm-5" style="padding-top: 9px">
+                                        <div class="col-sm-4" style="padding-top: 9px">
                                             <b>{{ product.name }}</b> <br>
                                             <div style="position: relative">
                                                 <input type="number" class="form-control" style="padding-right: 50px;" min="{{ product.quantity_min }}" value="{{ product.quantity_min }}" placeholder="Quantité" name="quantity">
                                                 <span style="position: absolute; top: 6px; right: 8px; opacity: .7;">{{ product.unit }}</span>
                                             </div>
+                                            <button style="margin-top: 10px; width: 100%; text-transform: uppercase;" type="submit" class="btn btn-group">Envoyer Message</button>
+
                                         </div>
-                                        <div class="col-sm-3">
-                                            <button style="margin-top: 30px; width: 100%; text-transform: uppercase;" type="submit" class="btn btn-group">Envoyer Message</button>
+                                        <div class="col-sm-4" style="margin-top: 32px">
+                                            <script src='https://www.google.com/recaptcha/api.js'></script>
+                                            <div class="g-recaptcha" data-sitekey="6LcIOV8UAAAAAO0kQRvjLmlOt7Q08VEubXgfvG6l"></div>
                                         </div>
                                     </div>
                                     <div class="row">

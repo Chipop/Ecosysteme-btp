@@ -3,7 +3,7 @@ import datetime
 from django.db.models import Max
 from django.shortcuts import get_object_or_404
 
-from ecommerce.models import WishList, Compare, CommerceCategory, Sale, Tag, Cart, Shop
+from ecommerce.models import WishList, Compare, CommerceCategory, Sale, Tag, Cart, Shop, Product
 
 
 def global_var(request):
@@ -83,7 +83,8 @@ def global_var(request):
         'number_products_in_cart': number_products_in_cart,
         'is_supplier': supplier,
         'is_seller': seller,
-        'store_id': store
+        'store_id': store,
+        'products': Product.objects.all().values_list('name', flat=True)
     }
 
     return context

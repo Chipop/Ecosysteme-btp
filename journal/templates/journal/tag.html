@@ -1,5 +1,19 @@
 {% extends 'base.html' %}
 
+{% block seo_title %}Tag - {{ tag.name }}  {% endblock seo_title %}
+{% block seo_og_title %}Tag - {{ tag.name }} {% endblock seo_og_title %}
+
+{% block seo_description %}
+    {{ tag.description }}
+{% endblock seo_description %}
+
+{% block seo_og_description %}
+    {{ tag.description }}
+{% endblock seo_og_description %}
+
+{% block seo_image %}
+{% endblock seo_image %}
+
 {% load static %}
 
 {% block style %}

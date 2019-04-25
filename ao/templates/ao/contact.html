@@ -1,0 +1,146 @@
+{% extends 'ao/base.html' %}
+
+{% load static %}
+
+{% block style %}
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+
+        {% if status %}
+            Snackbar.show({
+                text: 'Message envoyer avec succès',
+            });
+        {% endif %}
+        {% if recaptcha %}
+            Snackbar.show({
+                text: 'Veuillez vérifier la recaptcha',
+            });
+        {% endif %}
+
+    </script>
+
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- Titlebar
+================================================== -->
+<div id="titlebar" class="gradient" style="padding-top: 40px; margin-bottom: 30px;">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+
+				<h2>Contacter nous</h2>
+
+				<!-- Breadcrumbs -->
+				<nav id="breadcrumbs" class="dark">
+					<ul>
+						<li><a href="{% url 'ao:home' %}">Accueil</a></li>
+						<li>Contacter nous</li>
+					</ul>
+				</nav>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- Content
+
+<!-- Container -->
+<div class="container">
+	<div class="row">
+
+		<div class="col-xl-12">
+			<div class="contact-location-info margin-bottom-50">
+				<div class="contact-address">
+					<ul>
+						<li class="contact-address-headline">Visitez nous</li>
+						<li>114, Secteur 3, Riad Oulad Mtaa، Temara 10160</li>
+						<li>Téléphone 05376-29223</li>
+						<li><a href="javascript:void(0);"><span class="__cf_email__">anassoujri@espr.ma</span></a></li>
+						<li>
+							<div class="freelancer-socials">
+								<ul>
+									<li><a href="#" title="Dribbble" data-tippy-placement="top"><i class="icon-brand-dribbble"></i></a></li>
+									<li><a href="#" title="Twitter" data-tippy-placement="top"><i class="icon-brand-twitter"></i></a></li>
+									<li><a href="#" title="Behance" data-tippy-placement="top"><i class="icon-brand-behance"></i></a></li>
+									<li><a href="#" title="GitHub" data-tippy-placement="top"><i class="icon-brand-github"></i></a></li>
+								</ul>
+							</div>
+						</li>
+					</ul>
+
+				</div>
+				<div id="single-job-map-container">
+					<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3310.098818057715!2d-6.896811685303854!3d33.938586431159386!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xda712c1fb02e8b5%3A0xffb95f12141d7f72!2sELECTRONIC+SERVICE+PROVIDERS+(ESPR)!5e0!3m2!1sfr!2sma!4v1541721097245" width="600" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-xl-8 col-lg-8 offset-xl-2 offset-lg-2">
+
+            {% if not status %}
+			<section id="contact" class="margin-bottom-60">
+				<h3 class="headline margin-top-15 margin-bottom-35">Des questions? N'hésitez pas à nous contacter!</h3>
+
+				<form method="post" name="contactform" id="contactform" autocomplete="on">
+                    {% csrf_token %}
+					<div class="row">
+						<div class="col-md-6">
+							<div class="input-with-icon-left">
+								<input class="with-border" name="name" type="text" id="name" placeholder="Votre nom complet" required="required" />
+								<i class="icon-material-outline-account-circle"></i>
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="input-with-icon-left">
+								<input class="with-border" name="email" type="email" id="email" placeholder="Adresse Email" pattern="^[A-Za-z0-9](([_\.\-]?[a-zA-Z0-9]+)*)@([A-Za-z0-9]+)(([\.\-]?[a-zA-Z0-9]+)*)\.([A-Za-z]{2,})$" required="required" />
+								<i class="icon-material-outline-email"></i>
+							</div>
+						</div>
+					</div>
+
+					<div class="input-with-icon-left">
+						<input class="with-border" name="subject" type="text" id="subject" placeholder="Objet" required="required" />
+						<i class="icon-material-outline-assignment"></i>
+					</div>
+
+					<div>
+						<textarea class="with-border" name="message" cols="40" rows="5" id="comments" placeholder="Message" spellcheck="true" required="required"></textarea>
+					</div>
+
+                    <table width="100%">
+                        <tr>
+                            <td>
+                                <div style="margin-top: 15px;">
+                                    <script src='https://www.google.com/recaptcha/api.js'></script>
+                                    <div class="g-recaptcha" style="display: inline-block;" data-sitekey="6LcIOV8UAAAAAO0kQRvjLmlOt7Q08VEubXgfvG6l"></div>
+                                </div>
+                            </td>
+                            <td style="text-align: right">
+                                <input type="submit" class="submit button margin-top-15" id="submit" value="Envoyer Message" />
+                            </td>
+                        </tr>
+                    </table>
+
+				</form>
+			</section>
+            {% endif %}
+
+		</div>
+
+	</div>
+</div>
+<!-- Container / End -->
+
+
+{% endblock %}

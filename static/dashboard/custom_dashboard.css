@@ -1,0 +1,262 @@
+/* Page de garde , Messages de contact */
+
+.wrapper-content-custom {
+    width: 100%;
+}
+
+.btn-recherche-inbox {
+    border-radius: 0px 3px 3px 0px;
+    margin-top: 1px;
+}
+
+.th-email-list {
+    width: 25%;
+}
+
+.delete-icon {
+    font-size: 20px;
+    color: orangered;
+}
+
+.th-email-list-users {
+    width: 10%;
+}
+
+.link-profile {
+    margin-top: 5px;
+    padding-right: 5px;
+    font-size: 20px;
+    font-weight: 300;
+}
+
+.link-icon {
+    color: #6b6e70;
+}
+
+.link-icon:hover {
+    color: #1ab394;
+}
+
+.news-social-links-input-group {
+    padding-bottom: 12px;
+}
+
+a {
+    color: #1ab394;
+}
+
+.article-image-actions-trash {
+    position: relative;
+    top: -59px;
+    right: 30px;
+    color: white;
+}
+
+.article-image-actions-star {
+    position: relative;
+    top: -59px;
+    right: 65px;
+    color: gold;
+}
+
+.fa-icons-image-article {
+    font-size: 15px;
+}
+
+.inline-block {
+    display: inline-block;
+}
+
+.fa-icon-not-checked {
+    color: #ed5565;
+}
+
+.fa-icon-checked {
+    color: #1ab394;
+}
+
+.table-image {
+    height: 40px;
+    border-radius: 50%;
+}
+
+.product_details_price {
+    font-weight: 600;
+}
+
+.btn-actions-datatable:hover {
+    background-color: inherit;
+    border: 1px solid rgba(106, 110, 131, 0.77);
+}
+
+.btn-actions-datatable:active {
+    background-color: inherit;
+    border: 1px solid rgba(163, 169, 191, 0.57);
+}
+
+.droit_options {
+    height: 145px;
+}
+
+.margin_top_15 {
+    margin-top: 15px;
+}
+
+.error_color {
+    color: #ed5565;
+}
+
+.profile_droit_select {
+    height: 123px;
+}
+
+#example_length {
+    padding-left: 22px
+}
+
+#example_filter {
+    padding-right: 22px;
+    margin-top: 10px;
+}
+
+.dt-buttons {
+    padding-left: 22px;
+}
+
+#example_info {
+    padding-left: 22px;
+}
+
+#example_paginate {
+    padding-right: 22px
+}
+
+#example_filter input[type="search"] {
+    width: 222px;
+}
+
+.error_msg {
+    color: #ed5565;
+}
+
+form label {
+    font-weight: 600;
+    line-height: 32px;
+    font-size: 15px;
+    color: #333;
+}
+
+.stepwizard-step { /* newsletter steps */
+    width: 152px;
+}
+
+.mar-b-30 {
+    margin-bottom: 30px;
+}
+
+.date-inline-block {
+    width: auto;
+    display: inline-block;
+    margin-right: 15px;
+}
+
+.unread_message {
+    font-weight: 600;
+    color: #383d41;
+    background-color: #f8f7f7;
+}
+
+.responded_message {
+    font-weight: 600;
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+.small-text {
+    font-weight: 400;
+    font-size: 11px;
+}
+
+.btn-custom-dropdown {
+    padding: 0px;
+    border: 1px;
+}
+
+.btn-custom-activation-color{
+    background-color:#6c757d;
+}
+
+.btn-list-milieu {
+    border-RADIUS: 0px;
+}
+
+.btn-list-fin {
+        border-radius: 0px 3px 3px 0px;
+}
+
+.ibox-page-temps-utilisateur{
+    min-height:404px;
+}
+
+.ibox-source-traffic {
+    min-height: 336px;
+}
+
+.card_span{
+        font-size: 17px;
+}
+
+
+.bg-purple {
+    background-color: #7376DF !important;
+    border-color: #7376DF !important;
+    color: white;
+}
+
+.bg-black {
+    background-color: #2E4152 !important;
+    border-color: #2E4152 !important;
+    color: white;
+}
+
+.bg-grey {
+    background-color: #7B859E !important;
+    border-color: #7B859E !important;
+    color: white;
+}
+
+.bg-orange {
+    background-color: #DA6515 !important;
+    border-color: #DA6515 !important;
+    color: white;
+}
+
+.bg-blue {
+
+    background-color: #1c84c6 !important;
+    border-color: #1c84c6 !important;
+    color: white;
+}
+
+.back-to-top i {
+    font-size: 22px;
+    color: #ffffff;
+}
+
+
+.back-to-top{
+    background-color: #1BB394;
+    border-radius: 0px;
+    bottom: 0px;
+    padding: 7px;
+    display: none;
+    height: 40px;
+    opacity: 1;
+    position: fixed;
+    right: 20px;
+    text-align: center;
+    width: 70px;
+    overflow: hidden;
+    z-index: 9999;
+}

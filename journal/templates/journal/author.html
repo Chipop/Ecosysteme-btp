@@ -6,6 +6,12 @@
     {{ author }}, Journaliste à Newspaper
 {% endblock %}
 
+{% block seo_title %}{{ author }}, Journaliste à Newspaper {% endblock seo_title %}
+{% block seo_og_title %}{{ author }}, Journaliste à Newspaper {% endblock seo_og_title %}
+{% block seo_description %}{{ author.description }} {% endblock seo_description %}
+{% block seo_og_description %}{{ author.description }} {% endblock seo_og_description %}
+{% block seo_image %}{% if author.profile_picture.image %}{{ author.profile_picture.image.url }}{% endif %}{% endblock seo_image %}
+
 {% block style %}
     <link rel="stylesheet" href="{% static 'journal/css/author.css' %}">
 {% endblock %}

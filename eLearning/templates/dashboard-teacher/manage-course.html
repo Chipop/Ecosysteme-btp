@@ -1,0 +1,717 @@
+{% extends 'dashboard-teacher/base.html' %}
+{% load static %}
+
+{% block style %}
+
+    <style>
+        .button-subm{
+            background-color: white;
+            cursor: pointer;
+            border: 1px solid;
+            padding: 3px 25px;
+            border-radius: 25px;
+        }
+        .button-subm:hover{
+            background-color: #333 !important;
+            color: #fff;
+        }
+        a.btn_1.medium, .btn_1.medium {
+            padding: 12px 100px;
+        }
+        .btn.btn-primary{
+            cursor: pointer;
+        }
+        i.fa.fa-fw.fa-remove {
+            font-size: 20px;
+            padding-top: 12px !important;
+        }
+        div[id^="div_quiz"] {
+            position: relative;
+        }
+        a[id^="add_choice_btn"] {
+            position: absolute;
+            top: 5px;
+            left: 150px;
+        }
+        div[id^="div_question"] {
+            padding: 0 20px;
+            position: relative;
+        }
+        #formSendToEvaluate{
+            text-align: right;
+        }
+        .delete_part i.fa.fa-fw.fa-remove {
+            top: -29px !important;
+        }
+    </style>
+
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="container-fluid">
+    <!-- Breadcrumbs-->
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'eLearning:teacher_dashboard' %}">Tableau de bord</a>
+            </li>
+            <li class="breadcrumb-item">Gérer Cours</li>
+            <li class="breadcrumb-item active">{{ course.name }}</li>
+        </ol>
+        {% if message_error %}
+            <div class="alert alert-danger">
+                {{ message_error }}
+            </div>
+        {% endif %}
+        {% if message_success %}
+            <div class="alert alert-success">
+                {{ message_success }}
+            </div>
+        {% endif %}
+        <div class="box_general padding_bottom">
+			<div class="header_box version_2">
+				<h2><i class="fa fa-file"></i>Ciblez vos participants</h2>
+			</div>
+            {% for postskill in course.elearning_postskills_set.all %}
+                <form id="formDeletePostskill{{ postskill.pk }}" action="{% url 'eLearning:delete_postskill' %}" data-validate-url="{% url 'eLearning:delete_postskill' %}">
+                    <input type="hidden" value="{{ postskill.pk }}" name="postskill">
+                    <input type="hidden" value="{{ course.pk }}" name="course">
+                </form>
+            {% endfor %}
+            {% for prerequisite in course.elearning_prerequisites_set.all %}
+                <form id="formDeletePrerequisite{{ prerequisite.pk }}" action="{% url 'eLearning:delete_prerequisite' %}" data-validate-url="{% url 'eLearning:delete_prerequisite' %}">
+                    <input type="hidden" value="{{ prerequisite.pk }}" name="prerequisite">
+                    <input type="hidden" value="{{ course.pk }}" name="course">
+                </form>
+            {% endfor %}
+            <form id="formPrerequisitePostSkill" method="post" action="{% url 'eLearning:add_prerequisite_postskill' %}">
+                {% csrf_token %}
+                <input type="hidden" value="{{ course.pk }}" name="course">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h6>Prérequis</h6>
+                        <table id="list-prerequisite-container" style="width:100%;">
+                            {% for prerequisite in course.elearning_prerequisites_set.all %}
+                                <tr>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-md-11">
+                                                <div class="form-group">
+                                                    <input type="text" disabled="disabled" class="form-control" value="{{ prerequisite.value }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <div class="form-group">
+                                                    <a class="delete_existing" data-pk="{{ prerequisite.pk }}" href="javascript:"><i style="padding-top: 14px" class="fa fa-fw fa-remove"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            <tr class="list-prerequisite-item">
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-11">
+                                            <div class="form-group">
+                                                <input type="text" name="values_prerequisite" class="form-control" placeholder="Exemple : " required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <div class="form-group">
+                                                <a class="delete" href="javascript:"><i style="padding-top: 14px"  class="fa fa-fw fa-remove"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <a href="javascript:" class="btn_1 gray add-list-prerequisite-item"><i class="fa fa-fw fa-plus-circle"></i>Ajouter</a>
+                    </div>
+                </div>
+                <br/>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h6>Post Skills</h6>
+                        <table id="list-postskill-container" style="width:100%;">
+                            {% for postskill in course.elearning_postskills_set.all %}
+                                <tr>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-md-11">
+                                                <div class="form-group">
+                                                    <input type="text" disabled="disabled" class="form-control" value="{{ postskill.value }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <div class="form-group">
+                                                    <a class="delete_existing" data-pk="{{ postskill.pk }}" href="javascript:"><i style="padding-top: 14px"  class="fa fa-fw fa-remove"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            <tr class="list-postskill-item">
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-11">
+                                            <div class="form-group">
+                                                <input type="text" name="values_postskill" class="form-control" placeholder="Exemple : " required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <div class="form-group">
+                                                <a class="delete" href="javascript:"><i style="padding-top: 14px" class="fa fa-fw fa-remove"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <a href="javascript:" class="btn_1 gray add-list-postskill-item"><i class="fa fa-fw fa-plus-circle"></i>Ajouter</a>
+                        <a href="javascript:" class="btn active"><button type="submit" class="btn active button-subm" style="background-color: white;"><i class="fa fa-fw fa-save"></i>Sauvegarder</button></a>
+                        <a href="javascript:" hidden onclick="$('#formPrerequisitePostSkill').submit();" class="btn active"><i class="fa fa-fw fa-save"></i>Sauvegarder</a>
+                    </div>
+                </div>
+            </form>
+		</div>
+        <div class="box_general padding_bottom">
+			<div class="header_box version_2">
+				<h2><i class="fa fa-file"></i>Prix et Coupons</h2>
+			</div>
+            {% for coupon in course.elearning_coupon_set.all %}
+                <form id="formDeleteCoupon{{ coupon.pk }}" action="{% url 'eLearning:delete_coupon' %}" data-validate-url="{% url 'eLearning:delete_coupon' %}">
+                    <input type="hidden" value="{{ coupon.pk }}" name="coupon">
+                    <input type="hidden" value="{{ course.pk }}" name="course">
+                </form>
+            {% endfor %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+						<label><h6>Prix</h6></label>
+                        <form id="formUpdatePrice" action="{% url 'eLearning:update_price' %}" data-validate-url="{% url 'eLearning:update_price' %}">
+                            <table>
+                                <tr>
+                                    <td class="col-md-8" style="padding-left: 0">
+                                        <input type="hidden" name="course" value="{{ course.pk }}">
+                                        <input type="text" name="price" id="input_price" class="form-control" value="{{ course.price }}" placeholder="Prix Dh (Laisser vide pour cours gratuits)">
+                                    </td>
+                                    <td class="col-md-4"><a href="javascript:" class="btn active update_price"><i class="fa fa-fw fa-edit"></i> Modifier</a></td>
+                                </tr>
+                            </table>
+                        </form>
+					</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <form id="formCoupon" method="post" action="{% url 'eLearning:add_coupon' %}">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ course.pk }}" name="course">
+                        <h6>Coupons</h6>
+                        <table id="list-coupon-container" style="width:100%;">
+                            {% for coupon in course.elearning_coupon_set.all %}
+                                {% if not coupon.used and not coupon.is_general %}
+                                    <tr>
+                                        <td>
+                                            <div class="row">
+                                                <div class="col-md-7">
+                                                    <div class="form-group">
+                                                        <input type="text" disabled="disabled" class="form-control" value="{{ coupon.value }}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <input type="text" disabled="disabled" class="form-control" style="text-align:center;" value="{{ coupon.percentage }} %">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <input type="text" disabled="disabled" class="form-control" value="{% if coupon.is_multiple %}Multiple utilisations{% else %}Une utilisation{% endif %}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <div class="form-group">
+                                                        <a class="delete_existing" data-pk="{{ coupon.pk }}" href="javascript:"><i style="padding-top: 14px"  class="fa fa-fw fa-remove"></i></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                            <tr class="list-coupon-item">
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-7">
+                                            <div class="form-group">
+                                                <input type="text" name="values_coupon" class="form-control" placeholder="Coupon" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <input type="number" name="percentage_coupon" class="form-control" required placeholder="Pourcentage" min="1" max="100">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <select name="is_multiple" class="form-control" required>
+                                                    <option value="1">Une utilisation</option>
+                                                    <option value="2">Multiple utilisations</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <div class="form-group">
+                                                <a class="delete" href="javascript:"><i style="padding-top: 14px"  class="fa fa-fw fa-remove"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <a href="javascript:" class="btn_1 gray add-list-coupon-item"><i class="fa fa-fw fa-plus-circle"></i>Ajouter</a>
+                        <a href="javascript:" class="btn active">
+                            <button type="submit" class="btn active button-subm" style="background-color: white;"><i class="fa fa-fw fa-save"></i>Sauvegarder</button></a>
+                        <a href="javascript:" hidden onclick="$('#formCoupon').submit();" class="btn active"><i class="fa fa-fw fa-save"></i>Sauvegarder</a>
+                    </form>
+                </div>
+            </div>
+		</div>
+		<!-- /box_general-->
+        <div style="position: relative">
+        <h1 style="padding-left: 25px">Vidéos</h1>
+        {% for part in course.elearning_part_set.all %}
+            <div class="box_general padding_bottom">
+                <div class="header_box version_2">
+                    <form id="formDeletePart{{ part.pk }}" action="{% url 'eLearning:delete_part' %}" data-validate-url="{% url 'eLearning:delete_part' %}">
+                        <input type="hidden" value="{{ part.pk }}" name="part">
+                        <input type="hidden" value="{{ course.pk }}" name="course">
+                    </form>
+                    <h2><i class="fa fa-puzzle-piece"></i>{{ part.number }} - {{ part.name }}</h2>
+                    <div style="display: inline-block;">
+                        <a class="delete_part" data-pk="{{ part.pk }}" href="javascript:" style="position: relative">
+                            <i style="position: absolute; top: -14px; color: #a7a7a7;"  class="fa fa-fw fa-remove"></i></a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12" style="position: relative">
+                        <h6 style="padding: 8px 10px 18px; font-size: 18px;"><i class="fa fa-file-video-o"></i> Vidéos</h6>
+                        <table id="video-list-container{{ part.pk }}" style="width:100%;">
+                            {% for chapter in part.elearning_chapter_set.all %}
+                                <tr class="video-list-item">
+                                    <form id="formDeleteChapter{{ chapter.pk }}" action="{% url 'eLearning:delete_chapter' %}" data-validate-url="{% url 'eLearning:delete_chapter' %}">
+                                        <input type="hidden" value="{{ chapter.pk }}" name="chapter">
+                                        <input type="hidden" value="{{ course.pk }}" name="course">
+                                    </form>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" disabled="disabled" style="text-align:center;" value="{{ chapter.number }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" disabled="disabled" value="{{ chapter.name }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" disabled="disabled" value="{{ chapter.duration }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    {% if chapter.video_url %}
+                                                        <a class="form-control" disabled="disabled" target="_blank" href="{{ chapter.video_url }}">{{ chapter.video_url|truncatechars:35 }}</a>
+                                                    {% elif chapter.video_file %}
+                                                        {% if chapter.video_file.url %}
+                                                            <a class="form-control" download href="{{ chapter.video_file.url }}">Télécharger</a>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <div class="form-group">
+                                                    <a class="delete_chapter" data-pk="{{ chapter.pk }}" href="javascript:"><i style="padding-top: 14px"  class="fa fa-fw fa-remove"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                        <a href="javascript:" style="position: absolute; top: 0; left: 123px; border: 1px solid;" class="btn_1 gray" data-toggle="modal" data-target="#modalChapter" data-pk="{{ part.pk }}" data-name="{{ part.name }}"><i class="fa fa-fw fa-plus-circle"></i>Ajouter Vidéo</a>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h6 style="padding: 8px 10px; font-size: 18px;"><i class="fa fa-file-o"></i> Fichiers attachés</h6>
+                        <table style="width:100%;">
+                            <tr>
+                                <td>
+                                    <form class="formUpdateUrlPart" action="{% url 'eLearning:update_url_part' %}" data-validate-url="{% url 'eLearning:update_url_part' %}">
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                <input type="hidden" name="part" value="{{ part.pk }}">
+                                                <input type="hidden" name="course" value="{{ course.pk }}">
+                                                <input type="url" name="url" id="input_url" class="form-control" placeholder="Lien du fichier (Laisser vide pour déssocier"
+                                                       {% if part.attached_file_url %}value="{{ part.attached_file_url }}"{% endif %}>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <a href="javascript:" class="btn active">
+                                                    <button type="submit" class="btn active" style="background-color: white;"><i class="fa fa-fw fa-link"></i> Associer</button></a>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <form class="formUpdateFilePart" enctype="multipart/form-data" action="{% url 'eLearning:update_file_part' %}" data-validate-url="{% url 'eLearning:update_file_part' %}" data-part_id="{{ part.pk }}">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <input type="hidden" name="part" value="{{ part.pk }}">
+                                                <input type="hidden" name="course" value="{{ course.pk }}">
+                                                <input type="file" id="attached_file" name="attached_file" class="form-control" required>
+                                            </div>
+                                            <div class="col-md-4" id="divDownloadAttachedFile{{ part.pk }}" data-name="test">
+                                                {% if part.attached_file %}
+                                                    {% if part.attached_file.url %}
+                                                        <a class="form-control" download href="{{ part.attached_file.url }}">Télécharger</a>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-md-2">
+                                                <a href="javascript:" class="btn active"><button type="submit" class="btn active" style="background-color: white;"><i class="fa fa-fw fa-upload"></i> Importer</button></a>
+                                            </div>
+                                            <div class="col-md-12 progress" style="display: none">
+                                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" id="progress_bar_file_part{{ part.pk }}" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-md-12" id="div_parent_quiz{{ part.pk }}">
+                        <h6 style="padding: 8px 10px; font-size: 18px;"><i class="fa fa-clipboard"></i> Quiz</h6>
+                        {% if part.exam %}
+                            <div class="row" id="div_quiz{{ part.exam.pk }}">
+                                {% for question in part.exam.elearning_question_set.all %}
+                                    <div class="com-md-12" style="width:100%; padding: 0 20px; position: relative" id="div_question{{ question.pk }}">
+                                        <form id="formDeleteQuestion{{ question.pk }}" action="{% url 'eLearning:delete_question' %}" data-validate-url="{% url 'eLearning:delete_question' %}">
+                                            <input type="hidden" value="{{ question.pk }}" name="question">
+                                            <input type="hidden" value="{{ course.pk }}" name="course">
+                                        </form>
+                                        <h6>Question {{ forloop.counter }} : <a class="delete_question" data-pk="{{ question.pk }}" href="javascript:"><i style="padding-top: 14px"  class="fa fa-fw fa-remove"></i></a></h6>
+                                        <div>{% autoescape off %}{{ question.text }}{% endautoescape %}</div>
+                                        <table style="width:100%;" id="table_question{{ question.pk }}">
+                                            {% for choice in question.elearning_choice_set.all %}
+                                                <tr>
+                                                    <form id="formDeleteChoice{{ choice.pk }}" action="{% url 'eLearning:delete_choice' %}" data-validate-url="{% url 'eLearning:delete_choice' %}">
+                                                        <input type="hidden" value="{{ choice.pk }}" name="choice">
+                                                        <input type="hidden" value="{{ course.pk }}" name="course">
+                                                    </form>
+                                                    <td>
+                                                        <div class="row">
+                                                            <div class="col-md-11">
+                                                                <div class="form-group">
+                                                                    <input type="text" class="form-control" disabled="disabled" value="{{ choice.value }}">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-1">
+                                                                <div class="form-group">
+                                                                    <input type="checkbox" class="form-control" style="display: inline-block; width: auto;" disabled="disabled" {% if choice.is_correct %}checked{% endif %}>
+                                                                    <a class="delete_choice" data-pk="{{ choice.pk }}" href="javascript:"><i style="font-size: 20px;" class="fa fa-fw fa-remove"></i></a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </table>
+                                        <a style="position: absolute; top: 5px; left: 150px;" href="javascript:" id="add_choice_btn{{ question.pk }}" class="btn_1 gray" data-toggle="modal" data-target="#modalChoice" data-pk="{{ question.pk }}" data-name="Question {{ question.number }}"><i class="fa fa-fw fa-plus-circle"></i>Ajouter Choix</a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <a href="javascript:" class="btn_1 gray add-list-coupon-item" id="add_question_button{{ part.exam.pk }}" data-toggle="modal" data-target="#modalQuestion" data-pk="{{ part.exam.pk }}" data-name="{{ part.exam.title }}"><i class="fa fa-fw fa-plus-circle"></i>Ajouter Question</a>
+                            <form id="formDeleteQuiz{{ part.exam.pk }}" action="{% url 'eLearning:delete_quiz' %}" data-validate-url="{% url 'eLearning:delete_quiz' %}">
+                                <input type="hidden" value="{{ part.exam.pk }}" name="quiz">
+                                <input type="hidden" value="{{ part.pk }}" name="part">
+                                <input type="hidden" value="{{ course.pk }}" name="course">
+                            </form>
+                            <a href="javascript:" style="position: absolute; top: 0; left: 123px; border: 1px solid;" class="btn_1 danger delete_quiz" data-pk="{{ part.exam.pk }}" data-pk_part="{{ part.pk }}" data-name="{{ part.name }}"><i class="fa fa-fw fa-trash"></i>Supprimer Quiz</a>
+                        {% else %}
+                            <a href="javascript:" style="position: absolute; top: 0; left: 123px; border: 1px solid;" id="add_quiz_button{{ part.pk }}" class="btn_1 gray" data-toggle="modal" data-target="#modalQuiz" data-pk="{{ part.pk }}" data-name="{{ part.name }}"><i class="fa fa-fw fa-plus-circle"></i>Ajouter Quiz</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        <a href="javascript:" style="position: absolute; top: 6px; left: 172px; border: 1px solid; padding: 10px 30px;" class="btn_1 gray" data-toggle="modal" data-target="#modalPart"><i class="fa fa-fw fa-plus-circle"></i>Ajouter Section</a>
+		</div>
+        <p style="text-align: right">
+            <form action="{% url 'eLearning:send_to_evaluate' %}" id="formSendToEvaluate">
+                <input type="hidden" name="course" value="{{ course.pk }}">
+                <a href="javascript:" onclick="document.getElementById('formSendToEvaluate').submit();" class="btn_1 medium">Envoyer pour évaluation</a>
+            </form>
+        </p>
+    </div>
+</div>
+
+<div class="modal fade" id="modalPart" tabindex="-1" role="dialog" aria-labelledby="modalMail" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Ajouter Section</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="addPart" method="post" enctype="multipart/form-data" action="{% url 'eLearning:manage_course' course.pk %}" >
+                {% csrf_token %}
+                <div class="modal-body">
+                    {% if form.errors %}
+                    <div class="alert alert-danger" id="form-error">
+                        <p>Veuillez corriger les erreurs ci-dessous:</p>
+                        <ul>
+                            {% for field in form %}
+                                {% if field.errors %}
+                                    <li>{{ field.name }} - {{ field.errors|striptags }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% elif message_error_part %}
+                    <div class="alert alert-danger" id="form-error">
+                        <p>Veuillez corriger les erreurs ci-dessous:</p>
+                        <ul>
+                            <li>{{ message_error_part }}</li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                    <div class="form-group">
+                        <label for="number_part" class="col-form-label">Numéro : *</label>
+                        {{ form.number }}
+                    </div>
+                    <div class="form-group">
+                        <label for="name_part" class="col-form-label">Nom : *</label>
+                        {{ form.name }}
+                    </div>
+                    <div class="form-group">
+                        <label for="is_free" class="col-form-label">Gratuite ? </label>
+                        {{ form.is_free }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-secondary clear_modal_part">Vider</button>
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalChapter" tabindex="-1" role="dialog" aria-labelledby="modalMail" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Ajouter Vidéo à <b id="partName">Section</b></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="addChapter" method="post" enctype="multipart/form-data" novalidate="" action="{% url 'eLearning:add_chapter' %}"  data-validate-url="{% url 'eLearning:add_chapter' %}">
+                {% csrf_token %}
+                <input type="hidden" name="course" value="{{ course.pk }}">
+                <input type="hidden" name="part" id="pk_part">
+                <div class="modal-body">
+                    <div class="progress" id="progress_div" style="display: none;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" id="progress_bar" style="width: 0" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="number_part" class="col-form-label">Numéro : *</label>
+                        <input type="number" class="form-control" id="number_chapter" name="number" required placeholder="Numéro...">
+                    </div>
+                    <div class="form-group">
+                        <label for="name_part" class="col-form-label">Nom : *</label>
+                        <input type="text" class="form-control" name="name" required placeholder="Nom...">
+                    </div>
+                    <div class="form-group">
+                        <label for="name_part" class="col-form-label">Durée : *</label>
+                        <input type="text" class="form-control" name="duration" required placeholder="Durée...">
+                    </div>
+                    <div class="form-group">
+                        <label for="name_part" class="col-form-label">Lien du vidéo :</label>
+                        <input type="url" class="form-control" name="video_url" id="video_url" placeholder="URL...">
+                    </div>
+                    <div class="form-group">
+                        <label for="name_part" class="col-form-label">Ou importer vidéo : <a class="clear_file" href="javascript:"><i style="padding-top: 14px"  class="fa fa-fw fa-remove"></i></a></label>
+                        <input type="file" class="form-control" name="video_file" id="video_file">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-secondary clear_modal_chapter">Vider</button>
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalQuiz" tabindex="-1" role="dialog" aria-labelledby="modalMail" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Ajouter Quiz à <b id="partName_quiz">Section</b></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="addQuiz" method="post" enctype="multipart/form-data" novalidate="" action="{% url 'eLearning:add_quiz' %}"  data-validate-url="{% url 'eLearning:add_quiz' %}">
+                {% csrf_token %}
+                <input type="hidden" name="course" value="{{ course.pk }}">
+                <input type="hidden" name="part" id="pk_part_quiz">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-form-label">Titre : *</label>
+                        {{ form_quiz.title }}
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Description : *</label>
+                        {{ form_quiz.description }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-secondary clear_modal_quiz">Vider</button>
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalQuestion" tabindex="-1" role="dialog" aria-labelledby="modalMail" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Ajouter Question à <b id="quizName">Section</b></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="addQuestion" method="post" enctype="multipart/form-data" novalidate="" action="{% url 'eLearning:add_question' %}"  data-validate-url="{% url 'eLearning:add_question' %}">
+                {% csrf_token %}
+                <input type="hidden" name="course" value="{{ course.pk }}">
+                <input type="hidden" name="quiz" id="pk_quiz_modal">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-form-label">Texte : *</label>
+                        {{ form_question.text }}
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">La question est à choix multiple ? </label>
+                        {{ form_question.is_multiple }}
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Réponse détaillée :</label>
+                        {{ form_question.explanation }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-secondary clear_modal_question">Vider</button>
+                    <button type="submit" class="btn btn-primary">Suivant</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalChoice" tabindex="-1" role="dialog" aria-labelledby="modalMail" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Ajouter Choix à <b id="questionName">Section</b></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="addChoice" method="post" enctype="multipart/form-data" novalidate="" action="{% url 'eLearning:add_choice' %}"  data-validate-url="{% url 'eLearning:add_choice' %}">
+                {% csrf_token %}
+                <input type="hidden" name="course" value="{{ course.pk }}">
+                <input type="hidden" name="question" id="pk_choice_modal">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-form-label">Valeur : *</label>
+                        <textarea rows="5" id="value_choice" class="form-control" placeholder="Valeur.." required name="value"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="is_correct" class="col-form-label">La réponse est correcte? :  </label>
+                        <input id="is_correct" type="checkbox" name="is_correct">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-secondary clear_modal_choice">Vider</button>
+                    <button type="submit" class="btn btn-primary">Suivant</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        {% if form.errors or message_error_part %}
+            $('#modalPart').modal('toggle');
+        {% endif %}
+    });
+    $('#modalChapter').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var name = button.data('name');
+        var pk = button.data('pk');
+        var modal = $(this);
+        modal.find('.modal-header #partName').text(name);
+        modal.find('#pk_part').val(pk);
+    });
+    $('#modalQuiz').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var name = button.data('name');
+        var pk = button.data('pk');
+        var modal = $(this);
+        modal.find('.modal-header #partName_quiz').text(name);
+        modal.find('#pk_part_quiz').val(pk);
+    });
+    $('#modalQuestion').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var name = button.data('name');
+        var pk = button.data('pk');
+        var modal = $(this);
+        modal.find('.modal-header #quizName').text(name);
+        modal.find('#pk_quiz_modal').val(pk);
+    });
+    $('#modalChoice').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var name = button.data('name');
+        var pk = button.data('pk');
+        var modal = $(this);
+        modal.find('.modal-header #questionName').text(name);
+        modal.find('#pk_choice_modal').val(pk);
+    });
+</script>
+<script src="{% static 'eLearning/js/readUrlScript.js' %}"></script>
+{{ form_question.media }}
+{{ form_quiz.media }}
+{% endblock %}

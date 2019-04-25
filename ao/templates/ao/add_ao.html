@@ -1,0 +1,298 @@
+{% extends 'ao/base_small.html' %}
+
+{% load static %}
+
+{% block style %}
+
+    <style>
+        .simplebar-content{
+            background: #fafafa;
+        }
+    </style>
+
+{% endblock %}
+
+{% block sidebar %}
+    <div class="dashboard-sidebar">
+		<div class="dashboard-sidebar-inner" data-simplebar>
+			<div class="dashboard-nav-container">
+
+				<!-- Responsive Navigation Trigger -->
+				<a href="#" class="dashboard-responsive-nav-trigger">
+					<span class="hamburger hamburger--collapse" >
+						<span class="hamburger-box">
+							<span class="hamburger-inner"></span>
+						</span>
+					</span>
+					<span class="trigger-title">Profil Détails</span>
+				</a>
+
+				<!-- Navigation -->
+				<div class="dashboard-nav">
+					<div class="dashboard-nav-inner">
+
+                        {% if company is None %}
+                            <div id="profile-details">
+                                <div class="header-image">
+                                    <a href="{% url 'ao:profile' profile.id %}">
+                                        {% if profile.photo_profil.image.url is not None %}
+                                            <img src="{{ profile.photo_profil.image.url }}" alt="">
+                                        {% else %}
+                                            <img src="{% static 'ao/ao/images/company-logo-05.png' %}">
+                                        {% endif %}
+                                    </a>
+                                </div>
+
+                                <div class="header-details">
+                                    <h3 style="padding: 25px; text-align: center; padding-bottom: 0;">{{ profile.user.first_name|capfirst }} {{ profile.user.last_name|upper }}</h3>
+                                    <h4 style="text-align: center">{{ profile.fonction }}</h4>
+                                </div>
+                            </div>
+
+                            <ul data-submenu-title="Liens rapides">
+                                <li><a href="{% url 'ao:profile' profile.id %}"><i class="icon-material-outline-assignment"></i> Appels d'offres</a></li>
+                                <li><a href="{% url 'ao:saves' profile.id %}"><i class="icon-material-outline-star-border"></i> Enregistrement</a></li>
+                            </ul>
+                        {% else %}
+                            <div id="profile-details">
+                                <div class="header-image">
+                                    <a href="#">
+                                        {% if company.logo.url is not None %}
+                                            <img src="{{  company.logo.url }}" alt="">
+                                        {% else %}
+                                            <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                        {% endif %}
+                                    </a>
+                                </div>
+
+                                <div class="header-details">
+                                    <h3 style="padding: 25px; text-align: center; padding-bottom: 0;">{{ company.name }}</h3>
+                                    <h4 style="text-align: center">{{ company.activity }}</h4>
+                                </div>
+                            </div>
+
+                            <ul data-submenu-title="Liens rapides">
+                                <li><a href="{% url 'ao:profile' profile.id %}"><i class="icon-material-outline-assignment"></i> Appels d'offres</a></li>
+                                <li><a href="{% url 'ao:saves' profile.id %}"><i class="icon-material-outline-star-border"></i> Enregistrement</a></li>
+                            </ul>
+                        {% endif %}
+					</div>
+				</div>
+				<!-- Navigation / End -->
+
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block content %}
+
+    <!-- Dashboard Headline -->
+			<div class="dashboard-headline">
+				<h3>Ajouter un appel d'offre</h3>
+
+				<!-- Breadcrumbs -->
+				<nav id="breadcrumbs" class="dark">
+					<ul>
+						<li><a href="#">Acceuil</a></li>
+						<li><a href="#">Profil</a></li>
+						<li>Ajouter un appel d'offre</li>
+					</ul>
+				</nav>
+			</div>
+
+        <form action="" method="post" enctype="multipart/form-data" id="form-post">
+            {% csrf_token %}
+			<!-- Row -->
+			<div class="row">
+
+				<!-- Dashboard Box -->
+				<div class="col-xl-12">
+					<div class="dashboard-box margin-top-0">
+
+						<!-- Headline -->
+						<div class="headline">
+							<h3><i class="icon-feather-folder-plus"></i> Formulaire de soumission d'appel d'offre</h3>
+						</div>
+
+						<div class="content with-padding padding-bottom-10">
+							    <div class="row">
+                                    <div class="col-xl-4">
+                                        <div class="submit-field">
+                                            <h5>Titre</h5>
+                                            <input type="text" name="title" required class="with-border" placeholder="ex. Construction d'un terrain...">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-4">
+                                        <div class="submit-field">
+                                            <h5>Catégorie</h5>
+                                            <select class="selectpicker with-border" data-size="7" title="Selectionner une Categorie" name="category" required>
+                                                {% for category in categories %}
+                                                    <option value="{{ category.id }}">{{ category }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-4">
+                                        <div class="submit-field">
+                                            <h5>Date de fin de l'AO  <i class="help-icon" data-tippy-placement="right" title="Laisser vide pour un saisir une durée d'un mois"></i></h5>
+                                            <div class="input-with-icon">
+                                                <div id="autocomplete-container">
+                                                    <input class="with-border" type="datetime-local" name="date_limit">
+                                                </div>
+                                                <i class="icon-material-outline-access-time"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-4">
+                                        <div class="submit-field">
+                                            <h5>Email de contact</h5>
+                                            <input type="email" name="email" required class="with-border" placeholder="email@email...">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-4">
+                                        <div class="submit-field">
+                                            <h5>Numéro de Téléphone de contact</h5>
+                                            <input type="tel" name="tel" required class="with-border" placeholder="0666...">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-4">
+                                        <div class="submit-field">
+                                            <h5>Durée maximal de réalisation <i class="help-icon" data-tippy-placement="right" title="Durée maxiaml de réalisation de l'appel d'offre en jour"></i></h5>
+                                            <input type="number" name="days" class="with-border" placeholder="ex. 180">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-12">
+                                        <div class="submit-field">
+                                            <h5>Décrivez votre appel d'offre</h5>
+                                            <textarea cols="30" rows="5" class="with-border" name="content" required></textarea>
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <div class="uploadButton margin-top-14">
+                                                            <input class="uploadButton-input" type="file" accept="image/*, application/pdf, application/doc" id="upload" name="files" multiple/>
+                                                            <label class="uploadButton-button ripple-effect" for="upload">Importer des fichiers</label>
+                                                            <span class="uploadButton-file-name">Images ou documents pouvant être utiles pour décrire votre appel d'offre</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div style="margin-top: 15px; margin-left: 20px">
+                                                            <script src='https://www.google.com/recaptcha/api.js'></script>
+                                                            <div class="g-recaptcha" style="display: inline-block;" data-sitekey="6LcIOV8UAAAAAO0kQRvjLmlOt7Q08VEubXgfvG6l"></div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                </div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-xl-12">
+                    <button type="submit" class="button ripple-effect big margin-top-30">
+                        <i class="icon-feather-plus"></i>
+                        Poster un appel d'offre
+                    </button>
+                </div>
+            </div>
+        </form>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+
+        {% if status == False %}
+            Snackbar.show({
+                text: 'Veuillez vérifier la recaptcha',
+            });
+        {% endif %}
+
+    </script>
+
+    <script src="{% static 'ao/js/chart.min.js' %}"></script>
+    <script>
+        Chart.defaults.global.defaultFontFamily = "Nunito";
+        Chart.defaults.global.defaultFontColor = '#888';
+        Chart.defaults.global.defaultFontSize = '14';
+
+        var ctx = document.getElementById('chart').getContext('2d');
+
+        var chart = new Chart(ctx, {
+            type: 'line',
+
+            // The data for our dataset
+            data: {
+                labels: ["January", "February", "March", "April", "May", "June"],
+                // Information about the dataset
+                datasets: [{
+                    label: "Views",
+                    backgroundColor: 'rgba(42,65,232,0.08)',
+                    borderColor: '#2a41e8',
+                    borderWidth: "3",
+                    data: [196,132,215,362,210,252],
+                    pointRadius: 5,
+                    pointHoverRadius:5,
+                    pointHitRadius: 10,
+                    pointBackgroundColor: "#fff",
+                    pointHoverBackgroundColor: "#fff",
+                    pointBorderWidth: "2",
+                }]
+            },
+
+            // Configuration options
+            options: {
+
+                layout: {
+                  padding: 10,
+                },
+
+                legend: { display: false },
+                title:  { display: false },
+
+                scales: {
+                    yAxes: [{
+                        scaleLabel: {
+                            display: false
+                        },
+                        gridLines: {
+                             borderDash: [6, 10],
+                             color: "#d8d8d8",
+                             lineWidth: 1,
+                        },
+                    }],
+                    xAxes: [{
+                        scaleLabel: { display: false },
+                        gridLines:  { display: false },
+                    }],
+                },
+
+                tooltips: {
+                  backgroundColor: '#333',
+                  titleFontSize: 13,
+                  titleFontColor: '#fff',
+                  bodyFontColor: '#fff',
+                  bodyFontSize: 13,
+                  displayColors: false,
+                  xPadding: 10,
+                  yPadding: 10,
+                  intersect: false
+                }
+            },
+
+
+    });
+
+    </script>
+
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends 'eLearning/base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+
+    .box_grid figure .preview{
+        background: #eee;
+        height: 90%;
+        top: 11%;
+        width: 94%;
+        left: 3%;
+        border-radius: 5px;
+        padding: 12px 8px;
+    }
+
+    .box_grid figure .preview h3 {
+        font-weight: bold;
+        font-size: 20px;
+        padding-top: 8px;
+    }
+
+    .box_grid .preview ul{
+        padding: 0;
+        overflow: hidden;
+        max-height: 116px;
+    }
+
+    .box_grid .preview ul li {
+        display: block !important;
+        float: none;
+        padding: 0;
+    }
+
+</style>
+
+<section id="hero_in" class="courses">
+    <div class="wrapper">
+        <div class="container">
+            <h1 class="fadeInUp"><span></span>Liste des Souhaits</h1>
+        </div>
+    </div>
+</section>
+<!--/hero_in-->
+
+<div class="container margin_60_35">
+    <div class="row">
+        {% for course in courses %}
+        <div class="col-xl-4 col-lg-6 col-md-6">
+            <div class="box_grid wow">
+                <figure class="block-reveal">
+                    <div class="block-horizzontal"></div>
+                    <form id="formRemoveFromWish{{ course.c.pk }}" method="post" action="{% url 'eLearning:remove_from_wish' %}"><input type="hidden" name="course" value="{{ course.c.pk }}">{% csrf_token %}</form>
+                    <a href="javascript:" onclick="document.getElementById('formRemoveFromWish{{ course.c.pk }}').submit();" class="wish_bt2">
+                        <i class="icon-trash"></i>
+                    </a>
+                    <a href="{% url 'eLearning:course' course.c.pk %}"><img src="{{ course.c.image.url }}" class="img-fluid" alt="image {{ course.c.name }}"></a>
+                    <div class="price">
+                        {% if course.c.is_free %}Gratuit{% elif course.sale %}{{ course.sale.new_price }} Dh (-{{ course.sale.percentage }}%){% else %}{{ course.c.price }} Dh{% endif %}
+                    </div>
+                    <div class="preview">
+                        <h3>Vous allez apprendre</h3>
+                        <ul>
+                            {% for post_skill in course.c.elearning_postskills_set.all %}
+                                <li>{{ post_skill.value }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </figure>
+                <div class="wrapper">
+                    <small>{{ course.c.category.category.name }} > {{ course.c.category.name }}</small>
+                    <h3>{{ course.c.name }}</h3>
+                    <p>{% autoescape off %}{{ course.c.description|striptags|truncatewords:20 }}{% endautoescape %}</p>
+                    <div class="rating">
+                        {% for i in "*****" %}
+                            {% if forloop.counter <= course.ratting %}
+                               <i class="icon_star voted"></i>
+                            {% elif forloop.counter == course.ratting|add:"1" and course.rattingInt < course.ratting %}
+                                    <i class="icon_star-half_alt voted"></i>
+                            {% else %}
+                                <i class="icon_star_alt"></i>
+                            {% endif %}
+                        {% endfor %}
+                        <small>({{ course.number }})</small>
+                    </div>
+                </div>
+                <ul>
+                    <li><i class="icon_clock_alt"></i> {{ course.c.duration }}</li>
+                    <li><i class="icon_like"></i> {{ course.c.like }}</li>
+                    <li><a href="{% url 'eLearning:course' course.c.pk %}">Voir Cours</a></li>
+                </ul>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <!-- /row -->
+</div>
+<!-- /container -->
+<div class="bg_color_1">
+    <div class="container margin_60_35">
+        <div class="row">
+            <div class="col-md-4">
+                <a href="#0" class="boxed_list">
+                    <i class="pe-7s-help2"></i>
+                    <h4>Besoin d'aide? Contactez nous</h4>
+                    <p>Cum appareat maiestatis interpretaris et, et sit.</p>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="#0" class="boxed_list">
+                    <i class="pe-7s-wallet"></i>
+                    <h4>Paiements et Remboursements</h4>
+                    <p>Qui ea nemore eruditi, magna prima possit eu mei.</p>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="#0" class="boxed_list">
+                    <i class="pe-7s-note2"></i>
+                    <h4>Normes de Qualité</h4>
+                    <p>Hinc vituperata sed ut, pro laudem nonumes ex.</p>
+                </a>
+            </div>
+        </div>
+        <!-- /row -->
+    </div>
+    <!-- /container -->
+</div>
+<!-- /bg_color_1 -->
+{% endblock %}

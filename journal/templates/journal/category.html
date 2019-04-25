@@ -15,6 +15,21 @@
     $("#filter").val("{{ filter }}");
 {% endblock %}
 
+
+{% block seo_title %}{{ category.name }} -  {% endblock seo_title %}
+{% block seo_og_title %}{{ category.name }} - {% endblock seo_og_title %}
+
+{% block seo_description %}
+    {{ category.description }}
+{% endblock seo_description %}
+
+{% block seo_og_description %}
+{{ category.description }}
+{% endblock seo_og_description %}
+
+{% block seo_image %}
+{% endblock seo_image %}
+
 {% block content %}
     <!-- SECTION INFO -->
     <div class="section category-info">

@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "ecosysteme-btp",
+  "private_key_id": "619a53ce2f7f578d38dd7150a251f4eca1de5946",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC1BE9PtJiM5unG\nINwsg/n1cQk65CQwfiE5cpIrplrRR7FMbVNFd3xDHebWWZzeQV7ABnWuMZrm++1w\nxpuIsTS9o8bXoWe35YmpEw6g3kvYbYqlxv1x1g7EhHXKzsmj/vtAQ+CzB0FZP+V9\ngCXM2eG16l5h7Sx4Z3dXR8To4vSVuqXDaIapXtqnjQbwtKQvHiFPH3iIKR3lG8OZ\n1YBEILKxkO+Gj9Zip1Jje1/eDApI3XnZ99sBbpvE+MaTeL4/lv7f/OzJ+0QWbEdA\nvnpYWK7mxhSSGcNdJE2883v/dJl7rrRiKJAC+2dQs6erg2GKSum0Q7bHoQ/bn2Kb\nvgnGG+APAgMBAAECggEAWn9TmXEb3UGqeTO/b3/xrNv8tdUOJLJCMQLPAgSSndNe\nV+vGOFISrUlbOSmnC9SZpp30IojJPRaRMBMS+iVBzVd+VxpqDJ20k3MkGpfYSlUF\nfni8B7fxPR1N+H0mgRc+jHQC9+42JQUVWgeBnmcFeVm5IvMcivuLRfbrAlVI2zuU\nNpjfW4DD4w9j+jwqq01ekEyyqY6smPfSOKDIb6ZSuG6wo0EyKfAtWtZWsXpV36K6\nKDY4SoFzBG15k2H+aONAMNl9rm3OFsWe2yNAjzb+5WOvsgHr/PhWjWanMjCuv7af\nS7RzRoqpVob3GiQe6c/PUJQtLfjzdRGy4elgngoVCQKBgQDfI8ffmPnXA1sVBgtG\nJputIQAWadHBrvVzapYHQOpmV1DsjiyXW5PJ+AJ6zzkHmjFUBPLPeobLCvhK7eJO\noTHiCp1vYq2lCOU9L4DQjUlmIbG6oOI32rf4agSfSg7r0hDDuO0CE2SPdO3BrSM7\nJa1Nj04DiA26mWCklzygo4ID5wKBgQDPrIXVa+lFelg+44PiMy+LLmneOzl6Fa6W\niEXmD1QcbW23FGxYcIC70dlOohP6wYN2IlZnvvneLJ2h7+tUWuLyHgEcwtImpBS8\nr5vG+OxtmFD2bhu5wedqpQmyP4yy2feFF6MUzksPBud4pyxR3fB7KEfO+gkrnxD3\n3N3Omoq9mQKBgQCPcZ8BnIOvtxaMU1BYDmWxTC+UOP6AtgpP4csEarTEiYkaKON9\ngX9mLKrba+9LddIUIwI8YpXYXPr0oCwFRBafKxe+DP93wlorlSgH6Wuv3iU0xkvm\ngBIX/X9vLtqcunPQfkbOOM1Cc3aMNNMbKMNZwq/yETpSJFs+M4Lj+XiRLQKBgA/2\nFY8yrQoe/htPRzqibnwHBDIFYUSF2BZPwPeOpAtPSchxdGZTt0E4PrhxcpGqP91b\nhEKTBgdSbIcetnqURa8QKUu5mYdIwyNBZ/qh9SHzO/3EtrLPOWcT6iveAIVahVCg\nYXNe65vrDu1SA/EC2tHMZcB9rSjCH/685ftUG2e5AoGALG7//E/WV8YgC8lhpeEm\nSmi/msBhn1tsVGdzJjBqYptOG7XLwpvJVk0OOnJNo7OGIbzJjr2ft/Lfz31eSZPb\n2hXpXqhWZwoAjz76XWZ7xlX1tk6wsOPypxPLHZMZ00XbNMegjf4ioZODohRulZ5N\nKLQM3RiDas7AzNcR/v2GiJs=\n-----END PRIVATE KEY-----\n",
+  "client_email": "ecosysteme-btp@ecosysteme-btp.iam.gserviceaccount.com",
+  "client_id": "109469039704357373720",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/ecosysteme-btp%40ecosysteme-btp.iam.gserviceaccount.com"
+}

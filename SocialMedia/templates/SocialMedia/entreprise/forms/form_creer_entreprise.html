@@ -1,5 +1,5 @@
 {% load widget_tweaks %}
-<form class=" form-horizontal" id="formAjouterLangue" method="post" action="/reseausocial/creer_entreprise/"
+<form class=" form-horizontal"  novalidate="" id="formAjouterLangue" method="post" action="/reseausocial/creer_entreprise/"
       style="background-color:inherit" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="modal-body  "
@@ -64,7 +64,7 @@
                         Choisissez un fichier&hellip; {% render_field formCreerEntreprise.logo  id="imgInp" class="" style="display: none;" %}
                     </span>
                     </label>
-                    <input type="text" class="form-control" readonly>
+                    <input type="text" id="is_logo" class="form-control" readonly>
                 </div>
             </div>
             {% for error in formCreerEntreprise.logo.errors %}
@@ -84,7 +84,7 @@
                         Choisissez un fichier&hellip; {% render_field formCreerPageEntreprise.img_couverture id="imgInp1" class="" style="display: none;" %}
                     </span>
                     </label>
-                    <input type="text" class="form-control" readonly>
+                    <input type="text" id="is_cover" class="form-control" readonly>
                 </div>
             </div>
             {% for error in formCreerPageEntreprise.img_couverture.errors %}

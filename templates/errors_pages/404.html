@@ -4,8 +4,9 @@
 
 {% block stylesheet %}{{ block.super }}{% endblock %}
 
-{% block title %}{{ block.super }} | Connexion{% endblock %}
+{% block title %}{{ block.super }} | 404{% endblock %}
 {% block header %}
+{% include 'top_nav.html' %}
     <header class="header header-sticky header-light">
             <nav class="navbar navbar-expand-lg yamm">
                 <div class="container">
@@ -64,7 +65,7 @@
                 <br>
             </div>
         </div>
-        
+
 {% endblock %}
 
 {% block scripts %}

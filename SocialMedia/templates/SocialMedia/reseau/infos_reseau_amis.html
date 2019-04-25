@@ -1,0 +1,69 @@
+{% load staticfiles %}
+{% load nbsp %}
+
+     <div class="col-md-12 col-xs-12 col-xxs-12 infinite-item cn{{ friend.id }}" style="background-color: #f7f8f9;outline: #cdcfd2 solid 1px;padding: 0;">
+
+         <div id="statuts" class="infinite-item StatutCONTENT{{ statut.id }}" style="box-shadow: 0 0 0 1px rgba(0, 0, 0, .1), 0 2px 3px rgba(0, 0, 0, .2); ">
+
+
+
+
+                                <div id="ember1562" class="feed-shared-update-v2 feed-shared-update mh0 Elevation-2dp relative full-height ember-view">
+
+
+
+
+
+      <div id="ember1581" class="feed-shared-actor feed-shared-actor--with-control-menu ember-view"><a data-control-id="W1C4B5y7iMwQGAR0mwPlgw==" data-control-name="actor_picture" target="_self" href="{{ friend.photo_profil.image.url }}" id="ember1586" class="feed-shared-actor__image app-aware-link ember-view">    <span data-entity-hovercard-id="urn:li:fs_miniProfile:ACoAAA8BYqEBCGLg_vT_ca6mMEqkpp9nVffJ3hc" class="js-feed-shared-actor__avatar">
+      <div id="ember1597" class="feed-shared-actor__avatar ivm-image-view-model ember-view">
+          <div id="ember1602" class="display-flex ember-view"><!---->    <div id="ember1607" class="presence-entity presence-entity--size-3 ember-view"><div aria-label="{{ friend.user.frist_name }} {{ friend.user.last_name }}" id="ember1614" class="ivm-view-attr__img--centered feed-shared-actor__avatar-image EntityPhoto-circle-3 presence-entity__image EntityPhoto-circle-3 ember-view" style="background-image: url('{{ friend.photo_profil.image.url }}');">  <span class="visually-hidden">{{ friend.user.first_name }} {{ friend.user.last_name }}</span>
+</div>
+
+<div id="ember1617" class="presence-indicator  presence-entity__indicator presence-entity__indicator--size-3 hidden presence-indicator--size-3 ember-view"></div>
+</div>
+</div>
+</div>
+    </span>
+</a>
+<div class="feed-shared-actor__meta">
+<a data-control-id="W1C4B5y7iMwQGAR0mwPlgw==" data-control-name="actor" target="_self" href="{% url 'SocialMedia:getProfil' friend.id %}" id="ember1618" class="feed-shared-actor__meta-link app-aware-link ember-view">    <h3 class="Sans-13px-black-55%">
+      <span data-entity-hovercard-id="urn:li:fs_miniProfile:ACoAAA8BYqEBCGLg_vT_ca6mMEqkpp9nVffJ3hc" class="feed-shared-actor__name Sans-15px-black-85%-semibold hoverable-link-text">
+        <span dir="ltr">{{ friend.user.first_name }} {{ friend.user.last_name }}</span>
+      </span>
+        <span class="feed-shared-actor__influencer-badge">
+          <span class="visually-hidden">
+             est un utilisateur de ReseauSocial
+          </span>
+        </span>
+
+      <span class="feed-shared-actor__description Sans-13px-black-55%">
+        {% if friend.experience_profil is not None %}
+
+	        {% if friend.experience_profil.poste.nom_poste != "" %}
+	        	{{ contact.experience_profil.poste.nom_poste  }}
+	        {% elif contact.experience_profil.nom_poste != "" %}
+	        	{{ contact.experience_profil.nom_poste }}
+	        {% else %}
+	        	{{ "Poste Libre" }}
+	        {% endif %}
+
+        {% else %}Libre{% endif %}, {{ friend.user.first_name }}
+        <div class="float--right">
+        <a href="{% url 'SocialMedia:getProfil' friend.id %}" target="_blank" ><button style="background-color: #ea4c0f; border: 0; border-radius: 2px; box-sizing: border-box; color: white; cursor: pointer; display: inline-block; font-size: 1.7rem; font-weight: 600; height: 32px; line-height: 32px; overflow: hidden; padding: 0 16px; position: relative; text-align: center; text-decoration: none; transition-duration: 167ms; transition-property: background-color,box-shadow,color; transition-timing-function: cubic-bezier(0, 0, 0.2, 1); vertical-align: middle; z-index: 0; box-shadow: inset 0 0 0 1px #ea4c0f, inset 0 0 0 2px transparent, inset 0 0 0 3px transparent; text-align: left; overflow: hidden; white-space: nowrap; transition-property: color, border-color, background-color; transition-duration: .25s; transition-timing-function: ease-in-out;font-weight: 400; " class="btJoinGroupe fw--400"><i class="fa fa-user" aria-hidden="true" style="font-style: normal;"></i> Voir le profil</button></a>
+        </div>
+      </span>
+</a></div>
+
+<!----></div>
+
+<div id="ember1646" class="feed-shared-update__description feed-shared-inline-show-more-text ember-view" ><div id="ember1651" class="feed-shared-update-v2__commentary Sans-15px-black-70% feed-shared-text ember-view">  <div id="ember1652" class="feed-shared-text__text-view feed-shared-text-view white-space-pre-wrap break-words ember-view" style="margin-bottom: 12px;"><span aria-hidden="false"><span id="ember1655" class="ember-view"><span id="ContenuStatut{{ statut.id }}">{{ statut.contenu_statut|nbsp_Link|linebreaksbr }}</span></span></span><!----></div>
+</div><!----></div>
+
+
+
+
+
+
+   </div>
+
+     </div>

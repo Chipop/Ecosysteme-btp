@@ -1,7 +1,7 @@
 import re
 from operator import attrgetter
 
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count, Value, CharField
@@ -12,6 +12,8 @@ from django.views.decorators.http import require_POST
 from datetime import timedelta, datetime
 from itertools import chain
 
+from tracking_analyzer.models import Tracker
+
 from .models import Category, Image, News, Video, Comment, Tag, Answer, Newsletter, JoinMessage, \
     CommentFilter, Journalist, ImageNews, SignalComment, SignalAnswer, ContactMessage, Supervisor
 from .forms import ReplyForm, SignalForm, JournalistProfileForm, JournalistAddTagForm, \
@@ -19,6 +21,8 @@ from .forms import ReplyForm, SignalForm, JournalistProfileForm, JournalistAddTa
     JournalistCreateVideo, ContactForm, JoinForm
 
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+
+from main_app.SendMailBackend import get_custom_connection
 
 
 #####################################################
@@ -152,12 +156,11 @@ def contact(request):
     if request.method == 'POST':
         contact_form = ContactForm(request.POST)
         if contact_form.is_valid():
-            cd = contact_form.cleaned_data
             ContactMessage.objects.create(
-                name=cd['email'],
-                email=cd['email'],
-                website=cd['website'],
-                message=cd['message']
+                name=request.POST.get('name'),
+                email=request.POST.get('email'),
+                website=request.POST.get('website'),
+                message=request.POST.get('message')
             )
             created = True
         else:
@@ -206,6 +209,8 @@ def article_show(request, category_name, post):
         else:
             if not is_supervisor(request):
                 raise Http404
+
+    Tracker.objects.create_from_request(request, article,article._meta.verbose_name)
     article.add_view()
 
     # ARTICLE TAGS
@@ -254,6 +259,7 @@ def article_show(request, category_name, post):
         'self_article': self_article,
         'trending_now': trending_now
     }
+
     return render(request, 'journal/post.html', context)
 
 
@@ -263,6 +269,8 @@ def category(request, category_name):
     video_id = Video.objects.all().values_list('id', flat=True)
 
     cat = get_object_or_404(Category, name=category_name)
+
+    Tracker.objects.create_from_request(request, cat,cat._meta.verbose_name)
 
     news_filter = request.GET.get('filter', '-date_publication')
 
@@ -374,7 +382,7 @@ def last_articles(request):
 def author(request, selected_author_id):
     # AUTHOR
     aut = get_object_or_404(Journalist, id=selected_author_id)
-
+    Tracker.objects.create_from_request(request,aut,aut._meta.verbose_name)
     # COMMENT NUMBER
     number = Comment.objects.filter(email=aut.email).count()
 
@@ -437,6 +445,8 @@ def videos(request):
 def video_show(request, selected_video_id):
     # VIDEO
     selected_video = get_object_or_404(Video, id=selected_video_id)
+
+    Tracker.objects.create_from_request(request, selected_video,selected_video._meta.verbose_name)
     selected_video.add_view()
 
     # VIDEO TAGS
@@ -1806,6 +1816,8 @@ def is_supervisor(request):
 # ## SEND EMAIL TO NEWSLETTER SUBSCRIBERS ## #
 def send_email(id_article):
     article = News.objects.get(id=id_article)
+
+
     body = get_template('journal/email/newsletter.html')
     subject = 'BTP Newspaper'
     from_email = 'sender@example.com'
@@ -1813,8 +1825,31 @@ def send_email(id_article):
         'article': article
     }
     html_content = body.render(context)
-    msg = EmailMultiAlternatives(subject, '', from_email, [])
+    msg = EmailMultiAlternatives(subject, '', from_email, [],connection=get_custom_connection())
     for n in Newsletter.objects.filter(active=True):
         msg.to.append(n.email)
     msg.attach_alternative(html_content, "text/html")
     msg.send()
+
+
+
+# Share
+
+def share_article(request, id):
+    article = get_object_or_404(News, id=id)
+    article.add_share()
+    return HttpResponse('')
+
+
+def like_article(request, id):
+    article = get_object_or_404(News, id=id)
+    article.add_like()
+    return HttpResponse('')
+
+
+def signal_article(request, id):
+    article = get_object_or_404(News, id=id)
+    article.signale = True
+    article.save()
+
+    return HttpResponse('')

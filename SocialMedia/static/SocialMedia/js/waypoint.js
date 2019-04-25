@@ -46,6 +46,7 @@
 
   /* Private */
   Waypoint.prototype.trigger = function(args) {
+    console.log("trig")
     if (!this.enabled) {
       return
     }

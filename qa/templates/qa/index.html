@@ -1,583 +1,353 @@
-{% extends "base.html" %}
-
-{% block title %}Accueil{% endblock title %}
-{% block content %}
+﻿{% extends 'qa/base.html' %}
 {% load static %}
 
-<div>
-          {% include 'qa/header.html' %}
 
+{% block content %}
+  <!-- =-=-=-=-=-=-= HOME =-=-=-=-=-=-= -->
+  <div id="home" class="full-section parallax-home">
+    <div class="slider-caption">
+      <h1> Vous êtes à la recherche d'aide ?</h1>
+      <h2> <span>Rejoignez notre communauté</span></h2>
+      <a class="btn btn-transparent" href="#"> Rejoindre maintenant </a>
+      <a class="btn btn-light" href="{% url 'qa:all_questions' %}"> Lancer la navigation </a> </div>
+  </div>
+  <!-- =-=-=-=-=-=-= HOME END =-=-=-=-=-=-= -->
 
-<div class="row">
-    <div class="box col-md-9 ">
-        <div class="box-inner panel panel-default">
-           <!--  <div class="box-header well" data-original-title="">
-                <h2><i class="glyphicon glyphicon-question-sign"></i> Questions</h2>
-
-                <div class="box-icon">
-                    <a href="/qa#" class="btn btn-setting btn-round btn-default"><i class="glyphicon glyphicon-cog"></i></a>
-                    <a href="/qa#" class="btn btn-minimize btn-round btn-default"><i class="glyphicon glyphicon-chevron-up"></i></a>
-                    <a href="/qa#" class="btn btn-close btn-round btn-default"><i class="glyphicon glyphicon-remove"></i></a>
-                </div>
-            </div> -->
-           
-           <div class="box-content" style="padding: 20px;">
-                <ul class="nav nav-tabs" id="myTab">
-                    <li><a href="/qa#listQuestion" aria-controls="latest" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> Dernier</a></li>
-
-                    <li><a href="/qa#unans" aria-controls="unans" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Sans réponse <span class="badge">{{ noans.count }}</span></a></li>
-
-                    <li ><a href="/qa#reward" aria-controls="reward" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-star" aria-hidden="true"></span> Le plus gratifiant  <span class="badge">{{ reward.count }}</span></a></li>
-
-                </ul>
-
-                <div id="myTabContent" class="tab-content" style="padding: 10px;">
-                    <div class="tab-pane active" id="listQuestion">
-                        {% if questions %}
-                        {% for question in questions %}
-                         <div class="row">
-                             <div class="box col-md-9">
-                                <h2><a href="/qa/q/{{ question.id }}/" class="question-title">{{ question.question_title|truncatechars_html:50 }}</a></h2>
-                                <p class="question-excerpt" >{{ question.question_title|truncatechars_html:50 }}</p>
-                             </div>
-
-                             <div class="box col-md-3">
-                                  
-                                  <ul class="question-statistic">
-                                    <li>
-                                    <span class="question-views green">{{ question.views }}</span>
-                                        views                </li>
-                                    <li class="active">
-                                    <span itemprop="answerCount" class="question-answers blue">{{ question.answer_set.count }}</span>
-                                        answers                </li>
-                                    <li>
-                                    <span itemprop="upvoteCount" class="question-votes yellow">
-                                        {{ question.qvoter_set.count }}    </span>
-                                        votes                </li>
-                                </ul>
-                             </div>
-                         </div>
-
-                         <div class="row">
-                             {% for tag in question.tags.all %}
-
-                                <a href="/qa/tag/{{ tag.slug|slugify }}/" class="tags_raduis" style=""><span class="label label-info"><tag>{{ tag.slug }}</span></tag></a>
-                                {% endfor %}
-
-                                <small> {{ question.pub_date}}</small>
-                         </div>
-
-                         <hr>
-                        {% endfor %}
-
-<div class="pagination center-block">
-          <span class="step-links">
-           <div class="clearfix"></div>
-            <nav aria-label="">
-              <ul class="pager">
-                {% if questions.has_previous %}
-                    <li><a href="/qa?page={{ questions.previous_page_number }}">Précédent</a></li>
-                {% endif %}
-
-                 <span class="current">
-                   {{ questions.number }} / {{ questions.paginator.num_pages }}
-                </span>
-
-                {% if questions.has_next %}
-                    <li><a href="/qa?page={{ questions.next_page_number }}">Suivant</a></li>
-                {% endif %}
-              </ul>
-            </nav>
-          </span>
-</div>
-                        {% else %}
-                            <div class="alert alert-warning" role="alert">Aucune question n'est disponible!</div>
-                        {% endif %}
-                    </div>
-<!-- ****************************************************************************************************************************************************** -->
-
-                    <div class="tab-pane" id="unans">
-                        {% if noans %}
-                        {% for question in noans %}
-                         <div class="row">
-                             <div class="box col-md-9">
-                                <h2><a href="/qa/q/{{ question.id }}/" class="question-title">{{ question.question_title|truncatechars_html:50 }}</a></h2>
-                                <p class="question-excerpt" >{{ question.question_title|truncatechars_html:50 }}</p>
-                             </div>
-
-                             <div class="box col-md-3">
-                                  
-                                  <ul class="question-statistic">
-                                    <li>
-                                    <span class="question-views green">{{ question.views }}</span>
-                                        views                </li>
-                                    <li class="active">
-                                    <span itemprop="answerCount" class="question-answers blue">{{ question.answer_set.count }}</span>
-                                        answers                </li>
-                                    <li>
-                                    <span itemprop="upvoteCount" class="question-votes yellow">
-                                        {{ question.qvoter_set.count }}    </span>
-                                        votes                </li>
-                                </ul>
-                             </div>
-                         </div>
-
-                         <div class="row">
-                             {% for tag in question.tags.all %}
-
-                                <a href="/qa/tag/{{ tag.slug|slugify }}/" class="tags_raduis" style=""><span class="label label-info"><tag>{{ tag.slug }}</span></tag></a>
-                                {% endfor %}
-
-                                <small> {{ question.pub_date}}</small>
-                         </div>
-
-                         <hr>
-                        {% endfor %}
-
-<div class="pagination center-block">
-          <span class="step-links">
-           <div class="clearfix"></div>
-            <nav aria-label="">
-              <ul class="pager">
-                {% if noans.has_previous %}
-                    <li><a href="/qa?page={{ noans.previous_page_number }}">Précédent</a></li>
-                {% endif %}
-
-                 <span class="current">
-                   {{ noans.number }} / {{ noans.paginator.num_pages }}
-                </span>
-
-                {% if noans.has_next %}
-                    <li><a href="/qa?page={{ noans.next_page_number }}">Suivant</a></li>
-                {% endif %}
-              </ul>
-            </nav>
-          </span>
-</div>
-                        {% else %}
-                            <div class="alert alert-warning" role="alert">Aucune question n'est disponible!</div>
-                        {% endif %}
-                    </div>
-
-
-<!-- ****************************************************************************************************************************************************** -->
-
-
-                    <div class="tab-pane" id="reward">
-
-                    <div class="tab-pane" id="unans">
-                        {% if reward %}
-                        {% for question in reward %}
-                         <div class="row">
-                             <div class="box col-md-9">
-                                <h2><a href="/qa/q/{{ question.id }}/" class="question-title">{{ question.question_title|truncatechars_html:50 }}</a></h2>
-                                <p class="question-excerpt" >{{ question.question_title|truncatechars_html:50 }}</p>
-                             </div>
-
-                             <div class="box col-md-3">
-                                  
-                                  <ul class="question-statistic">
-                                    <li>
-                                    <span class="question-views green">{{ question.views }}</span>
-                                        views                </li>
-                                    <li class="active">
-                                    <span itemprop="answerCount" class="question-answers blue">{{ question.answer_set.count }}</span>
-                                        answers                </li>
-                                    <li>
-                                    <span itemprop="upvoteCount" class="question-votes yellow">
-                                        {{ question.qvoter_set.count }}    </span>
-                                        votes                </li>
-                                </ul>
-                             </div>
-                         </div>
-
-                         <div class="row">
-                             {% for tag in question.tags.all %}
-
-                                <a href="/qa/tag/{{ tag.slug|slugify }}/" class="tags_raduis" style=""><span class="label label-info"><tag>{{ tag.slug }}</span></tag></a>
-                                {% endfor %}
-
-                                <small> {{ question.pub_date}}</small>
-                         </div>
-
-                         <hr>
-                        {% endfor %}
-
-<div class="pagination center-block">
-          <span class="step-links">
-           <div class="clearfix"></div>
-            <nav aria-label="">
-              <ul class="pager">
-                {% if reward.has_previous %}
-                    <li><a href="/qa?page={{ reward.previous_page_number }}">Précédent</a></li>
-                {% endif %}
-
-                 <span class="current">
-                   {{ reward.number }} / {{ reward.paginator.num_pages }}
-                </span>
-
-                {% if reward.has_next %}
-                    <li><a href="/qa?page={{ reward.next_page_number }}">Suivant</a></li>
-                {% endif %}
-              </ul>
-            </nav>
-          </span>
-</div>
-                        {% else %}
-                            <div class="alert alert-warning" role="alert">Aucune question n'est disponible!</div>
-                        {% endif %}
-                    </div>
-
-
-
-                    </div>
-
-<!-- ****************************************************************************************************************************************************** -->
-
-                </div>
-            </div>
+  <!-- =-=-=-=-=-=-= Main Area =-=-=-=-=-=-= -->
+  <div class="main-content-area">
+    <!-- =-=-=-=-=-=-= How It Work  =-=-=-=-=-=-= -->
+    <section class="custom-padding" id="how-it-work">
+      <div class="container">
+        <!-- title-section -->
+        <div class="main-heading text-center">
+          <h2>Comment ça marche </h2>
+          <div class="slices"><span class="slice"></span><span class="slice"></span><span class="slice"></span>
+          </div>
+          <p>Cras varius purus in tempus porttitor ut dapibus efficitur sagittis cras vitae lacus metus nunc vulputate facilisis nisi
+            <br> eu lobortis erat consequat ut. Aliquam et justo ante. Nam a cursus velit</p>
         </div>
-    </div>
-    <!--/span-->
-    
-      {% include 'qa/side_left.html' %}
 
-</div>
+        <!-- End title-section -->
 
-<div class="row">
-    <div class="box col-md-4">
-        <div class="box-inner homepage-box">
-            <div class="box-header well">
-                <h2><i class="glyphicon glyphicon-th"></i> Tabs</h2>
-
-                <div class="box-icon">
-                    <a href="/qa#" class="btn btn-setting btn-round btn-default"><i
-                            class="glyphicon glyphicon-cog"></i></a>
-                    <a href="/qa#" class="btn btn-minimize btn-round btn-default"><i
-                            class="glyphicon glyphicon-chevron-up"></i></a>
-                    <a href="/qa#" class="btn btn-close btn-round btn-default"><i
-                            class="glyphicon glyphicon-remove"></i></a>
-                </div>
-            </div>
-            <div class="box-content">
-                <ul class="nav nav-tabs" id="myTab">
-                    <li class="active"><a href="/qa#info">Info</a></li>
-                    <li><a href="/qa#custom">Custom</a></li>
-                    <li><a href="/qa#messages">Messages</a></li>
-                </ul>
-
-                <div id="myTabContent" class="tab-content">
-                    <div class="tab-pane active" id="info">
-                        <h3>Charisma
-                            <small>a full featured template</small>
-                        </h3>
-                        <p>It's a full featured, responsive template for your admin panel. It's optimized for tablets
-                            and mobile phones.</p>
-
-                        <p>Check how it looks on different devices:</p>
-                        <a href="/qahttp://www.responsinator.com/?url=usman.it%2Fthemes%2Fcharisma"
-                           target="_blank"><strong>Preview on iPhone size.</strong></a>
-                        <br>
-                        <a href="/qahttp://www.responsinator.com/?url=usman.it%2Fthemes%2Fcharisma"
-                           target="_blank"><strong>Preview on iPad size.</strong></a>
-                    </div>
-                    <div class="tab-pane" id="custom">
-                        <h3>Custom
-                            <small>small text</small>
-                        </h3>
-                        <p>Sample paragraph.</p>
-
-                        <p>Your custom text.</p>
-                    </div>
-                    <div class="tab-pane" id="messages">
-                        <h3>Messages
-                            <small>small text</small>
-                        </h3>
-                        <p>Sample paragraph.</p>
-
-                        <p>Your custom text.</p>
-                    </div>
-                </div>
-            </div>
+        <div class="row">
+          <div class="col-sm-4 col-md-4 col-xs-12  center-responsive"> <img src="{% static 'images/step1.png' %}" class="img-responsive" alt="">
+            <h4><a href="/signup"> Créer Un Compte</a></h4>
+          </div>
+          <div class="col-sm-4 col-md-4 col-xs-12 center-responsive get-arrow"> <img src="{% static 'images/step2.png' %}" class="img-responsive" alt="">
+            <h4><a href="{% url 'qa:add_question' %}"> Publiez votre question</a></h4>
+          </div>
+          <div class="col-sm-4 col-md-4 col-xs-12 center-responsive get-arrow"> <img src="{% static 'images/step3.png' %}" class="img-responsive" alt="">
+            <h4><a href="{% url 'qa:all_questions' %}"> Trouvez votre solution</a></h4>
+          </div>
+          <div class="clearfix"></div>
         </div>
-    </div>
-    <!--/span-->
+      </div>
+      <!-- end container -->
+    </section>
+    <!-- =-=-=-=-=-=-= How It Work  End =-=-=-=-=-=-= -->
 
-    <div class="box col-md-4">
-        <div class="box-inner">
-            <div class="box-header well" data-original-title="">
-                <h2><i class="glyphicon glyphicon-user"></i> Member Activity</h2>
-
-                <div class="box-icon">
-                    <a href="/qa#" class="btn btn-minimize btn-round btn-default"><i
-                            class="glyphicon glyphicon-chevron-up"></i></a>
-                    <a href="/qa#" class="btn btn-close btn-round btn-default"><i
-                            class="glyphicon glyphicon-remove"></i></a>
-                </div>
-            </div>
-            <div class="box-content">
-                <div class="box-content">
-                    <ul class="dashboard-list">
-                        <li>
-                            <a href="/qa#">
-                                <img class="dashboard-avatar" alt="Usman"
-                                     src="http://www.gravatar.com/avatar/f0ea51fa1e4fae92608d8affee12f67b.png?s=50"></a>
-                            <strong>Name:</strong> <a href="/qa#">Usman
-                            </a><br>
-                            <strong>Since:</strong> 17/05/2014<br>
-                            <strong>Status:</strong> <span class="label-success label label-default">Approved</span>
-                        </li>
-                        <li>
-                            <a href="/qa#">
-                                <img class="dashboard-avatar" alt="Sheikh Heera"
-                                     src="http://www.gravatar.com/avatar/3232415a0380253cfffe19163d04acab.png?s=50"></a>
-                            <strong>Name:</strong> <a href="/qa#">Sheikh Heera
-                            </a><br>
-                            <strong>Since:</strong> 17/05/2014<br>
-                            <strong>Status:</strong> <span class="label-warning label label-default">Pending</span>
-                        </li>
-                        <li>
-                            <a href="/qa#">
-                                <img class="dashboard-avatar" alt="Abdullah"
-                                     src="http://www.gravatar.com/avatar/46056f772bde7c536e2086004e300a04.png?s=50"></a>
-                            <strong>Name:</strong> <a href="/qa#">Abdullah
-                            </a><br>
-                            <strong>Since:</strong> 25/05/2014<br>
-                            <strong>Status:</strong> <span class="label-default label label-danger">Banned</span>
-                        </li>
-                        <li>
-                            <a href="/qa#">
-                                <img class="dashboard-avatar" alt="Sana Amrin"
-                                     src="http://www.gravatar.com/avatar/hash"></a>
-                            <strong>Name:</strong> <a href="/qa#">Sana Amrin</a><br>
-                            <strong>Since:</strong> 17/05/2014<br>
-                            <strong>Status:</strong> <span class="label label-info">Updates</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+    <!-- =-=-=-=-=-=-= Latest Questions  =-=-=-=-=-=-= -->
+    <section class="section-padding-80 white" id="latest-post" style="padding-top: 20px">
+      <div class="container">
+        <!-- title-section -->
+        <div class="main-heading text-center">
+          <h2>QUESTIONS RÉCENTES</h2>
+          <div class="slices"><span class="slice"></span><span class="slice"></span><span class="slice"></span>
+          </div>
+          <p>Cras varius purus in tempus porttitor ut dapibus efficitur sagittis cras vitae lacus metus nunc vulputate facilisis nisi
+            <br> eu lobortis erat consequat ut. Aliquam et justo ante. Nam a cursus velit</p>
         </div>
-    </div>
-    <!--/span-->
+        <!-- End title-section -->
 
-    <div class="box col-md-4">
-        <div class="box-inner homepage-box">
-            <div class="box-header well" data-original-title="">
-                <h2><i class="glyphicon glyphicon-list-alt"></i> Keep in touch</h2>
+        <div class="row">
+          <!-- Content Area Bar -->
+          <div class="col-md-8 col-sm-12">
+            <div class="listing">
+              <!-- Question Area Panel -->
+              <div class="listing-area">
 
-                <div class="box-icon">
-                    <a href="/qa#" class="btn btn-minimize btn-round btn-default"><i
-                            class="glyphicon glyphicon-chevron-up"></i></a>
-                    <a href="/qa#" class="btn btn-close btn-round btn-default"><i
-                            class="glyphicon glyphicon-remove"></i></a>
-                </div>
-            </div>
-            <div class="box-content">
-                <h3>Stay updated with my projects and blog posts</h3>
-                <!-- Begin MailChimp Signup Form -->
-                <div class="mc_embed_signup">
-                    <form action="/qa//halalit.us3.list-manage.com/subscribe/post?u=444b176aa3c39f656c66381f6&amp;id=eeb0c04e84" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
-                        <div>
-                            <label>Please enter your email</label>
-                            <input type="email" value="" name="EMAIL" class="email" placeholder="Email address" required>
+                  {% for q in latest_questions %}
 
-                            <div class="power_field"><input type="text" name="b_444b176aa3c39f656c66381f6_eeb0c04e84" tabindex="-1" value=""></div>
-                            <div class="clear"><input type="submit" value="Subscribe" name="subscribe" class="button"></div>
+                      <!-- Question Listing -->
+                    <div class="listing-grid ">
+                      <div class="row">
+                        <div class="col-md-2 col-sm-2 col-xs-12 hidden-xs">
+                          <a data-toggle="tooltip" data-placement="bottom" href="{% url 'qa:profile' q.user.id %}"
+                             data-original-title="{{ q.user.user.first_name|capfirst }} {{ q.user.user.last_name|upper }}">
+                              {% if q.user.photo_profil is None %}
+                                <img alt="" class="correct img-responsive center-block" src="{% static 'images/default-profil.jpg' %}">
+                            {% else %}
+                                <img alt="" class="correct img-responsive center-block" src="{{ q.user.photo_profil.image.url }}">
+                            {% endif %}
+                          </a>
+                            {% if q.views_number > 1000 %}
+                                <span class="tick"><i class="fa fa-check" aria-hidden="true"></i></span>
+                            {% endif %}
                         </div>
-                    </form>
+                        <div class="col-md-7 col-sm-8  col-xs-12">
+                          <h3><a  href="{% url 'qa:question' q.id %}">{{ q.title|truncatechars:87 }}</a></h3>
+                          <div class="listing-meta">
+                            <span><i class="fa fa-clock-o" aria-hidden="true"></i>{{ q.creation_date }}</span>
+                            <span><i class="fa fa fa-eye" aria-hidden="true"></i> {{ q.views_number }} Vues</span>
+                          </div>
+
+                        </div>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                          <ul class="question-statistic">
+                            <li class="active">
+                                <a data-toggle="tooltip" data-placement="bottom" data-original-title="Réponses">
+                                  <span>{{ q.answers_count }}</span></a>
+                            </li>
+                            <li>
+                                <a data-toggle="tooltip" data-placement="bottom" data-original-title="Catégorie" href="{% url 'qa:category' q.category.id %}">
+                                  <span style="width: 115px">{{ q.category }}</span></a>
+                            </li>
+                          </ul>
+                        </div>
+
+                        <div class="col-md-10 col-sm-10  col-xs-12">
+                          <div class="pull-right tagcloud">
+                          {% if forloop.counter == 1 %}
+                              {% for tag in tags.1 %}
+                                  {% if forloop.counter < 5 %}
+                                      <a href="{% url 'qa:all_questions' %}?tag={{ tag.title }}">{{ tag.title }}</a>
+                                  {% endif %}
+                                  {% if forloop.last and forloop.counter > 4 %}
+                                      <a href="#">...</a>
+                                  {% endif %}
+                              {% endfor %}
+                          {% elif forloop.counter == 2 %}
+                              {% for tag in tags.2 %}
+                                  {% if forloop.counter < 5 %}
+                                      <a href="{% url 'qa:all_questions' %}?tag={{ tag.title }}">{{ tag.title }}</a>
+                                  {% endif %}
+                                  {% if forloop.last and forloop.counter > 4 %}
+                                      <a href="#">...</a>
+                                  {% endif %}
+                              {% endfor %}
+                          {% elif forloop.counter == 3 %}
+                              {% for tag in tags.3 %}
+                                  {% if forloop.counter < 5 %}
+                                      <a href="{% url 'qa:all_questions' %}?tag={{ tag.title }}">{{ tag.title }}</a>
+                                  {% endif %}
+                                  {% if forloop.last and forloop.counter > 4 %}
+                                      <a href="#">...</a>
+                                  {% endif %}
+                              {% endfor %}
+                          {% elif forloop.counter == 4 %}
+                              {% for tag in tags.4 %}
+                                  {% if forloop.counter < 5 %}
+                                      <a href="{% url 'qa:all_questions' %}?tag={{ tag.title }}">{{ tag.title }}</a>
+                                  {% endif %}
+                                  {% if forloop.last and forloop.counter > 4 %}
+                                      <a href="#">...</a>
+                                  {% endif %}
+                              {% endfor %}
+                          {% elif forloop.counter == 5 %}
+                              {% for tag in tags.5 %}
+                                  {% if forloop.counter < 5 %}
+                                      <a href="{% url 'qa:all_questions' %}?tag={{ tag.title }}">{{ tag.title }}</a>
+                                  {% endif %}
+                                  {% if forloop.last and forloop.counter > 4 %}
+                                      <a href="#">...</a>
+                                  {% endif %}
+                              {% endfor %}
+                          {% elif forloop.counter == 6 %}
+                              {% for tag in tags.6 %}
+                                  {% if forloop.counter < 5 %}
+                                      <a href="{% url 'qa:all_questions' %}?tag={{ tag.title }}">{{ tag.title }}</a>
+                                  {% endif %}
+                                  {% if forloop.last and forloop.counter > 4 %}
+                                      <a href="#">...</a>
+                                  {% endif %}
+                              {% endfor %}
+                              {% elif forloop.counter == 7 %}
+                              {% for tag in tags.7 %}
+                                  {% if forloop.counter < 5 %}
+                                      <a href="{% url 'qa:all_questions' %}?tag={{ tag.title }}">{{ tag.title }}</a>
+                                  {% endif %}
+                                  {% if forloop.last and forloop.counter > 4 %}
+                                      <a href="#">...</a>
+                                  {% endif %}
+                              {% endfor %}
+                          {% elif forloop.counter == 8 %}
+                              {% for tag in tags.8 %}
+                                  {% if forloop.counter < 5 %}
+                                      <a href="{% url 'qa:all_questions' %}?tag={{ tag.title }}">{{ tag.title }}</a>
+                                  {% endif %}
+                                  {% if forloop.last and forloop.counter > 4 %}
+                                      <a href="#">...</a>
+                                  {% endif %}
+                              {% endfor %}
+                          {% elif forloop.counter == 9 %}
+                              {% for tag in tags.9 %}
+                                  {% if forloop.counter < 5 %}
+                                      <a href="{% url 'qa:all_questions' %}?tag={{ tag.title }}">{{ tag.title }}</a>
+                                  {% endif %}
+                                  {% if forloop.last and forloop.counter > 4 %}
+                                      <a href="#">...</a>
+                                  {% endif %}
+                              {% endfor %}
+                          {% endif %}
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                    <!-- Question Listing End -->
+
+                  {% endfor %}
+
+              </div>
+
+              <!-- Pagination View More -->
+              <div class="text-center clearfix" style="margin-top: -25px;">
+                <a class="btn btn-primary btn-lg" href="{% url 'qa:all_questions' %}">Afficher toutes les questions</a>
+              </div>
+              <!-- Pagination View More End -->
+
+              <!-- Question Area Panel End -->
+            </div>
+          </div>
+          <!-- Content Area Bar End -->
+
+          <!-- Right Sidebar -->
+          <div class="col-md-4 col-sm-12 col-xs-12 clearfix">
+
+            <!-- sidebar -->
+            <div class="side-bar">
+
+              <!-- widget -->
+              <div class="widget">
+                <h2>Top Utilisateurs</h2>
+                <hr class="widget-separator no-margin">
+                <div class="media-group">
+                    {% for a in top_author %}
+                      <div class="media-group-item">
+                        <div class="media">
+                          <div class="media-left">
+                            <div class="avatar avatar-md avatar-circle">
+                                {% if a.photo_profil is None %}
+                                    <img alt="" class="" src="{% static 'images/default-profil.jpg' %}">
+                                {% else %}
+                                    <img alt="" class="" src="{{ a.photo_profil.image.url }}">
+                                {% endif %}
+                            </div>
+                          </div>
+                          <div class="media-body">
+                            <h5 class="media-heading"><a href="{% url 'qa:profile' a.id %}">
+                                {{ a.user.first_name|capfirst }} {{ a.user.last_name|upper }}
+                            </a></h5>
+                            <small class="media-meta">
+                                {% if a.fonction is None %}
+                                    -
+                                {% else %}
+                                   {{ a.fonction }}
+                                {% endif %}
+                            </small>
+                            <div class="points"><span>Points : </span>{{ a.points }}</div>
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
                 </div>
+              </div>
+              <!-- widget end -->
 
-                <!--End mc_embed_signup-->
-                <br/>
-
-                <p>You may like my other open source work, check my profile on <a href="/qahttp://github.com/usmanhalalit"
-                                                                                  target="_blank">GitHub</a>.</p>
+              <!-- widget -->
+              <div class="widget">
+                <div class="recent-comments">
+                  <h2>Réponses récentes</h2>
+                  <hr class="widget-separator no-margin">
+                  <ul id="recentcomments">
+                      {% for answer in latest_answers %}
+                          <li class="recentcomments">
+                              <span class="comment-author-link">
+                                  {{ answer.user.user.first_name|capfirst }} {{ answer.user.user.last_name|upper }}
+                              </span>
+                              sur
+                              <a href="{% url 'qa:question' answer.question.id %}">{{ answer.question.title|truncatechars:70 }}</a>
+                          </li>
+                      {% endfor %}
+                  </ul>
+                </div>
+              </div>
+              <!-- widget end -->
 
             </div>
+            <!-- sidebar end -->
+          </div>
+          <!-- Right Sidebar End -->
+          <div class="clearfix"></div>
         </div>
-    </div>
-    <!--/span-->
-</div><!--/row-->
+      </div>
+      <!-- end container -->
+    </section>
+    <!-- =-=-=-=-=-=-= Latest Questions  End =-=-=-=-=-=-= -->
 
-<div class="row">
-    <div class="box col-md-4">
-        <div class="box-inner">
-            <div class="box-header well" data-original-title="">
-                <h2><i class="glyphicon glyphicon-list"></i> Buttons</h2>
+    <!-- =-=-=-=-=-=-= Testimonials =-=-=-=-=-=-= -->
+    <section data-stellar-background-ratio="0.1" class="testimonial-bg parallex">
+      <div class="container">
 
-                <div class="box-icon">
-                    <a href="/qa#" class="btn btn-setting btn-round btn-default"><i
-                            class="glyphicon glyphicon-cog"></i></a>
-                    <a href="/qa#" class="btn btn-minimize btn-round btn-default"><i
-                            class="glyphicon glyphicon-chevron-up"></i></a>
-                    <a href="/qa#" class="btn btn-close btn-round btn-default"><i
-                            class="glyphicon glyphicon-remove"></i></a>
+        <!-- Row -->
+        <div class="row">
+
+          <!-- Blog Grid -->
+          <div class="col-md-8 ">
+            <div id="owl-slider" class="happy-client">
+              <div class="item"> <i class="fa fa-quote-left"> </i>
+                <p> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took. </p>
+                <div class="client-info-wrap clearfix">
+                  <div class="client-img"> <img class="img-circle" src="../../../theemon.com/d/designagency/LivePreview/assets/images/client-img-two.jpg" alt="" /> </div>
+                  <div class="client-info">
+                      <strong> Karim ELKHAOUA </strong>
+                      <i class="fa fa-star"> </i>
+                      <i class="fa fa-star"> </i>
+                      <i class="fa fa-star"> </i>
+                      <i class="fa fa-star"> </i>
+                      <i class="fa fa-star grey-star"></i>
+                  </div>
                 </div>
+              </div>
+              <div class="item"> <i class="fa fa-quote-left"> </i>
+                <p> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took. </p>
+                <div class="client-info-wrap clearfix">
+                  <div class="client-img"> <img class="img-circle" src="../../../theemon.com/d/designagency/LivePreview/assets/images/client-img-two.jpg" alt="" /> </div>
+                  <div class="client-info"> <strong> Abdlaziz CHIBOUB </strong>
+                      <i class="fa fa-star"> </i>
+                      <i class="fa fa-star"> </i>
+                      <i class="fa fa-star"> </i>
+                      <i class="fa fa-star"> </i>
+                      <i class="fa fa-star grey-star"></i>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="box-content buttons">
-                <p class="btn-group">
-                    <button class="btn btn-default">Left</button>
-                    <button class="btn btn-default">Middle</button>
-                    <button class="btn btn-default">Right</button>
-                </p>
-                <p>
-                    <button class="btn btn-default btn-sm"><i class="glyphicon glyphicon-star"></i> Icon button</button>
-                    <button class="btn btn-primary btn-sm">Small button</button>
-                    <button class="btn btn-danger btn-sm">Small button</button>
-                </p>
-                <p>
-                    <button class="btn btn-warning btn-sm">Small button</button>
-                    <button class="btn btn-success btn-sm">Small button</button>
-                    <button class="btn btn-info btn-sm">Small button</button>
-                </p>
-                <p>
-                    <button class="btn btn-inverse btn-default btn-sm">Small button</button>
-                    <button class="btn btn-primary btn-round btn-lg">Round button</button>
-                    <button class="btn btn-round btn-default btn-lg"><i class="glyphicon glyphicon-ok"></i></button>
-                    <button class="btn btn-primary"><i class="glyphicon glyphicon-edit glyphicon-white"></i></button>
-                </p>
-                <p>
-                    <button class="btn btn-default btn-xs">Mini button</button>
-                    <button class="btn btn-primary btn-xs">Mini button</button>
-                    <button class="btn btn-danger btn-xs">Mini button</button>
-                    <button class="btn btn-warning btn-xs">Mini button</button>
-                </p>
-                <p>
-                    <button class="btn btn-info btn-xs">Mini button</button>
-                    <button class="btn btn-success btn-xs">Mini button</button>
-                    <button class="btn btn-inverse btn-default btn-xs">Mini button</button>
-                </p>
+          </div>
+          <!-- Blog Grid -->
+
+          <!-- Blog Grid -->
+          <div class="col-md-4">
+            <div class="success-stories">
+              <div class="main-heading text-center">
+                <h2>Témoignage</h2>
+                <hr class="main">
+                <p>Cras varius purus in tempus porttitor ut dapibus efficitur sagittis cras vitae lacus metus nunc vulputate facilisis nisi
+                  <br> eu lobortis erat consequat ut. Aliquam et justo ante. Nam a cursus velit</p>
+              </div>
             </div>
+          </div>
+          <!-- Blog Grid -->
+
+          <div class="clearfix"></div>
         </div>
-    </div>
-    <!--/span-->
 
-    <div class="box col-md-4">
-        <div class="box-inner">
-            <div class="box-header well" data-original-title="">
-                <h2><i class="glyphicon glyphicon-list"></i> Buttons</h2>
+        <!-- Row End -->
+      </div>
+      <!-- end container -->
+    </section>
+    <!-- =-=-=-=-=-=-= Testimonials  =-=-=-=-=-=-= -->
+  </div>
+  <!-- =-=-=-=-=-=-= Main Area End =-=-=-=-=-=-= -->
 
-                <div class="box-icon">
-                    <a href="/qa#" class="btn btn-setting btn-round btn-default"><i
-                            class="glyphicon glyphicon-cog"></i></a>
-                    <a href="/qa#" class="btn btn-minimize btn-round btn-default"><i
-                            class="glyphicon glyphicon-chevron-up"></i></a>
-                    <a href="/qa#" class="btn btn-close btn-round btn-default"><i
-                            class="glyphicon glyphicon-remove"></i></a>
-                </div>
-            </div>
-            <div class="box-content  buttons">
-                <p>
-                    <button class="btn btn-default btn-lg">Large button</button>
-                    <button class="btn btn-primary btn-lg">Large button</button>
-                </p>
-                <p>
-                    <button class="btn btn-danger btn-lg">Large button</button>
-                    <button class="btn btn-warning btn-lg">Large button</button>
-                </p>
-                <p>
-                    <button class="btn btn-success btn-lg">Large button</button>
-                    <button class="btn btn-info btn-lg">Large button</button>
-                </p>
-                <p>
-                    <button class="btn btn-inverse btn-default btn-lg">Large button</button>
-                </p>
-                <div class="btn-group">
-                    <button class="btn btn-default btn-lg">Large Dropdown</button>
-                    <button class="btn dropdown-toggle btn-default btn-lg" data-toggle="dropdown"><span
-                            class="caret"></span></button>
-                    <ul class="dropdown-menu">
-                        <li><a href="/qa#"><i class="glyphicon glyphicon-star"></i> Action</a></li>
-                        <li><a href="/qa#"><i class="glyphicon glyphicon-tag"></i> Another action</a></li>
-                        <li><a href="/qa#"><i class="glyphicon glyphicon-download-alt"></i> Something else here</a></li>
-                        <li class="divider"></li>
-                        <li><a href="/qa#"><i class="glyphicon glyphicon-tint"></i> Separated link</a></li>
-                    </ul>
-                </div>
-
-            </div>
-        </div>
-    </div>
-    <!--/span-->
-
-    <div class="box col-md-4">
-        <div class="box-inner">
-            <div class="box-header well" data-original-title="">
-                <h2><i class="glyphicon glyphicon-list"></i> Weekly Stat</h2>
-
-                <div class="box-icon">
-                    <a href="/qa#" class="btn btn-setting btn-round btn-default"><i
-                            class="glyphicon glyphicon-cog"></i></a>
-                    <a href="/qa#" class="btn btn-minimize btn-round btn-default"><i
-                            class="glyphicon glyphicon-chevron-up"></i></a>
-                    <a href="/qa#" class="btn btn-close btn-round btn-default"><i
-                            class="glyphicon glyphicon-remove"></i></a>
-                </div>
-            </div>
-            <div class="box-content">
-                <ul class="dashboard-list">
-                    <li>
-                        <a href="/qa#">
-                            <i class="glyphicon glyphicon-arrow-up"></i>
-                            <span class="green">92</span>
-                            New Comments
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/qa#">
-                            <i class="glyphicon glyphicon-arrow-down"></i>
-                            <span class="red">15</span>
-                            New Registrations
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/qa#">
-                            <i class="glyphicon glyphicon-minus"></i>
-                            <span class="blue">36</span>
-                            New Articles
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/qa#">
-                            <i class="glyphicon glyphicon-comment"></i>
-                            <span class="yellow">45</span>
-                            User reviews
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/qa#">
-                            <i class="glyphicon glyphicon-arrow-up"></i>
-                            <span class="green">112</span>
-                            New Comments
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/qa#">
-                            <i class="glyphicon glyphicon-arrow-down"></i>
-                            <span class="red">31</span>
-                            New Registrations
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/qa#">
-                            <i class="glyphicon glyphicon-minus"></i>
-                            <span class="blue">93</span>
-                            New Articles
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/qa#">
-                            <i class="glyphicon glyphicon-comment"></i>
-                            <span class="yellow">254</span>
-                            User reviews
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <!--/span-->
-</div><!--/row-->
-
-
-{% endblock content %}
+{% endblock %}

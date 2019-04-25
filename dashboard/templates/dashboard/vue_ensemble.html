@@ -1,0 +1,461 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}
+    Vue d'ensemble | {{ block.super }}
+{% endblock title %}
+
+{% block stylesheets %}
+    {{ block.super }}
+
+    <style>
+        .caret {
+            border: 0px;
+        }
+
+        .clickable {
+            cursor: pointer;
+        }
+
+        .search-filters, .search-filters-visites-totales {
+            display: none;
+                padding-top: 10px;
+        }
+    </style>
+
+    <link rel="stylesheet" href="{% static 'dashboard/css/bootstrap-multiselect.css' %}">
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom" id="page_to_pdf">
+
+        <div class="row">
+
+
+            <div class="col-lg-12">
+                <div class="pull-right">
+                    <button class="btn btn-clean" id="cmd"> <i class="fa fa-file-pdf-o"></i> Imprimer</button>
+                    <button class=" btn btn-clean clickable" title="Filtrer" id="icon-filtrer-ga"
+                         >
+                         <i class="glyphicon glyphicon-filter"></i> FILTRER
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-lg-12">
+                <div class="search-filters pull-right">
+
+                    <select id="multiselect-modules" multiple="multiple">
+                        <option value="reseausocial">Réseau social</option>
+                        <option value="journal">Journal</option>
+                        <option value="e_commerce">Ecommerce</option>
+                        <option value="qa">Q&A</option>
+                        <option value="ao">Appels d'offres</option>
+                    </select>
+
+
+                    <div class="btn-group" style="margin-left:20px;">
+
+                        <div id="reportrange_top"
+                             style="background: #fff; cursor: pointer; padding: 5px 5px; border: 1px solid #ccc; width: 100%;    margin-right: 13px; ">
+                            <i class="fa fa-calendar"></i>&nbsp;
+                            <span></span> <i class="fa fa-caret-down"></i>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" id="btn-filtrer-ga">Filtrer</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="print_on_one_page" style="background-color:#f3f3f4;">
+
+
+            <div class="row">
+
+                <div class="col-lg-3">
+                    <div class="widget style1 navy-bg">
+                        <div class="row">
+                            <div class="col-4">
+                                <i class="fa fa-address-card fa-5x"></i>
+                            </div>
+                            <div class="col-8 text-right">
+                                <span class="card_span">Inscrits</span>
+                                <h2 class="font-bold">{{ utilisateurs }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3">
+                    <div class="widget style1 bg-black">
+                        <div class="row">
+                            <div class="col-4">
+                                <i class="fa fa-envelope fa-5x"></i>
+                            </div>
+                            <div class="col-8 text-right">
+                                <span class="card_span">Non lus</span>
+                                <h2 class="font-bold">{{ non_lus }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-3">
+                    <div class="widget style1 bg-success">
+                        <div class="row">
+                            <div class="col-4">
+                                <i class="fa fa-newspaper-o fa-5x"></i>
+                            </div>
+                            <div class="col-8 text-right">
+                                <span class="card_span">Articles</span>
+                                <h2 class="font-bold">{{ articles }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3">
+                    <div class="widget style1 bg-purple">
+                        <div class="row">
+                            <div class="col-4">
+                                <i class="fa fa-shopping-cart fa-5x"></i>
+                            </div>
+                            <div class="col-8 text-right">
+                                <span class="card_span">Commandes</span>
+                                <h2 class="font-bold">{{ commandes }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div class="row">
+
+
+                <div class="col-lg-4">
+                    <div class="widget style1 bg-danger">
+                        <div class="row">
+                            <div class="col-4">
+                                <i class="fa fa-question-circle-o fa-5x"></i>
+                            </div>
+                            <div class="col-8 text-right">
+                                <span class="card_span">Questions</span>
+                                <h2 class="font-bold">{{ questions }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-4">
+                    <div class="widget style1 bg-danger">
+                        <div class="row">
+                            <div class="col-4">
+                                <i class="fa fa-commenting-o fa-5x"></i>
+                            </div>
+                            <div class="col-8 text-right">
+                                <span class="card_span">Réponses</span>
+                                <h2 class="font-bold">{{ reponses }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="widget style1 bg-purple">
+                        <div class="row">
+                            <div class="col-4">
+                                <i class="fa fa-product-hunt fa-5x"></i>
+                            </div>
+                            <div class="col-8 text-right">
+                                <span class="card_span">Produits</span>
+                                <h2 class="font-bold">{{ produits }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="widget style1 bg-grey">
+                        <div class="row">
+                            <div class="col-4">
+                                <i class="fa fa-bullhorn fa-5x"></i>
+                            </div>
+                            <div class="col-8 text-right">
+                                <span class="card_span">Appels d'offres</span>
+                                <h2 class="font-bold">{{ nb_appels_offres }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="widget style1 bg-orange">
+                        <div class="row">
+                            <div class="col-4">
+                                <i class="fa fa-book fa-5x"></i>
+                            </div>
+                            <div class="col-8 text-right">
+                                <span class="card_span">Cours</span>
+                                <h2 class="font-bold">X</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+
+                <div class="col-lg-12">
+                    <div class="ibox ">
+                        <div class="ibox-title">
+                            <h5>Visites </h5>
+                        </div>
+
+                        <div class="ibox-content">
+                            <div id="visites-totales-chart-container"></div>
+                            <div id="visites-totales-view-selector-container" style="display:none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="row">
+
+                <div class="col-lg-12">
+
+                    <div class="ibox">
+                        <div class="ibox-content">
+                            <h3>Pages les plus visitées </h3>
+
+                            <div id="pages-plus-visites-chart-container"></div>
+                            <div id="pages-plus-visites-view-selector-container" style="display:none;"></div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="print_on_one_page">
+            <div class="row">
+                <div class="col-lg-12" style="height:150px;display:none;color:#2f4050;" id="div_to_hide">
+                    <h1>Hei</h1>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="ibox ">
+                        <div class="ibox-title">
+                            <h5>Canaux principaux</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <div id="visitors-channels-container"></div>
+                            <div id="visitors-channels-container" style="display:none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="ibox ">
+                        <div class="ibox-title">
+                            <h5>Source des visiteurs </h5>
+                        </div>
+                        <div class="ibox-content ibox-source-traffic">
+                            <div id="traffic-source-chart-container"></div>
+                            <div id="traffic-source-view-selector-container" style="display:none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+
+                <div class="col-lg-6">
+                    <div class="ibox ">
+                        <div class="ibox-title">
+                            <h5>Appareils des visiteurs </h5>
+                        </div>
+                        <div class="ibox-content">
+                            <div id="appareils-chart-container"></div>
+                            <div id="appareils-view-selector-container" style="display:none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="ibox ">
+                        <div class="ibox-title">
+                            <h5>Origine des visiteurs </h5>
+                        </div>
+                        <div class="ibox-content">
+                            <div id="origine-chart-container"></div>
+                            <div id="origine-view-selector-container" style="display:none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-lg-6">
+                    <div class="ibox ">
+                        <div class="ibox-title">
+                            <h5>Comportements des visiteurs</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <div id="new-returning-visitors-container"></div>
+                            <div id="new-returning-visitors-container" style="display:none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+
+                    <div class="ibox">
+                        <div class="ibox-content">
+                            <h3>Pages où passe l'utilisateur le plus de temps (secondes) <span
+                                    class="pull-right"></span>
+                            </h3>
+
+                            <div id="pages-plus-temps-chart-container"></div>
+                            <div id="pages-plus-temps-view-selector-container" style="display:none;"></div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock content %}
+
+
+
+
+{% block scripts %}
+
+    {{ block.super }}
+
+
+
+
+
+
+    <script src="{% static 'dashboard/js/bootstrap-multiselect.js' %}"></script>
+    <!-- Data picker -->
+    <script src="{% static 'dashboard/js/plugins/datapicker/bootstrap-datepicker.js' %}"></script>
+    <!-- Date range use moment.js same as full calendar plugin -->
+    <script src="{% static 'dashboard/js/plugins/fullcalendar/moment.min.js' %}"></script>
+    <!-- Date range picker -->
+    <script src="{% static 'dashboard/js/plugins/daterangepicker/daterangepicker.js' %}"></script>
+
+
+
+
+
+
+
+    <!-- Data picker -->
+    <script src="{% static 'dashboard/js/plugins/datapicker/bootstrap-datepicker.js' %}"></script>
+
+
+    <!-- Date range use moment.js same as full calendar plugin -->
+    <script src="{% static 'dashboard/js/plugins/fullcalendar/moment.min.js' %}"></script>
+
+
+
+    <!-- Date range picker -->
+    <script src="{% static 'dashboard/js/plugins/daterangepicker/daterangepicker.js' %}"></script>
+
+
+
+
+
+
+
+    <script>
+        $('#dashboard_vue_principale').addClass("active");
+
+    </script>
+
+
+    <script>
+        var google_token = "{{ ACCESS_TOKEN_FROM_GOOGLE_SERVICE_ACCOUNT }}";
+    </script>
+
+    <script src="{% static 'dashboard/js/ga/vue_ensemble_principale.js' %}"></script>
+
+
+    <script src="{% static 'dashboard/js/html2canvas.js' %}"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.min.js"></script>
+
+
+    <script>
+
+
+        $('#cmd').click(function () {
+
+            const filename = 'Rapport_Vue_Ensemble.pdf';
+
+
+            $('body').addClass("mini-navbar");
+
+            html2canvas(document.querySelector('body'),
+                                    {scale: 1}
+                             ).then(canvas => {
+                let pdf = new jsPDF('p', 'mm', 'a4');
+                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 211, 298);
+                pdf.save(filename);
+
+            });
+
+            $('body').removeClass("mini-navbar");
+
+
+        });
+
+        // This code is collected but useful, click below to jsfiddle link.
+
+    </script>
+
+
+
+
+{% endblock scripts %}

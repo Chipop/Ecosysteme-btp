@@ -1,0 +1,212 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}
+    Devis | Appels d'offres | {{ block.super }}
+{% endblock title %}
+
+
+{% block stylesheets %}
+    {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+        <div class="row">
+
+            <div class="col-lg-12">
+
+                <div class=" float-left">
+                    <a href="{% url 'dashboard:ao_devis' %}">
+                        <button id="btn_lancer_compagne" class="btn btn-primary dim">
+                            <i class="fa fa-arrow-left"></i> Liste des devis
+                        </button>
+                    </a>
+                </div>
+
+                <div class=" float-right">
+                    <a href="{% url 'dashboard:ao_delete_devis' id=devis.id %}">
+                        <button id="btn_lancer_compagne" class="btn btn-danger dim">
+                            <i class="fa fa-trash"></i> Supprimer
+                        </button>
+                    </a>
+
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+            <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Informations sur le devis</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <span style="font-weight:600;">Devis envoyé par</span>
+                                <br><br>
+                                <i class="fa fa-building"></i> <a href="{% url 'dashboard:ao_profil_entreprise' id=devis.company.id %}"> {{ devis.company.name }}</a>
+
+                            <br><br>
+                            </div>
+
+
+                            <div class="col-lg-6">
+                                <span style="font-weight:600;">Nb. de jours de réalisation</span><br><br>{{ devis.days }}
+                            </div>
+                            <div class="col-lg-6">
+                                <span style="font-weight:600;">Estimation du budget  necessaire</span><br><br>
+                                {{ devis.budget }} DH
+                            </div>
+                        </div>
+
+                        <br><br>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <span style="font-weight:600;">Message</span><br><br>
+                                {{ devis.message }}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Détails du devis  (Nb. d'insertions : {{ devis.quotationline_set.all.count }})
+
+                    </div>
+                    <div class="ibox-content">
+                        <table class="table">
+                        <thead>
+                            <th></th>
+                            <th>Désignation</th>
+                            <th>Unité</th>
+                            <th>Quantité</th>
+                            <th>Prix unitaire (DH)</th>
+                        </thead>
+                            {% for ligne_devis in devis.quotationline_set.all %}
+                                <tr>
+                                    <td>
+                                        N° de prix {{ forloop.counter }}
+                                    </td>
+                                    <td class="product_details_price">{{ ligne_devis.designation }}  </td>
+                                    <td class="product_details_price">{{ ligne_devis.unit }}</td>
+                                    <td class="product_details_price">{{ ligne_devis.qte }}</td>
+                                    <td class="product_details_price">{{ ligne_devis.price | intcomma }} DH</td>
+                                </tr>
+                            {% endfor %}
+
+                        <tfoot>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th>Total</th>
+                            <th>{{ total }} DH</th>
+                        </tfoot>
+
+
+                        </table>
+                    </div>
+                </div>
+
+
+
+            </div>
+
+            <div class="col-lg-4">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Appel d'offre concernée </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        {% if devis.ao.get_company %}
+                                            <img src="{% if devis.ao.get_company.logo %} {{ devis.ao.get_company.logo.url }} {% else %} {% static 'dashboard/img/interrogation.jpg' %} {% endif %}"
+                                             alt=""
+                                             style="height: 80px;border-radius:50%;">
+                                        {% else %}
+                                            <img src="{% if devis.ao.user.photo_profil %} {{ devis.ao.user.photo_profil.image.url }} {% else %} {% static 'dashboard/img/interrogation.jpg' %} {% endif %}"
+                                             alt=""
+                                             style="height: 80px;border-radius:50%;">
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <a href="">{{ order.user.user.first_name | title }} {{ order.user.user.last_name | title }}</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="ibox-content">
+                        <h5>Informations</h5>
+                        <p><span style="    font-weight: 700;">Nom</span> :
+                            {% if devis.ao.get_company %}
+                                <i class="fa fa-building"></i> <a href="{% url  'dashboard:ao_profil_entreprise' id=devis.ao.get_company.id %}">{{ devis.ao.get_company.name }}</a>
+                            {% else %}
+                               <i class="fa fa-user"></i> <a href="{% url 'dashboard:user_infos' id=devis.ao.user.id %}">{{ devis.ao.user.user.first_name|title }} {{ devis.ao.user.user.last_name|title }}</a>
+                            {% endif %}
+                        </p>
+
+                    <p><span style="    font-weight: 700;">Titre</span> : {{ devis.ao.title }}</p>
+                    <p><span style="    font-weight: 700;">Budget</span> : {{ devis.ao.budget }}</p>
+                    <p><span style="    font-weight: 700;">Date d'ajout</span> : {{ devis.ao.creation_date }}</p>
+                    <p><span style="    font-weight: 700;">Lots</span> : {{ devis.ao.project_set.all.count }}</p>
+                    <p><span style="    font-weight: 700;">Statut</span> : {{ devis.ao.get_etat }}</p>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+    </div>
+
+
+
+
+{% endblock content %}
+
+
+
+
+{% block scripts %}
+
+    {{ block.super }}
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+        $('#dashboard_ao').addClass("active");
+        $('#ao_devis').addClass("active");
+    </script>
+
+
+
+
+
+
+{% endblock scripts %}

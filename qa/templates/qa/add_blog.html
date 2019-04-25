@@ -1,10 +1,22 @@
 {% extends 'base_qa.html' %}
-{% load django_markdown %}
+
 {% load static %}
  {% load staticfiles %} 
 {% load crispy_forms_tags %}
+{% load widget_tweaks %}
 
 
+
+
+{% block style %}
+<script src='{% static "js/jquery.min.js"  %}'></script>
+<link rel="stylesheet" href='{% static "css/bootstrap-tagsinput.css" %}'>
+<script src='{% static "js/bootstrap-tagsinput.js" %}'></script>
+
+<style type="text/css">
+  #tags{ width:100%!important; }
+</style>
+{% endblock style %}
 
 
 {% block content %}
@@ -26,7 +38,7 @@
 
             <div class="box-panel">
 
-              <h2>Post Your Question</h2>
+              <h2>Poster un Blog</h2>
               <p> </p>
               <hr>
               <!-- form login -->
@@ -34,9 +46,22 @@
                  {% csrf_token %}
                  <div class="form-group">
                   <!-- <input type="file" name="myfile"> -->
-                  <label>Image Couverture</label>
-                  {{ formimg.image }}
+                  <!-- <label>Image Couverture</label> -->
+                  <!-- {{ formimg.image }} -->
+                  <!-- {% render_field formimg.image class="btn btn-file"  %} -->
                 </div>
+
+                 <div class="form-group">
+                                    <div class="input-group">
+                              <span class="input-group-btn">
+                                  <span class="btn btn-default btn-file1"
+                                        style="font-weight: bold;font-size: 22px;cursor: pointer;">
+                                      Choisir une Image De Couverture{% render_field formimg.image class="form-control" accept='image/*' id="imgInp1" %}
+                                  </span>
+                              </span>
+                                        <!-- <input type="text" class="form-control" readonly> -->
+                                    </div>
+                  </div>
 
                 <div class="form-group">
                   <label>Titre</label>
@@ -48,34 +73,42 @@
                     <option value="0" disabled select>All Categories</option>
                     <option value="36">Php</option>
                   </select> -->
-                  <select name="categorie" class="questions-category form-control chosen-container chosen-container-single">
+                  <!-- <select name="categorie" class="questions-category form-control chosen-container chosen-container-single">
                     <option value="0" disabled selected>select Categories</option>
                     {% for cat in categories %}
                       <option value="{{ cat.id }}" >{{ cat.title_categorie }}</option>
                     {% endfor %}
-                  </select>
+                  </select> -->
+                  {{ form.categorie }}
 
 
                 </div>
 
                 <input type="hidden" value="{{ user.id }}" name="user" />
 
-                <div class="form-group">
+                <!-- <div class="form-group">
                   <label>Tags</label>
 
                   <input name="tags" type="text" id="tags" placeholder="Ex : tag1,tag2...." class="form-control" data-role="tagsinput">
-                </div>
+                </div> -->
 
 
                 <div class="form-group " >
-                  <label> Detials</label>
+                  <label> Details</label>
                   <div>
                   {{ form.media }}
                   {{ form.blog_text }}
                 </div>
                 </div>
 
-                <button class="btn btn-primary pull-right">Publish Your Question</button>
+                <div class="form-group">
+                  <label>Tags</label>
+
+                  <input data-role="tagsinput" name="tags" type="text" id="tags" placeholder="Ex : tag1,tag2...." class="form-control ta"  >
+
+                </div>
+
+                <button class="btn btn-primary pull-right">Partager</button>
 
               </form>
               <!-- form login -->

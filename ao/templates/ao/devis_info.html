@@ -1,0 +1,199 @@
+{% extends 'ao/base_small.html' %}
+
+{% load static %}
+
+{% block style %}
+
+    <style>
+        .simplebar-content{
+            background: #fafafa;
+        }
+    </style>
+
+{% endblock %}
+
+{% block sidebar %}
+    <div class="dashboard-sidebar">
+		<div class="dashboard-sidebar-inner" data-simplebar>
+			<div class="dashboard-nav-container">
+
+				<!-- Responsive Navigation Trigger -->
+				<a href="#" class="dashboard-responsive-nav-trigger">
+					<span class="hamburger hamburger--collapse" >
+						<span class="hamburger-box">
+							<span class="hamburger-inner"></span>
+						</span>
+					</span>
+					<span class="trigger-title">Entreprise Détails</span>
+				</a>
+
+				<!-- Navigation -->
+				<div class="dashboard-nav">
+					<div class="dashboard-nav-inner">
+                        <div id="profile-details">
+                            <div class="header-image">
+                                <a href="{% url 'ao:company' devis.company.id %}">
+                                    {% if devis.company.logo.url is not None %}
+                                        <img src="{{  devis.company.logo.url }}" alt="">
+                                    {% else %}
+                                        <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                    {% endif %}
+                                </a>
+                            </div>
+                            <div class="header-details">
+                                <h3 style="padding: 25px; text-align: center; padding-bottom: 0;">{{ devis.company.name }}</h3>
+                                <h4 style="text-align: center">{{ devis.company.activity }}</h4>
+                            </div>
+                        </div>
+                        <ul data-submenu-title="Outils de contact">
+                            <li><a href="mailto:{{devis.company.mail}}" title="Email"><i class="icon-material-outline-email"></i> {{ devis.company.mail }}</a></li>
+                            <li><a href="tel:{{devis.company.telephone}}" title="Téléphone"><i class="icon-feather-phone"></i> {{ devis.company.telephone }}</a></li>
+                            <li><a href="tel:{{devis.company.fax}}" title="Fax"><i class="icon-line-awesome-fax"></i> {{ devis.company.fax }}</a></li>
+                        </ul>
+					</div>
+				</div>
+				<!-- Navigation / End -->
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block content %}
+
+    <!-- Dashboard Headline -->
+			<div class="dashboard-headline">
+				<h3>Détail devis</h3>
+
+				<!-- Breadcrumbs -->
+				<nav id="breadcrumbs" class="dark">
+					<ul>
+						<li><a href="{% url 'ao:home' %}">Acceuil</a></li>
+						<li><a href="#">Profil</a></li>
+						<li><a href="{% url 'ao:ao' devis.ao.id %}">AO</a></li>
+						<li>Devis</li>
+					</ul>
+				</nav>
+			</div>
+
+			<!-- Row -->
+			<div class="row">
+				<div class="col-xl-12">
+					<div class="dashboard-box margin-top-0">
+						<!-- Headline -->
+						<div class="headline">
+							<h3><i class="icon-feather-folder-plus"></i> Détails du devis envoyé par l'entreprise
+							    <a href="{% url 'ao:company' devis.company.id %}">{{ devis.company }}</a> <br>
+							    <span>reçu le {{ devis.date_creation }}</span>
+							</h3>
+                            <h5>Détail de l'appel offre :</h5>
+                            <h4><strong>Titre : </strong><a href="{% url 'ao:ao' devis.ao.id %}">{{ devis.ao.title }}</a></h4>
+                            <h4><strong>Catégorie :</strong> <a href="{% url 'ao:category' devis.ao.category.id %}"></a>{{ devis.ao.category }}</h4>
+                            <h4><strong>Budget :</strong> {{ devis.ao.budget }}</h4>
+                            <h4><strong>Date de fin :</strong>{{ devis.ao.date_limit }}</h4>
+						</div>
+
+						<div class="content with-padding padding-bottom-10">
+							<div class="row">
+								<div class="col-xl-4">
+									<div class="submit-field">
+										<h5>Budget estimé</h5>
+										<input type="text" disabled class="with-border" value="{{ devis.budget }}">
+									</div>
+								</div>
+								<div class="col-xl-4">
+									<div class="submit-field">
+										<h5>TVA</h5>
+										<input type="text" disabled class="with-border" value="{{ devis.tva }}%">
+									</div>
+								</div>
+								<div class="col-xl-4">
+									<div class="submit-field">
+										<h5>Nbr de jours de réalisation</h5>
+										<input type="text" disabled class="with-border" value="{{ devis.days }}">
+									</div>
+								</div>
+
+								<div class="col-xl-12">
+									<div class="submit-field">
+										<h5>Message envoyé</h5>
+										<p class="with-border" style="border-radius: 4px; border: 1px solid #e0e0e0; box-shadow: 0 1px 4px 0 rgba(0,0,0,.05); padding: 11px 20px; color: gray;">
+										    {{ devis.message }}
+										 </p>
+									</div>
+								</div>
+
+                                {% if devis_lines.count > 0 %}
+								<div class="col-xl-12">
+								    <div class="submit-field">
+										<h5>Détails de devis</h5>
+								        <table class="basic-table">
+								            <tr>
+								                <th style="background: #f4f4f4; color: #ea4c0f;">N° de prix</th>
+								                <th style="background: #f4f4f4; color: #ea4c0f;">Désignation</th>
+								                <th style="background: #f4f4f4; color: #ea4c0f;">Unité</th>
+								                <th style="background: #f4f4f4; color: #ea4c0f;">Prix unitaire Dh</th>
+								                <th style="background: #f4f4f4; color: #ea4c0f;">Quantité</th>
+                                            </tr>
+								            {% for line in devis_lines %}
+								                <tr>
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td>{{ line.designation }}</td>
+                                                    <td>{{ line.unit }}</td>
+                                                    <td>{{ line.price }}</td>
+                                                    <td>{{ line.qte }}</td>
+                                                </tr>
+								            {% endfor %}
+								            <tr>
+								                <td colspan="3"></td>
+								                <td style="font-weight: 600">Montant Dh HT</td>
+								                <td colspan="" style="font-weight: 600">{{ devis.amount }} Dh</td>
+								            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-xl-12">
+					<a class="button ripple-effect big margin-top-30" href="{% url 'ao:ao' devis.ao.id %}">
+                        <i class="icon-material-outline-arrow-back"></i> Retourner à l'appel d'offre source
+                    </a>
+				</div>
+
+            </div>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+
+        {% if status %}
+            Snackbar.show({
+                text: 'Lot créé avec succès',
+            });
+        {% endif %}
+        {% if recaptcha %}
+            Snackbar.show({
+                text: 'Veuillez vérifier la recaptcha',
+            });
+        {% endif %}
+
+        $("#form-add-project").submit(function () {
+            var keys = $("#keywords");
+            $(".keywords-list .keyword-text").each(function() {
+                var val = keys.val();
+                val += ',' + $(this).text();
+                keys.val(val);
+            });
+            $("#placeKeys").val(keys.val());
+        });
+
+    </script>
+
+
+{% endblock %}

@@ -1,0 +1,961 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+
+{% block title %}
+    Vue d'ensemble | Réseau social | {{ block.super }}
+{% endblock title %}
+
+
+{% block stylesheets %}
+    {{ block.super }}
+
+    <!-- c3 Charts -->
+    <link href="{% static 'dashboard/css/plugins/c3/c3.min.css' %}" rel="stylesheet">
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+
+        <div class="row">
+
+            <div class="col-lg-4">
+                <div class="widget style1 navy-bg">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-user fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Profils</span>
+                            <h2 class="font-bold">{{ profils.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-4">
+                <div class="widget style1 bg-black">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-users fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span"> Groupes </span>
+                            <h2 class="font-bold">{{ groupes.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="widget style1 bg-success">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-edit fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span"> Publications </span>
+                            <h2 class="font-bold">{{ publications.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+                <div class="widget style1 bg-purple">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-building fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Pages entreprises</span>
+                            <h2 class="font-bold">{{ pages_entreprises.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="widget style1 bg-purple">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa fa-bullhorn fa-5x"></i>
+                        </div>
+                        <div class="col-8 text-right">
+                            <span class="card_span">Offres d'emploi</span>
+                            <h2 class="font-bold">{{ offres_emploi.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+
+        <div class="row">
+
+            <div class="col-lg-6">
+
+                <div class="ibox">
+                    <div class="ibox-content ibox-page-temps-utilisateur">
+                        <h3>Pages où passe l'utilisateur le plus de temps (secondes) <span class="pull-right"></span>
+                        </h3>
+
+                        <div id="pages-plus-temps-chart-container"></div>
+                        <div id="pages-plus-temps-view-selector-container" style="display:none;"></div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Influenceurs par followers</h5>
+
+                    </div>
+                    <div class="ibox-content">
+                        <div>
+                            <div id="pie"></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Visites </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="visites-totales-chart-container"></div>
+                        <div id="visites-totales-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+
+            <div class="col-lg-12">
+
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <h3>Pages les plus visitées <span class="pull-right"></span>
+                        </h3>
+
+                        <div id="pages-plus-visites-chart-container"></div>
+                        <div id="pages-plus-visites-view-selector-container" style="display:none;"></div>
+
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-lg-4">
+                <div class="ibox ">
+                    <div class="ibox-title ">
+                        <h5>Source des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content ibox-source-traffic">
+                        <div id="traffic-source-chart-container"></div>
+                        <div id="traffic-source-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Appareils des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="appareils-chart-container"></div>
+                        <div id="appareils-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="ibox ">
+                    <div class="ibox-title">
+                        <h5>Origine des visiteurs </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div id="origine-chart-container"></div>
+                        <div id="origine-view-selector-container" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    <div class="row">
+        <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_profils_list' %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Derniers profils inscrits <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for profil in derniers_inscrits|slice:"10" %}
+                        <a href="{% url 'dashboard:socialmedia_infos_profile' id_user=profil.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ profil.user.first_name.title }} {{ profil.user.last_name.title }} <i
+                                    class="fa fa-calendar"></i> <span
+                                    class="small-text">{{ profil.user.date_joined }}</span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun utilisateur.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+    <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_profils_list' %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Profils les  plus vus <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for profil in profil_plus_vus|slice:"10" %}
+                        <a href="{% url 'dashboard:socialmedia_infos_profile' id_user=profil.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ profil.user.first_name.title }} {{ profil.user.last_name.title }} <i
+                                    class="fa fa-eye"></i> <span
+                                    class="small-text">{{ profil.socialmedia_profil_views_number }}</span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun utilisateur.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+    <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_profils_list' %}"
+                       class="list-group-item list-group-item-action active disabled">
+                        Profils les plus suivis <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for profil in influenceurs_followers_pie|slice:"10" %}
+                        <a href="{% url 'dashboard:socialmedia_infos_profile' id_user=profil.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ profil.user__first_name.title }} {{ profil.user__last_name.title }} <i
+                                    class="fa fa-users"></i> <span
+                                    class="small-text"> {{ profil.total_follow }}</span>  </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun utilisateur.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+    </div>
+
+        <div class="row">
+
+            <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_groups_list' %}"
+                       class="list-group-item list-group-item-action active disabled bg-black">
+                        Groupes avec le plus de membres <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for groupe in groupes_avec_plus_membres|slice:"10" %}
+                        <a href="{% url 'dashboard:socialmedia_infos_group' id_group=groupe.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ groupe.nom|truncatechars:"35" }} <i
+                                    class="fa fa-calendar"></i> <span
+                                    class="small-text">{{ groupe.date_creation }}</span> <i
+                                    class="fa fa-users"></i> <span
+                                    class="small-text">{{ groupe.total_membres }}</span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun groupe.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+        <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_groups_list' %}"
+                       class="list-group-item list-group-item-action active disabled bg-black">
+                        Groupes les plus vus <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for groupe in groupes_plus_vus|slice:"10" %}
+                        <a href="{% url 'dashboard:socialmedia_infos_group' id_group=groupe.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ groupe.nom|truncatechars:"35" }} <i
+                                    class="fa fa-eye"></i> <span
+                                    class="small-text">{{ groupe.views_number }}</span>
+                                 </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun groupe.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+            <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_groups_list' %}"
+                       class="list-group-item list-group-item-action active disabled bg-black">
+                        Derniers groupes <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for groupe in groupes.reverse|slice:"10" %}
+                        <a href="{% url 'dashboard:socialmedia_infos_group' id_group=groupe.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ groupe.nom|truncatechars:"35" }} <i
+                                    class="fa fa-calendar"></i> <span
+                                    class="small-text">{{ groupe.date_creation }}</span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun groupe.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+    <div class="row">
+
+    <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_publications' %}"
+                       class="list-group-item list-group-item-action active disabled bg-blue">
+                        Publications avec le plus d'interactions <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for publication in statuts_plus_interactions|slice:"10" %}
+                        <a href="{% url 'dashboard:socialmedia_infos_publication' id_publication=publication.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ publication.contenu_statut|truncatechars:"20" }} <i
+                                    class="fa fa-calendar"></i> <span
+                                    class="small-text">{{ publication.date_statut }}</span>
+                            <i
+                                    class="fa fa-hand-o-up"></i> <span
+                                    class="small-text">{{ publication.total_interactions }}</span>
+                            <i
+                                    class="fa fa-thumbs-o-up"></i> <span
+                                    class="small-text">{{ publication.total_jaime }}</span>
+                            <i
+                                    class="fa fa-commenting"></i> <span
+                                    class="small-text">{{ publication.total_comments }}</span>
+                            <i
+                                    class="fa fa-share"></i> <span
+                                    class="small-text">{{ publication.total_shares }}</span></strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun statut.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+    <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_publications' %}"
+                       class="list-group-item list-group-item-action active disabled bg-blue">
+                        Publications les plus vus <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for publication in publications_plus_vus|slice:"10" %}
+                        <a href="{% url 'dashboard:socialmedia_infos_publication' id_publication=publication.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ publication.contenu_statut|truncatechars:"35" }} <i
+                                    class="fa fa-eye"></i> <span
+                                    class="small-text">{{ publication.views_number }}</span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun statut.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+        <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_publications' %}"
+                       class="list-group-item list-group-item-action active disabled bg-blue">
+                        Dernières publications <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for publication in publications|slice:"10" %}
+                        <a href="{% url 'dashboard:socialmedia_infos_publication' id_publication=publication.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ publication.contenu_statut|truncatechars:"35" }} <i
+                                    class="fa fa-calendar"></i> <span
+                                    class="small-text">{{ publication.date_statut }}</span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucun statut.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_page_entreprise_list' %}"
+                       class="list-group-item list-group-item-action active disabled bg-purple">
+                        Pages entreprises les plus suivies <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for page in pages_entreprises_plus_suivis %}
+                        <a href="{% url 'dashboard:socialmedia_infos_page_entreprise' id_page_entreprise=page.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ page.entreprise__nom|truncatechars:"35" }}
+                                 <i
+                                    class="fa fa-users"></i> <span
+                                    class="small-text">{{ page.total_abonnes }}</span>
+                            </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune page.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+    <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_page_entreprise_list' %}"
+                       class="list-group-item list-group-item-action active disabled bg-purple">
+                        Pages entreprises les plus vues <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for page in pages_entreprises_plus_vus %}
+                        <a href="{% url 'dashboard:socialmedia_infos_page_entreprise' id_page_entreprise=page.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ page.entreprise.nom|truncatechars:"35" }}
+                                 <i
+                                    class="fa fa-eye"></i> <span
+                                    class="small-text">{{ page.views_number }}</span>
+                            </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune page.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+    <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_page_entreprise_list' %}"
+                       class="list-group-item list-group-item-action active disabled bg-purple">
+                        Dernières pages d'entreprise <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for page in pages_entreprises.reverse|slice:"10" %}
+                        <a href="{% url 'dashboard:socialmedia_infos_page_entreprise' id_page_entreprise=page.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ page.entreprise.nom|truncatechars:"35" }}    </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune page.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+    </div>
+
+        <div class="row">
+
+            <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_offre_emploi_list' %}"
+                       class="list-group-item list-group-item-action active disabled bg-purple">
+                        Offres d'emploi avec le plus de candidatures <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for offre in offres_plus_candidature %}
+                        <a href="{% url 'dashboard:socialmedia_infos_offre_emploi' id_offre_emploi=offre.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ offre.nom_poste|truncatechars:"35" }} <i
+                                    class="fa fa-users"></i> <span
+                                    class="small-text">{{ offre.total_postulants }}</span>
+
+                            </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune offre.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+        <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_offre_emploi_list' %}"
+                       class="list-group-item list-group-item-action active disabled bg-purple">
+                        Offres d'emploi les plus vus <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for offre in offre_emploi_plus_vus %}
+                        <a href="{% url 'dashboard:socialmedia_infos_offre_emploi' id_offre_emploi=offre.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ offre.nom_poste|truncatechars:"35" }} <i
+                                    class="fa fa-eye"></i> <span
+                                    class="small-text">{{ offre.views_number }}</span>
+
+                            </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune offre.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+            <div class="col-md-4 mar-b-30">
+                <div class="list-group">
+                    <a href="{% url 'dashboard:socialmedia_offre_emploi_list' %}"
+                       class="list-group-item list-group-item-action active disabled bg-purple">
+                        Dernières offres d'emploi <span class="pull-right">Voir tout</span>
+                    </a>
+
+                    {% for offre in offres_emploi.reverse|slice:"10" %}
+                        <a href="{% url 'dashboard:socialmedia_infos_offre_emploi' id_offre_emploi=offre.id %}"
+                           style=" color: inherit;text-decoration: inherit; "
+                           class="list-group-item list-group-item-action">
+                            <strong>{{ offre.nom_poste|truncatechars:"35" }} | <i
+                                    class="fa fa-calendar"></i> <span
+                                    class="small-text">{{ offre.date_publication }}</span> </strong>
+                        </a>
+                    {% empty %}
+
+                        <span
+                                class="list-group-item list-group-item-action">
+
+                            Aucune offre.
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+{% endblock content %}
+
+
+
+
+{% block scripts %}
+
+    {{ block.super }}
+
+
+
+    <!-- Data picker -->
+    <script src="{% static 'dashboard/js/plugins/datapicker/bootstrap-datepicker.js' %}"></script>
+
+
+    <!-- Date range use moment.js same as full calendar plugin -->
+    <script src="{% static 'dashboard/js/plugins/fullcalendar/moment.min.js' %}"></script>
+
+
+    <!-- Date range picker -->
+    <script src="{% static 'dashboard/js/plugins/daterangepicker/daterangepicker.js' %}"></script>
+
+
+
+
+
+
+
+    <script>
+        $('#dashboard_socialmedia').addClass("active");
+        $('#socialmedia_vue_generale').addClass("active");
+    </script>
+
+    <script>
+        $(function () {
+
+            // Moris Data
+            Morris.Line({
+                element: 'morris-line-chart',
+                data: [{y: '2006', a: 75, b: 90},
+                    {y: '2007', a: 75, b: 65},
+                    {y: '2008', a: 50, b: 40},
+                    {y: '2009', a: 75, b: 65},
+                    {y: '2010', a: 50, b: 40},
+                    {y: '2011', a: 75, b: 65},
+                    {y: '2012', a: 100, b: 90}],
+                xkey: 'y',
+                ykeys: ['a', 'b'],
+                labels: ['Visites totales', 'Visites Uniques'],
+                hideHover: 'auto',
+                resize: true,
+                lineColors: ['#54cdb4', '#1ab394'],
+            });
+
+
+        });
+
+    </script>
+
+
+
+    <!-- d3 and c3 charts -->
+    <script src="{% static 'dashboard/js/plugins/d3/d3.min.js' %}"></script>
+    <script src="{% static 'dashboard/js/plugins/c3/c3.min.js' %}"></script>
+
+
+    <script>
+        // Chart Js Pie Demo
+
+        $(document).ready(function () {
+
+            c3.generate({
+                bindto: '#pie',
+                data: {
+                    columns: [
+
+                        {% for influencer in influenceurs_followers_pie|slice:"6" %}
+                            ['{{ influencer.user__first_name }} {{ influencer.user__last_name }} ({{ influencer.user__email }}) ', {{ influencer.total_follow }}],
+                        {% empty %}
+                            ['Aucun', 1],
+                        {% endfor %}
+
+
+                    ],
+                    type: 'pie'
+                },
+                pie: {
+                    label: {
+                        format: function (value, ratio, id) {
+                            return value;
+                        }
+                    }
+                }
+            });
+
+
+        });
+
+
+    </script>
+
+
+
+
+    <script>
+        (function (w, d, s, g, js, fs) {
+            g = w.gapi || (w.gapi = {});
+            g.analytics = {
+                q: [], ready: function (f) {
+                    this.q.push(f);
+                }
+            };
+            js = d.createElement(s);
+            fs = d.getElementsByTagName(s)[0];
+            js.src = 'https://apis.google.com/js/platform.js';
+            fs.parentNode.insertBefore(js, fs);
+            js.onload = function () {
+                g.load('analytics');
+            };
+        }(window, document, 'script'));
+    </script>
+
+
+    <script>
+
+        //Visites totales Line Chart Ecommerce
+
+        gapi.analytics.ready(function () {
+
+            /**
+             * Authorize the user with an access token obtained server side.
+             */
+            gapi.analytics.auth.authorize({
+                'serverAuth': {
+                    'access_token': '{{ ACCESS_TOKEN_FROM_GOOGLE_SERVICE_ACCOUNT }}'
+                }
+            });
+
+            /**
+             * Create a new DataChart instance with the given query parameters
+             * and Google chart options. It will be rendered inside an element
+             * with the id "chart-container".
+             */
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:pageviews,ga:uniquePageViews',
+                    dimensions: 'ga:date',
+                    'start-date': '30daysAgo',
+                    'end-date': 'today',
+                    filters: 'ga:pagePath=@/reseausocial/',
+                },
+                chart: {
+                    container: 'visites-totales-chart-container',
+                    type: 'LINE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:pageviews,ga:uniquePageviews,ga:avgTimeOnPage',
+                    dimensions: 'ga:pageTitle,ga:pagePath',
+                    'start-date': '30daysAgo',
+                    'end-date': 'today',
+                    sort: '-ga:pageviews',
+                    filters: 'ga:pagePath=@/reseausocial/',
+                    'max-results': 10,
+                },
+                chart: {
+                    container: 'pages-plus-visites-chart-container',
+                    type: 'TABLE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:users',
+                    dimensions: 'ga:source',
+                    filters: 'ga:pagePath=@/reseausocial/',
+                    'max-results': 8,
+                },
+                chart: {
+                    container: 'traffic-source-chart-container',
+                    type: 'TABLE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:avgTimeOnPage',
+                    dimensions: 'ga:pagePath',
+                    filters: 'ga:pagePath=@/reseausocial/',
+                    'max-results': 10,
+                    'sort': '-ga:avgTimeOnPage'
+                },
+                chart: {
+                    container: 'pages-plus-temps-chart-container',
+                    type: 'TABLE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:users',
+                    dimensions: 'ga:deviceCategory',
+                    filters: 'ga:pagePath=@/reseausocial/',
+                },
+                chart: {
+                    container: 'appareils-chart-container',
+                    type: 'PIE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+
+
+            var dataChart = new gapi.analytics.googleCharts.DataChart({
+                query: {
+                    metrics: 'ga:users',
+                    dimensions: 'ga:city',
+                    filters: 'ga:pagePath=@/reseausocial/',
+                },
+                chart: {
+                    container: 'origine-chart-container',
+                    type: 'PIE',
+                    options: {
+                        width: '100%'
+                    }
+                }
+            });
+
+            /**
+             * Render the dataChart on the page.
+             */
+
+            // Ga:xxxx = L'id de la propriété Google analytics
+            dataChart.set({query: {ids: "ga:181212196"}}).execute();
+
+        });
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock scripts %}

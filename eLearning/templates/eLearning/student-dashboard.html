@@ -1,0 +1,267 @@
+{% extends 'eLearning/base.html' %}
+{% load static %}
+{% block content %}
+    <style>
+        .sbHolder{
+            display: inline-block;
+        }
+        .sbOptions {
+            top: 40px !important;
+        }
+        .sbToggle, .sbSelector:link, .sbSelector:visited, .sbSelector:hover {
+            top: 9px;
+        }
+
+        div.my-col:nth-child(2) {
+            font-size: 12px;
+        }
+        .thumb_cart img{
+            padding-top: 10px;
+        }
+        .table td, .table th {
+            vertical-align: middle;
+        }
+        .table thead th {
+            font-size: 18px;
+        }
+        .card-body {
+            padding: 15px 10px 0;
+            background: #F5F5F5;
+            border-radius: 0 0 5px 5px;
+        }
+        .card .progress-bar {
+            height: 4px;
+        }
+
+        p.card-text {
+            margin-bottom: 10px;
+            line-height: 1.6em;
+            max-height: 5.2em;
+            overflow: hidden;
+        }
+
+        .card-body b {
+            display: inline-grid;
+            overflow: hidden;
+            max-width: 29px;
+        }
+
+        .card-body span a {
+            font-size: 11px;
+            float: right;
+            padding-top: 3px;
+            color: rebeccapurple;
+        }
+
+        img.card-img-top {
+            height: 147px;
+        }
+
+        .card {
+            border: 2px solid #f5f5f5;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .card .progress {
+            background: #BBDEFB;
+        }
+
+        .card-text strong a {
+            color: #000;
+        }
+        .image-container{
+            position: relative;
+        }
+        .image-container:hover .play{display:block} .play{
+            position: absolute;
+            display: none;
+            width: 100%;
+            margin: 0 auto;
+            left: 0px;
+            right: 0px;
+            z-index: 100;
+            background: rgba(224,224,224 ,.5);
+            height: 100%;
+            top: 0;
+            padding-top: 20%;
+            padding-left: 40%;
+        }
+        .image-container .play img{
+            width: 50px;
+        }
+        .progress-bar{
+            background-color: #ea4c0f;
+        }
+        .card-body span a{
+            color: #ea4c0f;
+        }
+    </style>
+<section id="hero_in" class="cart_section">
+    <div class="wrapper">
+        <div class="container">
+            <h1 class="fadeInUp"><span></span>Dashboard</h1>
+        </div>
+    </div>
+</section>
+<!--/hero_in-->
+<div class="bg_color_1">
+    <div class="container margin_60_35">
+        <div class="row">
+            <div class="col-md-3">
+                <p style="font-size: 24px;">Cours suivis : <span style="font-weight: bold">{{ request.user.profil.elearning_formation_set.all.count }} </span></p>
+            </div>
+            <div class="col-md-9">
+                <p style="display: inline; float: left; font-size: 24px; margin-right: 20px;">Progression moyenne :
+                    <span id="progressAvgValue" style="font-weight: bold;">{{ progress_avg }}</span>%</p>
+                <div class="progress" style="margin-top: 10px;">
+                    <div class="progress-bar" role="progressbar" style="width: {{ progress_avg }}%" aria-valuenow="{{ progress_avg }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <p style="font-size: 24px;">Filtrer par : </p>
+            </div>
+            <form method="get" action="{% url 'eLearning:student_dashboard' %}" id="filter_form" style="display: contents;">
+                <div class="col-md-3" style="border-right: 1px solid; height: 50px;">
+                    <label for="filterCategory" style="font-size: 16px;">Catégorie : </label>
+                    <select title="" name="filterCategory" class="selectbox" id="menu_categories" onchange="document.getElementById('filter_form').submit();">
+                        {% if selected_category %}
+                            {% if selected_category == 0 %}
+                                <option value="0" selected="selected">Tous</option>
+                            {% else %}
+                                <option value="0">Tous</option>
+                            {% endif %}
+                            {% for category in categories %}
+                                {% if selected_category == category.category_id %}
+                                    <option value="{{ category.category_id }}" selected="selected">{{ category.category_name }}</option>
+                                {% else %}
+                                    <option value="{{ category.category_id }}">{{ category.category_name }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <option value="0" selected="selected">Tous</option>
+                            {% for category in categories %}
+                                <option value="{{ category.category_id }}">{{ category.category_name }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="col-md-3 my-col" style="border-right: 1px solid; height: 50px;">
+                    <label for="filterTeacher" style="font-size: 16px;">Professeur :</label>
+                    <select title="" name="filterTeacher" class="selectbox" id="menu_categories" onchange="document.getElementById('filter_form').submit();">
+                        {% if selected_teacher %}
+                            {% if selected_teacher == 0 %}
+                                <option value="0" selected="selected">Tous</option>
+                            {% else %}
+                                <option value="0">Tous</option>
+                            {% endif %}
+                            {% for teacher in teachers %}
+                                {% if selected_teacher == teacher.teacher_id %}
+                                <option value="{{ teacher.teacher_id }}" selected="selected">{{ teacher.teacher_last_name }}
+                                    {{teacher.teacher_first_name }}</option>
+                                {% else %}
+                                    <option value="{{ teacher.teacher_id }}">{{ teacher.teacher_last_name }} {{ teacher.teacher_first_name }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <option value="0" selected="selected">Tous</option>
+                            {% for teacher in teachers %}
+                                <option value="{{ teacher.teacher_id }}">{{ teacher.teacher_last_name }} {{ teacher.teacher_first_name }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="filterProgress" style="font-size: 16px;">Progrés :</label>
+                    <select title="" name="filterProgress" class="selectbox" id="menu_categories" onchange="document.getElementById('filter_form').submit();">
+                        {% if selected_progress %}
+                            {% if selected_progress == 0 %}
+                                <option value="0" selected="selected">Tous</option>
+                            {% else %}
+                                <option value="0">Tous</option>
+                                {% if selected_progress == 1 %}
+                                    <option value="1" selected="selected">Pas commencé</option>
+                                {% else %}
+                                    <option value="1">Pas commencé</option>
+                                {% endif %}
+                                {% if selected_progress == 2 %}
+                                    <option value="2" selected="selected">En cours</option>
+                                {% else %}
+                                    <option value="2">En cours</option>
+                                {% endif %}
+                                {% if selected_progress == 3 %}
+                                    <option value="3" selected="selected">Terminé</option>
+                                {% else %}
+                                    <option value="3">Terminé</option>
+                                {% endif %}
+                            {% endif %}
+                        {% else %}
+                            <option value="0" selected="selected">Tous</option>
+                            <option value="1">Pas commencé</option>
+                            <option value="2">En cours</option>
+                            <option value="3">Terminé</option>
+                        {% endif %}
+                    </select>
+                </div>
+            <!--<a href="{% url 'eLearning:student_dashboard' %}">Réinitialiser</a>-->
+            </form>
+
+        </div>
+    </div>
+
+    <div class="container margin_60_35" style="padding-top: 0">
+        <div>
+
+        </div>
+        <div class="row">
+            <section id="courses" class="col-md-12">
+                <div class="row">
+                    {% for course in courses %}
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="image-container">
+                                    <a href="{% url 'eLearning:course' course.c.pk %}">
+                                    {% if course.c.image %}
+                                        <img src="{{ course.c.image.url }}" class="card-img-top" alt="Image {{ course.c.name }}">
+                                    {% else %}
+                                        <img src="" class="card-img-top" alt="Image {{ course.c.name }}">
+                                    {% endif %}
+                                    </a>
+                                    <a href="{% url 'eLearning:course' course.c.pk %}">
+                                        <div class="play">
+                                            <img src="{% static "eLearning/img/icon-play.png" %}" />
+                                        </div>
+                                    </a>
+                                </div>
+                              <div class="card-body">
+                                <p class="card-text">
+                                    <strong><a href="{% url 'eLearning:unsubscribe' course.id %}">{{ course.c.name }}</a></strong><br>
+                                    {{ course.c.description|striptags|truncatechars:60 }}
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" style="width: {{ course.progress }}%" aria-valuenow="{{ course.progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <span>
+                                        <b>{{ course.progress|floatformat:0 }}</b>% terminé
+                                        <a href="{% url 'eLearning:unsubscribe' course.id %}">Se Désabonner</a>
+                                    </span>
+                                </p>
+                              </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+        $("#progressAvgValue").text($("#progressAvgValue").text().slice(0, 3));
+    </script>
+
+{% endblock %}

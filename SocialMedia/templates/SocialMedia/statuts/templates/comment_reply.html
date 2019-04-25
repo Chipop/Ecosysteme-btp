@@ -1,0 +1,192 @@
+{% load static humanize urlize_targetblank %}
+
+<div class="st_comment_reply" data-id="{{ comment.id }}">
+    <div class="st_comment_user_infos">
+
+        <div class="st_comment_user_image">
+            <img src="
+
+                    {% if comment.user.photo_profil %}{{ comment.user.photo_profil.image.url }}{% else %}{% static 'SocialMedia/defaults/default_profil.png' %}{% endif %}"
+                 alt="FirstName LastName">
+        </div>
+
+        <div class="st_comment_user_details">
+            <a class="st_comment_user_name"
+               href="{% url 'SocialMedia:getProfil' pk=comment.user.id %}">{{ comment.user.user.first_name|title }} {{ comment.user.user.last_name|title }}</a>
+            <span class="st_comment_user_job">{% if comment.user.resume %}{{ comment.user.resume }}{% endif %}</span>
+        </div>
+
+        <div class="st_comment_options ">
+            <span class="st_comment_date"
+                  title="{{ comment.date_commentaire }}">{{ comment.date_commentaire|naturaltime }}</span> &nbsp
+            <span class="st_icon_menu st_comment_menu" onclick="open_menu(this)">
+                                <i class="fa fa-ellipsis-h"></i>
+                            </span>
+
+            <ul class="st_menu_list st_comment_menu_list" role="menu">
+
+                {% if comment.get_related_statut.is_entreprise_statut %}
+
+                    {% if request.user.profil in comment.get_related_statut.mur_entreprise.moderateurs.all or request.user.profil in comment.get_related_statut.mur_entreprise.administrateurs.all or request.user.profil == comment.user %}
+                        <li>
+                            <div class="st_menu_item" data-toggle="modal" data-target="#comment_update_content_modal"
+                                 data-id="{{ comment.id }}" data-type="reply"
+                                 onclick="comment_update_content_call_modal(this);">
+                                <i class="st_menu_item_icon  fa fa-pencil"></i>
+                                <div class="st_menu_item_description">
+                                    Modifier le commentaire
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="st_menu_item" data-id="{{ comment.id }}" data-type="reply"
+                                 onclick="comment_delete(this);">
+                                <i class="st_menu_item_icon  fa fa-times"></i>
+                                <div class="st_menu_item_description">
+                                    Supprimer le commentaire
+                                </div>
+                            </div>
+                        </li>
+                    {% else %}
+                        <li>
+                            <div class="st_menu_item" data-toggle="modal" data-type="reply"
+                                 data-target="#comment_signal_modal" data-id="{{ comment.id }}"
+                                 onclick="comment_signal_call_modal(this);">
+                                <i class="st_menu_item_icon  fa fa-flag"></i>
+                                <div class="st_menu_item_description">
+                                    Signaler le commentaire
+                                </div>
+                            </div>
+                        </li>
+                    {% endif %}
+                {% elif comment.get_related_statut.is_group_statut %}
+                    {% if request.user.profil in comment.get_related_statut.mur_groupe.moderators.all or request.user.profil in comment.get_related_statut.mur_groupe.admins.all or request.user.profil == comment.user %}
+                        <li>
+                            <div class="st_menu_item" data-toggle="modal" data-target="#comment_update_content_modal"
+                                 data-id="{{ comment.id }}" data-type="reply"
+                                 onclick="comment_update_content_call_modal(this);">
+                                <i class="st_menu_item_icon  fa fa-pencil"></i>
+                                <div class="st_menu_item_description">
+                                    Modifier le commentaire
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="st_menu_item" data-id="{{ comment.id }}" data-type="reply"
+                                 onclick="comment_delete(this);">
+                                <i class="st_menu_item_icon  fa fa-times"></i>
+                                <div class="st_menu_item_description">
+                                    Supprimer le commentaire
+                                </div>
+                            </div>
+                        </li>
+                    {% else %}
+                        <li>
+                            <div class="st_menu_item" data-toggle="modal" data-type="reply"
+                                 data-target="#comment_signal_modal" data-id="{{ comment.id }}"
+                                 onclick="comment_signal_call_modal(this);">
+                                <i class="st_menu_item_icon  fa fa-flag"></i>
+                                <div class="st_menu_item_description">
+                                    Signaler le commentaire
+                                </div>
+                            </div>
+                        </li>
+                    {% endif %}
+                {% elif comment.get_related_statut.is_profil_statut %}
+                    {% if comment.user == request.user.profil or comment.get_related_statut.publisher == request.user.profil %}
+                        <li>
+                            <div class="st_menu_item" data-toggle="modal" data-target="#comment_update_content_modal"
+                                 data-id="{{ comment.id }}" data-type="reply"
+                                 onclick="comment_update_content_call_modal(this);">
+                                <i class="st_menu_item_icon  fa fa-pencil"></i>
+                                <div class="st_menu_item_description">
+                                    Modifier le commentaire
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="st_menu_item" data-id="{{ comment.id }}" data-type="reply"
+                                 onclick="comment_delete(this);">
+                                <i class="st_menu_item_icon  fa fa-times"></i>
+                                <div class="st_menu_item_description">
+                                    Supprimer le commentaire
+                                </div>
+                            </div>
+                        </li>
+                    {% else %}
+                        <li>
+                            <div class="st_menu_item" data-toggle="modal" data-type="reply"
+                                 data-target="#comment_signal_modal" data-id="{{ comment.id }}"
+                                 onclick="comment_signal_call_modal(this);">
+                                <i class="st_menu_item_icon  fa fa-flag"></i>
+                                <div class="st_menu_item_description">
+                                    Signaler le commentaire
+                                </div>
+                            </div>
+                        </li>
+                    {% endif %}
+                {% elif comment.get_related_statut.type == "shared" %}
+                    {% if comment.user == request.user.profil or comment.get_related_statut.publisher == request.user.profil %}
+                        <li>
+                            <div class="st_menu_item" data-toggle="modal" data-target="#comment_update_content_modal"
+                                 data-id="{{ comment.id }}" data-type="reply"
+                                 onclick="comment_update_content_call_modal(this);">
+                                <i class="st_menu_item_icon  fa fa-pencil"></i>
+                                <div class="st_menu_item_description">
+                                    Modifier le commentaire
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="st_menu_item" data-id="{{ comment.id }}" data-type="reply"
+                                 onclick="comment_delete(this);">
+                                <i class="st_menu_item_icon  fa fa-times"></i>
+                                <div class="st_menu_item_description">
+                                    Supprimer le commentaire
+                                </div>
+                            </div>
+                        </li>
+                    {% else %}
+                        <li>
+                            <div class="st_menu_item" data-toggle="modal" data-type="reply"
+                                 data-target="#comment_signal_modal" data-id="{{ comment.id }}"
+                                 onclick="comment_signal_call_modal(this);">
+                                <i class="st_menu_item_icon  fa fa-flag"></i>
+                                <div class="st_menu_item_description">
+                                    Signaler le commentaire
+                                </div>
+                            </div>
+                        </li>
+                    {% endif %}
+                {% endif %}
+
+            </ul>
+
+        </div>
+    </div>
+
+    <div class="st_comment_reply_content" data-id="{{ comment.id }}" data-type="reply">
+        {{ comment.content|urlize|urlize_targetblank }}
+    </div>
+    <div class="st_comment_reply_image">
+        {% if comment.image.fichier %}
+            <div data-id="{{ comment.id }}" class="st_comment_image clgp" style="padding:15px 0px;">
+                <a class="" href="
+                        {% if comment.image.fichier %}{{ comment.image.fichier.url }}{% else %}{% static 'SocialMedia/img/image_not_found.png' %}{% endif %}">
+                    <img class="st_comment_img_preview" src="{{ comment.image.fichier.url }}" alt="">
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="st_comment_social_buttons">
+        <span class="st_comment_reply_like_link {% if request.user.profil in comment.likes.all %}st_social_button_active{% endif %}"
+              onclick="like_comment_reply(this);" data-id="{{ comment.id }}"
+              data-liked="{% if request.user.profil in comment.likes.all %}true{% else %}false{% endif %}">J'aime</span>
+        |
+        <span class="st_comment_reply_social_count_underline" data-toggle="modal" data-target="#likers_modal"
+              data-id="{{ comment.id }}" onclick="comment_get_likers(this)"><span class="st_comment_reply_nb_likes"
+                                                                                  data-id="{{ comment.id }}">{{ comment.likes.all.count }}</span> J'aime</span>
+    </div>
+
+</div>

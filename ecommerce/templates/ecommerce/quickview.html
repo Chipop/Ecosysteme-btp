@@ -263,9 +263,9 @@
                                                         <span>Contacter</span>
                                                     </a>
                                                     {% else %}
-                                                    <a type="button" class="addToCart btn-button btn" title="Ajouter au Chariot" onclick="cart.add('{{ product.pk }}', '{{ user.is_authenticated }}', '{{ product.name }}', '{{ product.image.url }}', '{% url 'e_commerce:product' product.pk %}');">
+                                                    <a type="button" class="addToCart btn-button btn" title="Ajouter au Panier" onclick="cart.add('{{ product.pk }}', '{{ user.is_authenticated }}', '{{ product.name }}', '{{ product.image.url }}', '{% url 'e_commerce:product' product.pk %}');">
                                                         <i class="fa fa-shopping-basket"></i>
-                                                        <span>Ajouter au Chariot</span>
+                                                        <span>Ajouter au Panier</span>
                                                     </a>
                                                     {% endif %}
                                                 </li>

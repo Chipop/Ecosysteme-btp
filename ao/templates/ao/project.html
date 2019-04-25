@@ -1,0 +1,390 @@
+{% extends 'ao/base.html' %}
+
+{% load static %}
+
+{% block style %}
+
+{% endblock %}
+
+
+{% block script %}
+
+    <script>
+        {% if status %}
+            Snackbar.show({
+                text: 'Offre envoyé avec succès',
+            });
+        {% endif %}
+        // Snackbar for copy to clipboard button
+        $('.copy-url-button').click(function() {
+            Snackbar.show({
+                text: 'Copié à presse-papiers!',
+            });
+        });
+    </script>
+
+
+    <script>
+        function download_piece_jointe_project(id_ao){
+            var url = "{% url 'ao:project_download_document' id=0 %}".replace('0',id_ao);
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function (response) {
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log("ajax error");
+                }
+            });
+        }
+    </script>
+
+{% endblock %}
+
+
+{% block content %}
+
+<!-- Titlebar
+================================================== -->
+<div class="single-page-header" data-background-image="{% static 'ao/images/single-job.jpg'  %}">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="single-page-header-inner">
+					<div class="left-side">
+						<div class="header-image">
+                            {% if ao_company is not None %}
+                                <a href="{% url 'ao:company' ao_company.id %}">
+                            {% else %}
+                                <a href="javascript:void(0);">
+                            {% endif %}
+                                {% if project.ao.image is not None %}
+                                    <img src="{{ project.ao.image }}" alt="">
+                                {% else %}
+                                    <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                {% endif %}
+                            </a>
+                        </div>
+						<div class="header-details">
+                            <h3>{{ project.title }}</h3>
+                            <h4><a href="{% url 'ao:ao' project.ao.id %}" title="Afficher l'appel d'offre">{{ project.ao.title }}</a></h4>
+
+							<h5>A Prepos du lot</h5>
+							<ul>
+								<li>
+								    {% if ao_company is not None %}
+                                        <a href="{% url 'ao:company' ao_company.id %}">
+                                    {% else %}
+                                        <a href="javascript:void(0);">
+                                    {% endif %}
+								        <i class="icon-material-outline-business"></i> {{ project.ao.company }}
+								    </a>
+								</li>
+								<li><i class="icon-material-outline-location-on"></i> {{ project.cities_s }}</li>
+                                <li><i class="{{ project.ao.category.icon }}"></i> {{ project.categories_s }}</li>
+							</ul>
+						</div>
+					</div>
+					<div class="right-side">
+						<div class="salary-box">
+							<div class="salary-type">Budget</div>
+							<div class="salary-amount">{{ project.budget }} Dirhams</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- Page Content
+================================================== -->
+<div class="container">
+	<div class="row">
+
+		<!-- Content -->
+		<div class="col-xl-8 col-lg-8 content-right-offset">
+
+			<div class="single-page-section">
+				<h3 class="margin-bottom-25">Description du lot</h3>
+                <h3 style="font-size: 18px">Appel d'offre source: <a href="{% url 'ao:ao' project.ao.id %}"><strong>{{ project.ao.title }}</strong></a></h3>
+				{{ project.description|safe }}
+			</div>
+
+            <!-- Atachments -->
+			<div class="single-page-section">
+				<h3>Pièces jointes</h3>
+				<div class="attachments-container">
+                    {% for file in project.files.all %}
+                        <a download onclick="download_piece_jointe_project('{{ project.id }}');" href="{{ file.file.url }}" target="_blank" class="attachment-box ripple-effect"><span>{{ file.name|truncatechars:20 }}</span><i>{{ file.extension|upper }}</i></a>
+                    {% endfor %}
+				</div>
+			</div>
+
+
+            {% if project.other_project.count > 0 %}
+
+			<div class="single-page-section">
+				<h3 class="margin-bottom-30">Autre lots du même appel d'offre</h3>
+
+                <!-- Listings Container -->
+				<div class="listings-container grid-layout">
+
+                    {% for proj in project.other_project %}
+
+                        <!-- Job Listing -->
+						<a href="{% url 'ao:project' proj.ao.id proj.id %}" class="job-listing">
+
+							<!-- Job Listing Details -->
+							<div class="job-listing-details">
+								<!-- Details -->
+								<div class="job-listing-description">
+									<h4 class="job-listing-company">{{ proj.title }}</h4>
+									<h3 class="job-listing-title">{{ proj.categories_s }}</h3>
+								</div>
+							</div>
+
+							<!-- Job Listing Footer -->
+							<div class="job-listing-footer">
+								<ul>
+									<li><i class="icon-material-outline-location-on"></i> {{ proj.cities_s }}</li>
+									<li><i class="icon-material-outline-account-balance-wallet"></i> {{ proj.budget }} Dh</li>
+									<li><i class="icon-material-outline-access-time"></i> {{ proj.creation_date }}</li>
+								</ul>
+							</div>
+						</a>
+
+                    {% endfor %}
+                </div>
+                <!-- Listings Container / End -->
+			</div>
+
+            {% endif %}
+
+			<div class="single-page-section">
+				<h3 class="margin-bottom-25">Lots du même catégories</h3>
+
+				<!-- Listings Container -->
+				<div class="listings-container grid-layout">
+                    {% for project_r in project.related_projects %}
+
+                        <!-- Job Listing -->
+						<a href="{% url 'ao:project' project_r.ao.id project_r.id %}" class="job-listing">
+
+							<!-- Job Listing Details -->
+							<div class="job-listing-details">
+								<!-- Logo -->
+								<div class="job-listing-company-logo">
+									{% if project_r.image is not None %}
+                                        <img src="{{ ao.image }}" alt="">
+                                    {% else %}
+                                        <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                    {% endif %}
+								</div>
+
+								<!-- Details -->
+								<div class="job-listing-description">
+									<h4 class="job-listing-company">
+                                        {{ project_r.title }}
+                                        {% if aor.type_user != 'particular' %}
+                                            <span class="verified-badge" title="Verified Employer" data-tippy-placement="top"></span>
+                                        {% endif %}
+                                    </h4>
+									<h3 class="job-listing-title">{{ project_r.ao.company }}</h3>
+								</div>
+							</div>
+
+							<!-- Job Listing Footer -->
+							<div class="job-listing-footer">
+								<ul>
+									<li><i class="icon-material-outline-location-on"></i> {{ project_r.cities_s }}</li>
+									<li><i class="icon-material-outline-account-balance-wallet"></i> {{ project_r.budget }}</li>
+									<li><i class="icon-material-outline-access-time"></i> {{ project_r.creation_date }}</li>
+								</ul>
+							</div>
+						</a>
+
+                    {% endfor %}
+
+                </div>
+				<!-- Listings Container / End -->
+
+            </div>
+		</div>
+
+
+		<!-- Sidebar -->
+		<div class="col-xl-4 col-lg-4">
+			<div class="sidebar-container">
+
+                {% if profile_id is not None %}
+                    {% if profile_id is not project.ao.user.id %}
+                        {% if is_company and not already %}
+                            <a href="#small-dialog" class="apply-now-button popup-with-zoom-anim">
+                                Ajouter une offre à ce lot
+                                <i class="icon-material-outline-arrow-right-alt"></i>
+                            </a>
+                        {% elif already %}
+                            <a href="javascript:void(0);" class="apply-now-button popup-with-zoom-anim">
+                                Vous avez déja postuler pour ce lot
+                            </a>
+                        {% elif not is_company %}
+                            <a href="javascript:void(0);" class="apply-now-button popup-with-zoom-anim">
+                                Vous devez avoir une entreprise pour postuler
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'ao:delete_project' project.id %}" class="apply-now-button" style="margin-bottom: 10px;"
+                            onclick="return confirm('Voulez-vous vraiment supprimer le lot ?')">
+                            Supprimer lot
+                            <i class="icon-material-outline-delete"></i>
+                        </a>
+                        <a href="{% url 'ao:edit_project' project.ao.id project.id %}" class="apply-now-button" style="background-color: #689F38;">
+                            Modifier lot
+                            <i class="icon-feather-edit"></i>
+                        </a>
+                    {% endif %}
+                {% endif %}
+
+				<!-- Sidebar Widget -->
+				<div class="sidebar-widget">
+					<div class="job-overview">
+						<div class="job-overview-headline">Résumé du lot</div>
+						<div class="job-overview-inner">
+							<ul>
+								<li>
+									<i class="icon-material-outline-location-on"></i>
+									<span>Emplacement</span>
+									<h5>{{ project.cities_s }}</h5>
+								</li>
+								<li>
+									<i class="icon-material-outline-business-center"></i>
+									<span>Annonceur</span>
+									<h5>{{ project.ao.company }}</h5>
+								</li>
+								<li>
+									<i class="icon-material-outline-local-atm"></i>
+									<span>Budget</span>
+									<h5>{{ project.budget }}Dh</h5>
+								</li>
+								<li>
+									<i class="icon-material-outline-access-time"></i>
+									<span>Date d'ajout</span>
+									<h5>{{ project.creation_date }}</h5>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+
+				<!-- Sidebar Widget -->
+				<div class="sidebar-widget">
+                    <!-- Bookmark Button -->
+                    {% if profile_id is not None %}
+                        <h3>Enregistrer ou Partager</h3>
+                        <form style="display: inline" data-url="{% url 'ao:add_save' profile_id project.id %}?type=project" id="form_save">
+                            <button class="bookmark-button margin-bottom-25" type=submit>
+                                <span class="bookmark-icon"></span>
+                                <span class="bookmark-text">Enregistrer</span>
+                                <span class="bookmarked-text">Enregistré</span>
+                            </button>
+                        </form>
+                    {% else %}
+                        <h3>Partager</h3>
+                    {% endif %}
+					<!-- Copy URL -->
+					<div class="copy-url">
+						<input id="copy-url" type="text" value="" class="with-border">
+						<button class="copy-url-button ripple-effect" data-clipboard-target="#copy-url" title="Copier à Presse-papiers" data-tippy-placement="top"><i class="icon-material-outline-file-copy"></i></button>
+					</div>
+
+					<!-- Share Buttons -->
+					<div class="share-buttons margin-top-25">
+						<div class="share-buttons-trigger"><i class="icon-feather-share-2"></i></div>
+						<div class="share-buttons-content">
+							<span>Intéressant ? <strong>Partagez-le !</strong></span>
+							<ul class="share-buttons-icons">
+								<li><a href="#" data-button-color="#3b5998" title="Share on Facebook" data-tippy-placement="top"><i class="icon-brand-facebook-f"></i></a></li>
+								<li><a href="#" data-button-color="#1da1f2" title="Share on Twitter" data-tippy-placement="top"><i class="icon-brand-twitter"></i></a></li>
+								<li><a href="#" data-button-color="#dd4b39" title="Share on Google Plus" data-tippy-placement="top"><i class="icon-brand-google-plus-g"></i></a></li>
+								<li><a href="#" data-button-color="#0077b5" title="Share on LinkedIn" data-tippy-placement="top"><i class="icon-brand-linkedin-in"></i></a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+</div>
+
+
+<!-- Apply for a job popup
+================================================== -->
+<div id="small-dialog" class="zoom-anim-dialog mfp-hide dialog-with-tabs">
+
+	<!--Tabs -->
+	<div class="sign-in-form">
+
+		<ul class="popup-tabs-nav">
+			<li><a href="#tab">Envoyer une offre pour lot</a></li>
+		</ul>
+
+		<div class="popup-tabs-container">
+
+			<!-- Tab -->
+			<div class="popup-tab-content" id="tab">
+
+				<!-- Welcome Text -->
+				<div class="welcome-text">
+					<h3>Remplis les informations de votre offre de lot</h3>
+				</div>
+
+				<!-- Form -->
+				<form method="post" id="apply-now-form" enctype="multipart/form-data">
+
+                    {% csrf_token %}
+
+					<div class="input-with-icon-left">
+						<i class="icon-material-outline-access-time"></i>
+						<input type="number" class="input-text with-border" name="days" id="number" placeholder="Nombre de jours de réalisation" required/>
+					</div>
+
+					<div class="input-with-icon-left">
+						<i class="icon-material-outline-money"></i>
+						<input type="text" class="input-text with-border" name="budget" id="money" placeholder="Estimation de budget nécessaire" required/>
+					</div>
+
+					<div class="input-with-icon-left">
+                        <textarea name="message" id="message" cols="3" rows="4" placeholder="Message"></textarea>
+					</div>
+
+					<div class="uploadButton">
+						{{ form.upload_cv }}
+						<label class="uploadButton-button ripple-effect" for="id_upload_cv">Selectionner un fichier</label>
+						<span class="uploadButton-file-name">Ajouté un fichier à votre offre. <br> Taille maximal: 50 MB.</span>
+					</div>
+
+                    <div style="text-align: center; margin-top: 15px">
+                        <script src='https://www.google.com/recaptcha/api.js'></script>
+                        <div class="g-recaptcha" style="display: inline-block;" data-sitekey="6LcIOV8UAAAAAO0kQRvjLmlOt7Q08VEubXgfvG6l"></div>
+                    </div>
+
+				</form>
+
+				<!-- Button -->
+				<button class="button margin-top-5 full-width button-sliding-icon ripple-effect" type="submit" form="apply-now-form">
+                    Envoyer Maintenant <i class="icon-material-outline-arrow-right-alt"></i></button>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+<!-- Apply for a job popup / End -->
+
+
+{% endblock %}

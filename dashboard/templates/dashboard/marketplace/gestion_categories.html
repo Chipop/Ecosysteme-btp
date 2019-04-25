@@ -1,0 +1,522 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+
+{% block title %}
+    Gestion des sous catégories | Ecommerce | {{ block.super }}
+{% endblock title %}
+
+{% block stylesheets %}
+
+    {{ block.super }}
+
+
+    <!-- Toastr style -->
+    <link href="{% static 'dashboard/css/plugins/toastr/toastr.min.css' %}" rel="stylesheet">
+
+    <!-- Sweet Alert -->
+    <link href="{% static 'dashboard/css/plugins/sweetalert/sweetalert.css' %}" rel="stylesheet">
+
+{% endblock stylesheets %}
+
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+        <div class="row">
+
+
+            <div id="window_liste_emails" class="col-lg-12 animated fadeInRight">
+                <div class="mail-box-header">
+
+                    <h2>
+                        Gestion des catégories
+                        <span id="crud_buttons" class="pull-right" style="font-size:12px;font-weight:bold;">
+                            {# Boutons Ajouter / Modifier / Supprimer #}
+                            <button id="btn_supprimer_cat" class="btn btn-danger dim"
+                                    onclick="fnc_supprimer_cat(this);"><i class="fa fa-times"></i> Supprimer</button>
+                            <button id="btn_modifier_cat" class="btn btn-success dim"
+                                    onclick="fnc_modifier_cat(this)"><i class="fa fa-pencil"></i> Modifier</button>
+                            <button id="btn_ajouter_cat" class="btn btn-primary dim" onclick="fnc_ajouter_cat(this);"><i
+                                    class="fa fa-plus"></i> Ajouter</button>
+                        </span>
+                    </h2>
+                    <div class="mail-tools tooltip-demo m-t-md">
+
+
+                    </div>
+                </div>
+                <div class="mail-box">
+
+                    <a href="{% url 'dashboard:marketplace_add_category_level_one' %}">
+                        <button class="btn btn-primary " style="margin:25px;">Ajouter une catégorie de niveau I</button>
+                    </a>
+
+                    <div style="margin-left:20px;">
+
+
+
+                        {# 1 #}
+                        {% for category in categories %}
+
+
+                            {# ################ DIV CAT 1 ######################## #}
+                            <div category-level="1" category-id="{{ category.id }}"
+                                 style="font-size:20px;font-weight:bold;">
+                                {# Nom Cat 1 #}
+
+                                {# ######### Modification ######### #}
+                                <span data-goal="category_name">I - {{ category.name }}</span>
+                                {# Form Modification Cat 1 #}
+                                <form form-goal="modifier"
+                                      action="{% url 'dashboard:marketplace_update_category' category_level=1 category_id=category.id %}"
+                                      style="display:none;" class="form-inline">
+                                    I - <input type="text" name="category_name" class="form-control"
+                                               value="{{ category.name }}"
+                                               style=" margin-left:5px;font-size:12px;font-weight:bold;">
+                                    <input type="submit" value="Modifier" class="btn btn-primary"
+                                           style=" margin-left:5px;font-size:12px;font-weight:bold;">
+                                </form>
+
+
+                                {# ######### Ajout ######### #}
+                                {# Btn Ajouter Cat 2 for Cat 1  #}
+                                <button button-goal="ajouter" class="btn btn-success dim"
+                                        style="font-size:10px;font-weight:bold; margin-left:5px;display:none;"
+                                        category-level="2" category-parent-id="{{ category.id }}"
+                                        onclick="show_form_ajout(this)"><i
+                                        class="fa fa-plus-circle"></i>
+                                    Ajouter une catégorie niveau II
+                                </button>
+                                {# Form Ajouter new Cat 2 for Cat 1 #}
+                                <form form-goal="ajouter"
+                                      action="{% url 'dashboard:marketplace_add_category' category_level=2 category_parent_id=category.id %}"
+                                      style="display:none; font-size:12px;margin:0 0 5px 22px;" class="form-inline"
+                                      category-level="2" category-parent-id="{{ category.id }}">
+                                    <input type="text" name="category_name" class="form-control"> <input type="submit"
+                                                                                                         value="Ajouter"
+                                                                                                         class="btn btn-success">
+                                </form>
+
+
+                                {# ######### Supprimer ######### #}
+                                {# Btn Supprimer Cat 1  #}
+                                <button button-goal="supprimer" class="btn btn-danger dim"
+                                        style="font-size:10px;font-weight:bold; margin-left:5px;display:none;"
+                                        category-level="1" category-id="{{ category.id }}"
+                                        onclick="delete_category(this);"><i
+                                        class="fa fa-times"></i>
+                                    Supprimer
+                                </button>
+
+                            </div>
+
+
+
+
+
+
+
+
+
+
+                            {# 2 #}
+                            {% for sous_1 in category.commercescategoryone_set.all %}
+                                {# ################ DIV CAT 2 ######################## #}
+                                <div category-level="2" category-id="{{ sous_1.id }}"
+                                     style="font-size:16px;font-weight:bold; padding-left:20px;">
+                                    {# Nom cat 2 #}
+                                    <span data-goal="category_name">II - {{ sous_1.name }}</span>
+                                    {# ######### Modification ######### #}
+                                    {# Form Modification Cat 2 #}
+                                    <form form-goal="modifier"
+                                          action="{% url 'dashboard:marketplace_update_category' category_level=2 category_id=sous_1.id %}"
+                                          style="display:none;" class="form-inline">
+                                        II - <input type="text" name="category_name" class="form-control"
+                                                    value="{{ sous_1.name }}"
+                                                    style=" margin-left:5px;font-size:12px;font-weight:bold;">
+                                        <input type="submit" value="Modifier" class="btn btn-success"
+                                               style=" margin-left:5px;font-size:12px;font-weight:bold;">
+                                    </form>
+
+
+                                    {# ######### Ajout ######### #}
+                                    {# Btn Ajouter Cat 3 for Cat 2  #}
+                                    <button button-goal="ajouter" class="btn btn-warning dim"
+                                            style="font-size:8px;font-weight:bold; margin-left:5px;display:none;"
+                                            category-level="3" category-parent-id="{{ sous_1.id }}"
+                                            onclick="show_form_ajout(this)"><i
+                                            class="fa fa-plus-circle"></i>
+                                        Ajouter une catégorie niveau III
+                                    </button>
+                                    {# Form Ajouter new Cat 3 for Cat 2 #}
+                                    <form form-goal="ajouter"
+                                          action="{% url 'dashboard:marketplace_add_category' category_level=3 category_parent_id=sous_1.id %}"
+                                          category-level="3" category-parent-id="{{ sous_1.id }}"
+                                          style="display:none; font-size:12px;margin:0 0 5px 32px;" class="form-inline">
+                                        <input type="text" name="category_name" class="form-control"> <input
+                                            type="submit"
+                                            value="Ajouter"
+                                            class="btn btn-warning">
+                                    </form>
+
+
+                                    {# ######### Supprimer ######### #}
+                                    {# Btn Supprimer Cat 2  #}
+                                    <button button-goal="supprimer" class="btn btn-danger dim"
+                                            style="font-size:10px;font-weight:bold; margin-left:5px;display:none;"
+                                            category-level="2" category-id="{{ sous_1.id }}"
+                                            onclick="delete_category(this);"><i
+                                            class="fa fa-times"></i>
+                                        Supprimer
+                                    </button>
+                                </div>
+
+
+
+
+
+
+
+
+
+                                {# 3 #}
+                                {% for sous_2 in sous_1.commercescategorytwo_set.all %}
+
+                                    {# ################ DIV CAT 3 ######################## #}
+                                    <div category-level="3" category-id="{{ sous_2.id }}"
+                                         style="font-size:14px;font-weight:600; margin-left:50px;">
+
+
+                                        {# Nom Cat 3 #}
+                                        {# ######### Modification ######### #}
+                                        <span data-goal="category_name">III - {{ sous_2.name }}</span>
+                                        {# Form Modifier Cat 3 #}
+                                        <form form-goal="modifier"
+                                              action="{% url 'dashboard:marketplace_update_category' category_level=3 category_id=sous_2.id %}"
+                                              style="display:none;" class="form-inline">
+                                            III - <input type="text" name="category_name" class="form-control"
+                                                         value="{{ sous_2.name }}"
+                                                         style=" margin-left:5px;font-size:12px;font-weight:bold;">
+                                            <input type="submit" value="Modifier" class="btn btn-warning"
+                                                   style=" margin-left:5px;font-size:12px;font-weight:bold;">
+                                        </form>
+
+
+                                        {# ######### Ajouter ######### #}
+                                        {# Btn Ajouter Cat 4 for Cat 3 #}
+                                        <button button-goal="ajouter" class="btn btn-danger dim"
+                                                style="font-size:8px;font-weight:bold; margin-left:5px;display:none;"
+                                                category-level="4" category-parent-id="{{ sous_2.id }}"
+                                                onclick="show_form_ajout(this)"><i
+                                                class="fa fa-plus-circle"></i>
+                                            Ajouter une catégorie niveau IV
+                                        </button>
+                                        {# Form Ajouter new Cat 4 for Cat 3 #}
+                                        <form form-goal="ajouter"
+                                              action="{% url 'dashboard:marketplace_add_category' category_level=4 category_parent_id=sous_2.id %}"
+                                              category-level="4" category-parent-id="{{ sous_2.id }}"
+                                              style="display:none; font-size:12px;margin:0 0 5px 25px;"
+                                              class="form-inline">
+                                            <input type="text" name="category_name" class="form-control"> <input
+                                                type="submit"
+                                                value="Ajouter"
+                                                class="btn btn-danger">
+                                        </form>
+
+
+                                        {# ######### Supprimer ######### #}
+                                        {# Btn Supprimer Cat 3  #}
+                                        <button button-goal="supprimer" class="btn btn-danger dim"
+                                                style="font-size:10px;font-weight:bold; margin-left:5px;display:none;"
+                                                category-level="3" category-id="{{ sous_2.id }}"
+                                                onclick="delete_category(this);"><i
+                                                class="fa fa-times"></i>
+                                            Supprimer
+                                        </button>
+                                    </div>
+
+
+
+                                    {# 4 #}
+                                    {% for sous in sous_2.commercescategory_set.all %}
+
+                                        {# ################ DIV CAT 4 ######################## #}
+                                        <div category-level="4" category-id="{{ sous.id }}"
+                                             style="font-size:12px;font-weight:600; margin-left:75px;">
+                                            {# ######### Modification ######### #}
+                                            {# Nom Cat 4 #}
+                                            <span data-goal="category_name">VI - {{ sous.name }}</span>
+                                            {# Form Modifier Cat 4 #}
+                                            <form form-goal="modifier"
+                                                  action="{% url 'dashboard:marketplace_update_category' category_level=4 category_id=sous.id %}"
+                                                  style="display:none;" class="form-inline">
+                                                VI - <input type="text" name="category_name" class="form-control"
+                                                            value="{{ sous.name }}"
+                                                            style=" margin-left:5px;font-size:12px;font-weight:bold;">
+                                                <input type="submit" value="Modifier" class="btn btn-danger"
+                                                       style=" margin-left:5px;font-size:12px;font-weight:bold;">
+                                            </form>
+
+                                            {# ######### Supprimer ######### #}
+                                            {# Btn Supprimer Cat 4  #}
+                                            <button button-goal="supprimer" class="btn btn-danger dim"
+                                                    style="font-size:10px;font-weight:bold; margin-left:5px;display:none;"
+                                                    category-level="4" category-id="{{ sous.id }}"
+                                                    onclick="delete_category(this);"><i
+                                                    class="fa fa-times"></i>
+                                                Supprimer
+                                            </button>
+                                        </div>
+                                    {% endfor %}
+                                    {# End 4 #}
+
+                                {% endfor %}
+                                {# End 3 #}
+                            {% endfor %}
+                            {# End 2 #}
+                        {% endfor %}
+                        {#  End 1 #}
+                    </div>
+
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+
+    {# Pour l'ajout nous avons besoin de :  #}
+    {# Category level, Category parent , Category Name #}
+
+    {# Pour la modification :  #}
+    {# Category level, Category id, Category Name #}
+
+    {# Pour la suppréssion #}
+    {# Category level, Category Id  #}
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script>
+        $('#dashboard_marketplace').addClass("active");
+        $('#marketplace_manage_categories').addClass("active");
+    </script>
+
+
+    <!-- Sweet alert -->
+    <script src="{% static 'dashboard/js/plugins/sweetalert/sweetalert.min.js' %}"></script>
+
+
+    <script>
+
+
+        function show_form_ajout(button) {
+            category_level = ($(button).attr("category-level"));
+            category_parent_id = ($(button).attr("category-parent-id"));
+
+            $('form[category-level=' + category_level + '][category-parent-id=' + category_parent_id + ']').css("display", "block");
+        }
+
+        function reinitialise_modification(button) {
+            $(button).html('<i class="fa fa-pencil"></i> Modifier');
+            $("form[form-goal='modifier']").css("display", 'none');
+            $("span[data-goal='category_name']").css("display", 'inline');
+        }
+
+        function reinitialise_ajout(button) {
+
+            $(button).html('<i class="fa fa-plus"></i> Ajouter');
+            $("button[button-goal='ajouter']").css("display", 'none');
+            $("form[form-goal='ajouter']").css("display", 'none');
+        }
+
+        function reinitialise_supprimer(button) {
+            $(button).html('<i class="fa fa-times"></i> Supprimer');
+            $("button[button-goal='supprimer']").css("display", 'none');
+        }
+
+
+        function fnc_ajouter_cat(button) {
+            if ($(button).html() == '<i class="fa fa-plus"></i> Ajouter') {
+                $(button).html('<i class="fa fa-times-circle"></i> Annuler');
+                $("button[button-goal='ajouter']").css("display", 'inline');
+
+                btn_modification = $('#btn_modifier_cat');
+                reinitialise_modification(btn_modification);
+
+                btn_supprimer = $('#btn_supprimer_cat');
+                reinitialise_supprimer(btn_supprimer);
+            }
+            else {
+                reinitialise_ajout(button);
+            }
+
+        }
+
+
+        function fnc_modifier_cat(button) {
+            if ($(button).html() == '<i class="fa fa-pencil"></i> Modifier') {
+                $(button).html('<i class="fa fa-times-circle"></i> Annuler');
+                $("form[form-goal='modifier']").css("display", 'block');
+                $("span[data-goal='category_name']").css("display", 'none');
+
+                btn_ajout = $('#btn_ajouter_cat');
+                reinitialise_ajout(btn_ajout);
+
+                btn_supprimer = $('#btn_supprimer_cat');
+                reinitialise_supprimer(btn_supprimer);
+            }
+            else {
+                reinitialise_modification(button);
+            }
+        }
+
+        function fnc_supprimer_cat(button) {
+            if ($(button).html() == '<i class="fa fa-times"></i> Supprimer') {
+                $(button).html('<i class="fa fa-times-circle"></i> Annuler');
+                $("button[button-goal='supprimer']").css("display", 'inline');
+
+                btn_ajout = $('#btn_ajouter_cat');
+                reinitialise_ajout(btn_ajout);
+
+                btn_modification = $('#btn_modifier_cat');
+                reinitialise_modification(btn_modification);
+            }
+            else {
+                reinitialise_supprimer(button);
+            }
+        }
+
+        function delete_category(button) {
+            category_level = $(button).attr("category-level");
+            category_id = $(button).attr("category-id");
+
+            if(category_level !== "4")
+                text = "Toutes les sous catégories seront supprimées!";
+            else
+                text = "";
+
+            swal({
+                title: "Êtes-vous sûres de vouloir supprimer cette catégorie?",
+                text: text,
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Supprimer",
+                closeOnConfirm: false
+            }, function (isConfirm) {
+                if (!isConfirm) return;
+                $.ajax({
+                    url: "{% url 'dashboard:marketplace_delete_category' category_id=0 category_level=1 %}".replace(/0/, category_id).replace(/1/,category_level),
+                    type: "GET",
+                    dataType: "json",
+                    success: function (response) {
+                        if(response.status === "success")
+                        {
+                            swal(response.message, "", "success");
+                            $('div[category-level='+category_level+'][category-id='+category_id+']').remove();
+                        }
+                        else if (response.status === "warning")
+                        {
+                            swal("Attention !", response.message, "warning");
+                        }
+                        else if (response.status === "error")
+                        {
+                            swal(response.message, "Veuillez réessayer.", "error");
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        swal("Une erreur s'est produite!", "Veuillez réessayer.", "error");
+                    }
+                });
+            });
+        }
+
+
+        $("form[form-goal='modifier']").css("padding-top", "5px");
+
+        $(document).ready(function () {
+
+            // Scroll pour les boutons CRUD
+
+            var $sidebar = $("#crud_buttons"),
+                $window = $(window),
+                offset = $sidebar.offset(),
+                topPadding = 15;
+
+            $window.scroll(function () {
+                if ($window.scrollTop() > offset.top) {
+                    $sidebar.stop().animate({
+                        marginTop: $window.scrollTop() - offset.top + topPadding
+                    });
+                } else {
+                    $sidebar.stop().animate({
+                        marginTop: 0
+                    });
+                }
+            });
+
+            // S'il a ajouté modifié supprimé uen catégorie
+            // On scroll jusqu'a cette derniere pour lui
+
+            cat_id = "{{ category_id }}"
+            cat_lev = "{{ category_level }}"
+            category_id_scroll = 'category-id=' + cat_id;
+            category_level_scroll = 'category-level=' + cat_lev;
+
+            if (category_id_scroll !== "category-id=" && category_level_scroll !== "category-level=") {
+                $('html, body').animate({
+                    scrollTop: $('div[' + category_id_scroll + '][' + category_level_scroll + ']').offset().top
+                }, 500, 'linear');
+            }
+
+
+        });
+    </script>
+
+
+    <!-- Toastr script -->
+    <script src="{% static 'dashboard/js/plugins/toastr/toastr.min.js' %}"></script>
+
+    <script>
+        {% if messages %}
+            {% for msg in messages %}
+                {% if msg.tags == "success" %}
+                    toastr.options = {
+                        "closeButton": true,
+                        "debug": false,
+                        "progressBar": true,
+                        "preventDuplicates": false,
+                        "positionClass": "toast-top-right",
+                        "onclick": null,
+                        "showDuration": "400",
+                        "hideDuration": "1000",
+                        "timeOut": "7000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+
+                    Command: toastr["success"]("{{ msg }}")
+
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+
+
+
+
+{% endblock scripts %}
+

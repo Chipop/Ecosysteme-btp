@@ -1,0 +1,243 @@
+{% extends 'ao/base_small.html' %}
+
+{% load static %}
+
+{% block style %}
+
+    <style>
+        .simplebar-content{
+            background: #fafafa;
+        }
+    </style>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+        {% if status %}
+            Snackbar.show({
+                text: 'Veuillez vérifier la recaptcha',
+            });
+        {% endif %}
+    </script>
+
+{% endblock %}
+
+{% block sidebar %}
+
+<div class="dashboard-sidebar">
+		<div class="dashboard-sidebar-inner" data-simplebar>
+			<div class="dashboard-nav-container">
+
+				<!-- Responsive Navigation Trigger -->
+				<a href="#" class="dashboard-responsive-nav-trigger">
+					<span class="hamburger hamburger--collapse" >
+						<span class="hamburger-box">
+							<span class="hamburger-inner"></span>
+						</span>
+					</span>
+					<span class="trigger-title">Profil Détails</span>
+				</a>
+
+
+				<!-- Navigation -->
+				<div class="dashboard-nav">
+					<div class="dashboard-nav-inner">
+                        <div id="profile-details">
+                            <div class="header-image">
+                                <a href="{% url 'ao:profile' profile.id %}">
+                                    {% if profile.photo_profil.image.url is not None %}
+                                        <img src="{{ profile.photo_profil.image.url }}" alt="">
+                                    {% else %}
+                                        <img src="{% static 'ao/images/company-logo-05.png' %}">
+                                    {% endif %}
+                                </a>
+                            </div>
+
+                            <div class="header-details">
+                                <h3 style="padding: 25px; text-align: center; padding-bottom: 0;">{{ profile.user.first_name|capfirst }} {{ profile.user.last_name|upper }}</h3>
+                                <h4 style="text-align: center">{{ profile.fonction }}</h4>
+                            </div>
+                        </div>
+
+                        <ul data-submenu-title="Liens rapides">
+                            <li><a href="{% url 'ao:profile' profile.id %}"><i class="icon-material-outline-assignment"></i> Appels d'offres</a></li>
+                            <li><a href="{% url 'ao:saves' profile.id %}"><i class="icon-material-outline-star-border"></i> Enregistrement</a></li>
+                        </ul>
+					</div>
+				</div>
+				<!-- Navigation / End -->
+
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
+
+{% block content %}
+
+<!-- Dashboard Headline -->
+			<div class="dashboard-headline">
+				<h3>Créer profil Entreprise</h3>
+
+				<!-- Breadcrumbs -->
+				<nav id="breadcrumbs" class="dark">
+					<ul>
+						<li><a href="{% url 'ao:home' %}">Accueil</a></li>
+						<li><a href="{% url 'ao:profile' profile.id %}">Profil</a></li>
+						<li>Entreprise</li>
+					</ul>
+				</nav>
+			</div>
+
+			<!-- Row -->
+			<div class="row">
+
+			    <form action="" method="post" enctype="multipart/form-data">
+			        {% csrf_token %}
+
+				<!-- Dashboard Box -->
+				<div class="col-xl-12">
+					<div class="dashboard-box margin-top-0">
+
+						<!-- Headline -->
+						<div class="headline">
+							<h3><i class="icon-line-awesome-briefcase"></i> Entreprise</h3>
+						</div>
+
+						<div class="content with-padding">
+							<div class="row">
+
+								<div class="col-auto">
+									<div class="avatar-wrapper" data-tippy-placement="bottom" title="Change Avatar">
+                                        <img class="profile-pic" src="{% static 'ao/images/company-logo-05.png' %}">
+										<div class="upload-button"></div>
+										<input class="file-upload" type="file" accept="image/*" name="logo"/>
+									</div>
+								</div>
+
+								<div class="col">
+									<div class="row">
+
+										<div class="col-xl-6">
+											<div class="submit-field">
+												<h5>Nom d'entreprise</h5>
+												<input type="text" class="with-border" required name="name_e">
+											</div>
+										</div>
+
+										<div class="col-xl-6">
+											<div class="submit-field">
+												<h5>Activité</h5>
+												<input type="text" class="with-border" required name="activity">
+											</div>
+										</div>
+
+										<div class="col-xl-6">
+											<!-- Account Type -->
+											<div class="submit-field">
+												<h5>Ville</h5>
+												<input type="text" class="with-border" required name="city_e">
+											</div>
+										</div>
+
+										<div class="col-xl-6">
+											<div class="submit-field">
+												<h5>Code postal</h5>
+												<input type="text" class="with-border" name="code_e">
+											</div>
+										</div>
+
+										<div class="col-xl-12">
+											<div class="submit-field">
+												<h5>Adresse</h5>
+												<input type="text" class="with-border" name="address_e">
+											</div>
+										</div>
+								    </div>
+								</div>
+							</div>
+							<div class="row">
+							    <div class="col-xl-12">
+                                    <div class="submit-field">
+                                        <h5>Description de l'entreprise</h5>
+                                        <textarea cols="30" rows="5" class="with-border" name="description" required></textarea>
+                                    </div>
+                                </div>
+							    <div class="col-xl-4">
+                                    <div class="submit-field">
+                                        <h5>Email</h5>
+                                        <input type="email" required class="with-border" name="email_e">
+                                    </div>
+                                </div>
+							    <div class="col-xl-4">
+                                    <div class="submit-field">
+                                        <h5>Téléphone</h5>
+                                        <input type="text" required class="with-border" name="tel_e">
+                                    </div>
+                                </div>
+							    <div class="col-xl-4">
+                                    <div class="submit-field">
+                                        <h5>Fax</h5>
+                                        <input type="text" required class="with-border" name="fax_e">
+                                    </div>
+                                </div>
+							    <div class="col-xl-4">
+                                    <div class="submit-field">
+                                        <h5>Registre du Commerce</h5>
+                                        <input type="text" required class="with-border" name="rc_e">
+                                    </div>
+                                </div>
+							    <div class="col-xl-4">
+                                    <div class="submit-field">
+                                        <h5>Facebook</h5>
+                                        <input type="text" class="with-border" name="fb_e">
+                                    </div>
+                                </div>
+							    <div class="col-xl-4">
+                                    <div class="submit-field">
+                                        <h5>Twitter</h5>
+                                        <input type="text" class="with-border" name="twitter_e">
+                                    </div>
+                                </div>
+							    <div class="col-xl-4">
+                                    <div class="submit-field">
+                                        <h5>Youtube</h5>
+                                        <input type="text" class="with-border" name="youtube_e">
+                                    </div>
+                                </div>
+							    <div class="col-xl-4">
+                                    <div class="submit-field">
+                                        <h5>LinkedIn</h5>
+                                        <input type="text" class="with-border" name="linkedin_e">
+                                    </div>
+                                </div>
+
+							    <div class="col-xl-4">
+                                    <div class="submit-field">
+                                        <h5>Github</h5>
+                                        <input type="text" class="with-border" name="github_e">
+                                    </div>
+                                </div>
+                                <div class="col-xl-12">
+                                    <div>
+                                        <script src='https://www.google.com/recaptcha/api.js'></script>
+                                        <div class="g-recaptcha" style="display: inline-block;" data-sitekey="6LcIOV8UAAAAAO0kQRvjLmlOt7Q08VEubXgfvG6l"></div>
+                                    </div>
+                                </div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Button -->
+				<div class="col-xl-12">
+					<button type="submit" class="button ripple-effect big margin-top-30">Créer Entreprise</button>
+				</div>
+
+			    </form>
+			</div>
+			<!-- Row / End -->
+
+{% endblock %}

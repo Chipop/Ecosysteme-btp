@@ -1,0 +1,511 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}
+    Profil Administrateur | Espace Administrateur | {{ block.super }}
+{% endblock title %}
+
+{% block stylesheets %}
+
+    {{ block.super }}
+
+
+    <link href="{% static 'dashboard/css/plugins/Datatable/datatable.css' %}" rel="stylesheet">
+    <link href="{% static 'dashboard/css/plugins/Datatable/Datatable_Boostrap4.min.css' %}" rel="stylesheet">
+    <!-- Multi Select -->
+    <link href="{% static 'dashboard/multi-select/jquery.dropdown.min.css' %}" rel="stylesheet">
+
+
+{% endblock stylesheets %}
+
+
+{% block content %}
+
+    <div class="wrapper wrapper-content wrapper-content-custom">
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class="float-right">
+
+                    {% if myprofil and admin.has_modifier_son_profil %}
+                        <a href="{% url 'dashboard:delete_admin' id_admin=admin_profil.id %}">
+                            <button class="btn btn-danger dim">
+                                Supprimer
+                            </button>
+                        </a>
+
+                        <a href="{% url 'dashboard:update_admin' id_admin=admin_profil.id %}">
+                            <button class="btn btn-success dim">
+                                Modifier
+                            </button>
+                        </a>
+                    {% endif %}
+
+
+                    {% if not myprofil and  admin.has_gerer_admins %}
+                        <a href="{% url 'dashboard:delete_admin' id_admin=admin_profil.id %}">
+                            <button class="btn btn-danger dim">
+                                Supprimer
+                            </button>
+                        </a>
+
+                        <a href="{% url 'dashboard:update_admin' id_admin=admin_profil.id %}">
+                            <button class="btn btn-success dim">
+                                Modifier
+                            </button>
+                        </a>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row">
+
+
+            <div class="col-lg-3">
+                <div class="row">
+
+
+                    <div class="col-lg-12">
+                        <div class="ibox ">
+                            <div class="ibox-content">
+                                <div style="text-align:center;">
+                                    <img src="{% if admin_profil.image %} {{ admin_profil.image.url }} {% else %} {% static 'dashboard/img/default_profil_m.png' %} {% endif %}"
+                                         class="rounded-circle" height="130"
+                                         width="130" alt="">
+                                    <h3>{{ admin_profil.nom | title }} {{ admin_profil.prenom | title }}</h3>
+                                    <h4>{{ admin_profil.email }}</h4>
+                                    <h5 class="text-muted">{{ admin_profil.role }}</h5>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-lg-12">
+                        <div class="ibox ">
+                            <div class="ibox-content">
+                                <div style=" width: 62%; margin: 0 auto;">
+                                    <h5>Ajouts <span style="    margin-left: 44px;"
+                                                     class="badge badge-primary"> {{ admin_profil.nombre_ajouts }}</span>
+                                    </h5>
+                                    <h5>Modifications <span style="    margin-left: 2px;"
+                                                            class="badge badge-success"> {{ admin_profil.nombre_modifications }}</span>
+                                    </h5>
+                                    <h5>Suppressions <span style="margin-left: 4px;"
+                                                           class="badge badge-danger"> {{ admin_profil.nombre_supressions }}</span>
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div class="col-lg-9">
+                <div class="ibox ">
+                    <div class="ibox-content">
+                        <h3>Droits</h3>
+
+                        <div class="row">
+
+                            <div class="col-lg-4">
+                                <div class="row">
+
+                                    <div class="col-lg-12">
+                                        <h4>Administration</h4>
+                                    </div>
+
+                                    <div class="col-lg-12">
+                                    <div class="multi_select_demo">
+                                        <select class="form-control profile_droit_select" multiple="" disabled>
+                                            {% for droit in droits_administration %}
+                                                <option {% if droit in admin_profil.droits.all %} selected {% endif %}
+                                                                                                  value="{{ droit.id }}">{{ droit.nom }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="row">
+
+                                    <div class="col-lg-12">
+                                        <h4>Page de garde</h4>
+                                    </div>
+
+                                    <div class="col-lg-12">
+                                    <div class="multi_select_demo">
+                                        <select class="form-control profile_droit_select" multiple="" disabled>
+                                            {% for droit in droits_page_de_garde %}
+                                                <option {% if droit in admin_profil.droits.all %} selected {% endif %}
+                                                                                                  value="{{ droit.id }}">{{ droit.nom }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="row">
+
+                                    <div class="col-lg-12">
+                                        <h4>Newsletter</h4>
+                                    </div>
+
+                                    <div class="col-lg-12">
+                                    <div class="multi_select_demo">
+                                        <select class="form-control profile_droit_select" multiple="" disabled>
+                                            {% for droit in droits_newsletter %}
+                                                <option {% if droit in admin_profil.droits.all %} selected {% endif %}
+                                                                                                  value="{{ droit.id }}">{{ droit.nom }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="row margin_top_15">
+
+                                    <div class="col-lg-12">
+                                        <h4>Réseau social</h4>
+                                    </div>
+
+                                    <div class="col-lg-12">
+                                    <div class="multi_select_demo">
+                                        <select class="form-control profile_droit_select" multiple="" disabled>
+                                            {% for droit in droits_reseau_social %}
+                                                <option {% if droit in admin_profil.droits.all %} selected {% endif %}
+                                                                                                  value="{{ droit.id }}">{{ droit.nom }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="row margin_top_15">
+
+                                    <div class="col-lg-12">
+                                        <h4>Journal</h4>
+                                    </div>
+
+                                    <div class="col-lg-12">
+
+
+                                        <div class="multi_select_demo">
+                                            <select class="form-control profile_droit_select" multiple="" disabled>
+                                            {% for droit in droits_journal %}
+                                                <option {% if droit in admin_profil.droits.all %} selected {% endif %}
+                                                                                                  value="{{ droit.id }}">{{ droit.nom }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="row margin_top_15">
+
+                                    <div class="col-lg-12">
+                                        <h4>E-commerce</h4>
+                                    </div>
+
+                                    <div class="col-lg-12">
+                                        <div class="multi_select_demo">
+                                            <select class="form-control profile_droit_select" multiple="" disabled>
+                                                {% for droit in droits_ecommerce %}
+                                                    <option {% if droit in admin_profil.droits.all %}
+                                                        selected {% endif %}
+                                                        value="{{ droit.id }}">{{ droit.nom }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                        <div class="col-lg-4">
+                                <div class="row margin_top_15">
+
+                                    <div class="col-lg-12">
+                                        <h4>Q&A</h4>
+                                    </div>
+
+                                    <div class="col-lg-12">
+                                        <div class="multi_select_demo">
+                                            <select class="form-control profile_droit_select" multiple="" disabled>
+                                                {% for droit in droits_qa %}
+                                                    <option {% if droit in admin_profil.droits.all %}
+                                                        selected {% endif %}
+                                                        value="{{ droit.id }}">{{ droit.nom }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                        <div class="col-lg-4">
+                                <div class="row margin_top_15">
+
+                                    <div class="col-lg-12">
+                                        <h4>Appels d'offres</h4>
+                                    </div>
+
+                                    <div class="col-lg-12">
+                                        <div class="multi_select_demo">
+                                            <select class="form-control profile_droit_select" multiple="" disabled>
+                                                {% for droit in droits_ao %}
+                                                    <option {% if droit in admin_profil.droits.all %}
+                                                        selected {% endif %}
+                                                        value="{{ droit.id }}">{{ droit.nom }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                        <div class="col-lg-4">
+                                <div class="row margin_top_15">
+
+                                    <div class="col-lg-12">
+                                        <h4>E-learning</h4>
+                                    </div>
+
+                                    <div class="col-lg-12">
+                                        <div class="multi_select_demo">
+                                            <select class="form-control profile_droit_select" multiple="" disabled>
+                                                {% for droit in droits_elearning %}
+                                                    <option {% if droit in admin_profil.droits.all %}
+                                                        selected {% endif %}
+                                                        value="{{ droit.id }}">{{ droit.nom }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="ibox ">
+                    <div class="ibox-content">
+                        <h3>Historique des actions</h3>
+
+                        <table id="example" class="table table-striped table-bordered" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for action in actions %}
+                                <tr>
+                                    <td>{{ action.date }}</td>
+                                    <td>
+                                        <span class="
+                                                    {% if action.type == "Ajout" %}
+                                                        badge badge-primary
+                                                    {% elif action.type == "Modification" %}
+                                                        badge badge-success
+                                                    {% elif action.type == "Suppression" %}
+                                                        badge badge-danger
+                                                    {% endif %}
+                                                    ">
+                                            {{ action.type }}
+                                        </span>
+                                    </td>
+                                    <td>{{ action.nom | safe }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+    {{ block.super }}
+    <script>
+        $('#dashboard_admin').addClass("active");
+        $('#admin_profile').addClass("active");
+    </script>
+
+
+
+    <!-- Multi Select -->
+    <script src="{% static 'dashboard/multi-select/jquery.dropdown.min.js' %}"></script>
+    <script>
+    $('.multi_select_demo').dropdown({
+
+            searchNoData: '<li style="color:#333">Aucun résultat</li>',
+            input: '<input type="text" maxLength="20" placeholder="Recherche...">',
+
+
+        });
+    </script>
+
+    <script src="{% static 'dashboard/js/plugins/Datatable/pdfmake.js' %}"></script>
+    <script src="{% static 'dashboard/js/plugins/Datatable/pdfmake_font.js' %}"></script>
+    <script src="{% static 'dashboard/js/plugins/Datatable/Datatable.js' %}"></script>
+
+    <script>
+
+
+        function check_all(checkbox) {
+            if ($("#check_all").is(':checked') == true) {
+                $('input:checkbox:not("#check_all")').prop('checked', 'true');
+            } else {
+                $('input:checkbox:not("#check_all")').prop('checked', false);
+            }
+        }
+
+
+        $(document).ready(function () {
+
+
+            $('#example').DataTable({
+                "lengthMenu": [10, 25, 50, 75, 100],
+                "pageLength": 10,
+                "pagingType": "full_numbers",// Premier Dernier Predecant suivant + numbers
+                fixedHeader: true,
+                //Boutons
+                dom: 'Bfrltip',
+                buttons: [
+                    {
+                        extend: "excelHtml5",
+                        text: "<i class=\"fa fa-file-excel-o\"></i>",
+                        className: 'btn btn-white btn-actions-datatable',
+                        title: "ACTIONS DE L'ADMIN {{ admin_profil.nom | upper }} {{ admin_profil.prenom | upper }}",
+                    },
+                    {
+                        extend: "pdfHtml5",
+                        text: "<i class=\"fa fa-file-pdf-o\"></i>",
+                        className: 'btn btn-white btn-actions-datatable',
+                        title: "ACTIONS DE L'ADMIN {{ admin_profil.nom | upper }} {{ admin_profil.prenom | upper }}",
+                        customize: function (doc) {
+                            doc.content[1].margin = [100, 0, 100, 0] //left, top, right, bottom
+                        },
+                    },
+                    {
+                        extend: "csvHtml5",
+                        text: "<i class=\"fa fa-file\"></i>",
+                        className: 'btn btn-white btn-actions-datatable',
+                        title: "ACTIONS DE L'ADMIN {{ admin_profil.nom | upper }} {{ admin_profil.prenom | upper }}",
+                    },
+
+                    {
+                        extend: 'print',
+                        text: "<i class=\"fa fa-print\"></i>",
+                        className: 'btn btn-white btn-actions-datatable',
+                        title: "ACTIONS DE L'ADMIN {{ admin_profil.nom | upper }} {{ admin_profil.prenom | upper }}",
+                    },
+
+
+                ],
+                //Internationalisation
+                language: {
+                    processing: "Traitement en cours...",
+                    search: "Rechercher&nbsp;:",
+                    lengthMenu: "Afficher _MENU_ &eacute;l&eacute;ments",
+                    info: "Affichage de l'&eacute;lement _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
+                    infoEmpty: "Affichage de l'&eacute;lement 0 &agrave; 0 sur 0 &eacute;l&eacute;ments",
+                    infoFiltered: "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+                    infoPostFix: "",
+                    loadingRecords: "Chargement en cours...",
+                    zeroRecords: "Aucun &eacute;l&eacute;ment &agrave; afficher",
+                    emptyTable: "Aucune donnée disponible dans le tableau",
+                    paginate: {
+                        first: "«",
+                        previous: "‹",
+                        next: "›",
+                        last: "»"
+                    },
+                    aria: {
+                        sortAscending: ": activer pour trier la colonne par ordre croissant",
+                        sortDescending: ": activer pour trier la colonne par ordre décroissant"
+                    }
+                },
+                // Par defaut : Order by premier colonne ASC
+                bSort: false,
+            });
+
+            $('#example_length').css("padding-left", "22px");
+            $('#example_filter').css("padding-right", "22px");
+            $('.dt-buttons').css("padding-left", "22px");
+            $('#example_info').css("padding-left", "22px");
+            $('#example_paginate').css("padding-right", "22px");
+
+
+        });
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+{% endblock scripts %}
+

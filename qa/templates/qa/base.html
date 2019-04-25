@@ -1,0 +1,175 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include 'google_analytics_header_script.html' %}
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="author" content="ScriptsBundle">
+  <title>{% block title %} Q&A {% endblock %} - {{ website_title }}</title>
+  <!-- =-=-=-=-=-=-= Favicons Icon =-=-=-=-=-=-= -->
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+  <!-- =-=-=-=-=-=-= Mobile Specific =-=-=-=-=-=-= -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+  <!-- =-=-=-=-=-=-= Bootstrap CSS Style =-=-=-=-=-=-= -->
+  <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+  <!-- =-=-=-=-=-=-= Template CSS Style =-=-=-=-=-=-= -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <!-- =-=-=-=-=-=-= Font Awesome =-=-=-=-=-=-= -->
+  <link rel="stylesheet" href="{% static 'css/font-awesome.css' %}">
+  <!-- =-=-=-=-=-=-= Et Line Fonts =-=-=-=-=-=-= -->
+  <link rel="stylesheet" href="{% static 'css/et-line-fonts.css' %}">
+  	<!-- =-=-=-=-=-=-= Owl carousel =-=-=-=-=-=-= -->
+	<link rel="stylesheet" type="text/css" href="{% static 'css/owl.carousel.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/owl.style.css' %}">
+  <!-- =-=-=-=-=-=-= Google Fonts =-=-=-=-=-=-= -->
+  <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic|Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css">
+  <!-- =-=-=-=-=-=-= Highliter Css =-=-=-=-=-=-= -->
+  <link type="text/css" rel="Stylesheet" href="{% static 'css/styles/shCoreDefault.css' %}" />
+  <!-- =-=-=-=-=-=-= Css Animation =-=-=-=-=-=-= -->
+  <link type="text/css" rel="stylesheet" href="{% static 'css/animate.min.css' %}" />
+  <!-- =-=-=-=-=-=-= Hover Dropdown =-=-=-=-=-=-= -->
+    <link type="text/css" rel="stylesheet" href="{% static 'css/bootstrap-dropdownhover.min.css' %}" />
+    <!-- Google font -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700%7CLato:300,400" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/autocomplete.css' %}">
+  <!-- JavaScripts -->
+  <script src="{% static 'js/modernizr.js' %}"></script>
+
+  {% block style %}
+  {% endblock %}
+</head>
+
+<body>
+
+    <!--  Facebook Share -->
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = 'https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v3.2';
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+
+  <!-- =-=-=-=-=-=-= PRELOADER =-=-=-=-=-=-= -->
+  <div class="preloader"><span class="preloader-gif"></span>
+  </div>
+
+  {% include 'top_nav.html' %}
+
+  <!-- =-=-=-=-=-=-= HEADER Navigation =-=-=-=-=-=-= -->
+  <div class="navbar navbar-default">
+    <div class="container">
+      <!-- header -->
+      <div class="navbar-header">
+        <button data-target=".navbar-collapse" data-toggle="collapse" class="navbar-toggle" type="button">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <!-- logo -->
+        <a href="{% url 'qa:home' %}" class="navbar-brand"><img class="img-responsive" alt="" style="max-height: 55px" src="{% static 'images/logo_qa.png' %}">
+        </a>
+        <!-- search form -->
+        <form class="navbar-form pull-left" action="{% url 'qa:all_questions' %}" method="get">
+          <div class="icon-addon addon-lg autocomplete">
+              <input type="text" id="input-search-autoc" name="q" class="form-control" style="width: 270px"
+                     placeholder="Demander aux experts..." autocomplete="off">
+              <button type="submit" style="border-color: #fff; border-style: dashed;">
+                  <span class="glyphicon glyphicon-search"></span></button>
+          </div>
+        </form>
+        <!-- header end -->
+        <!-- header end -->
+      </div>
+      <!-- navigation menu -->
+      <div class="navbar-collapse collapse">
+        <!-- right bar -->
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="{% url 'qa:all_questions' %}">Parcourir les questions</a></li>
+            <li class="hidden-sm"><a href="{% url 'qa:blog' %}">Blog</a></li>
+          <li class="dropdown"> <a class="dropdown-toggle " data-hover="dropdown" data-toggle="dropdown" data-animations="fadeInUp">Plus <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+                {% if qa_profile_id is not None %}
+                    <li><a href="{% url 'qa:profile' qa_profile_id %}">Profil</a></li>
+                    <li><a href="{% url 'qa:notification' qa_profile_id %}">Notifications</a></li>
+                {% endif %}
+                {% if qa_profile_pro %}
+                    <li><a href="{% url 'qa:add_post' %}">Ajouter un article</a></li>
+                {% endif %}
+                <li><a href="{% url 'qa:how_it_work' %}">COMMENT ÇA MARCHE</a></li>
+                <li><a href="{% url 'qa:contact' %}">Contact</a></li>
+            </ul>
+          </li>
+          <li>
+            <div class="btn-nav"><a href="{% url 'qa:add_question' %}" class="btn btn-primary btn-small navbar-btn">Poster une question</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <!-- navigation menu end -->
+      <!--/.navbar-collapse -->
+    </div>
+  </div>
+  <!-- HEADER Navigation End -->
+
+
+  {% block content %}
+  {% endblock %}
+
+
+  {% include 'qa/includes/footer.html' %}
+
+
+
+    <!-- =-=-=-=-=-=-= JQUERY =-=-=-=-=-=-= -->
+  <script src="{% static 'js/jquery.min.js' %}"></script>
+  <!-- Bootstrap Core Css  -->
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  <!-- Jquery Smooth Scroll  -->
+  <script src="{% static 'js/jquery.smoothscroll.js' %}"></script>
+  <!-- Jquery Easing -->
+  <script type="text/javascript" src="{% static 'js/easing.js' %}"></script>
+  <!-- Jquery Counter -->
+  <script src="{% static 'js/jquery.countTo.js' %}"></script>
+  <!-- Jquery Waypoints -->
+  <script src="{% static 'js/jquery.waypoints.js' %}"></script>
+  <!-- Jquery Appear Plugin -->
+  <script src="{% static 'js/jquery.appear.min.js' %}"></script>
+  <!-- Carousel Slider  -->
+  <script src="{% static 'js/carousel.min.js' %}"></script>
+  <!-- Jquery Parallex -->
+  <script src="{% static 'js/jquery.stellar.min.js' %}"></script>
+  <!--Style Switcher -->
+  <script src="{% static 'js/bootstrap-dropdownhover.min.js' %}"></script>
+  <!-- Include jQuery Syntax Highlighter -->
+  <script type="text/javascript" src="{% static 'scripts/shCore.js' %}"></script>
+  <script type="text/javascript" src="{% static 'scripts/shBrushPhp.js' %}"></script>
+
+  <!-- Template Core JS -->
+  <script src="{% static 'js/custom.js' %}"></script>
+
+  <script src="{% static 'js/select2.min.js' %}"></script>
+
+  <script src="{% static 'js/autocomplete.js' %}"></script>
+  <script>
+      var autocomplete_strings = [];
+      {% for s in autocomplete_strings_qa_1 %}
+          autocomplete_strings.push("{{s}}");
+      {% endfor %}
+      {% for s in autocomplete_strings_qa_2 %}
+          autocomplete_strings.push("{{s}}");
+      {% endfor %}
+      autocomplete(document.getElementById("input-search-autoc"), autocomplete_strings);
+  </script>
+
+    {% block script %}
+    {% endblock %}
+</body>
+
+</html>
